@@ -7,7 +7,7 @@ if ($act==''){ ?>
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Data Pertanyan Penilaian Teman </h3>
-                  <?php if($_SESSION['level']!='kepala'){ ?>
+                  <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                   <a class='pull-right btn btn-primary btn-sm' href='index.php?view=penilaianteman&act=tambah'>Tambahkan Data</a>
                   <?php } ?>
                 </div><!-- /.box-header -->
@@ -17,7 +17,7 @@ if ($act==''){ ?>
                       <tr>
                         <th style='width:40px'>No</th>
                         <th>Pertanyaan</th>
-                        <?php if($_SESSION['level']!='kepala'){ ?>
+                        <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                         <th style='width:70px'>Action</th>
                         <?php } ?>
                       </tr>
@@ -28,11 +28,11 @@ if ($act==''){ ?>
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
-                              <td>$r[pertanyaan]</td>";
-                              if($_SESSION['level']!='kepala'){
+                              <td>".(isset($r['pertanyaan']) ? $r['pertanyaan'] : '')."</td>";
+                              if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){
                         echo "<td><center>
-                                <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=penilaianteman&act=edit&id=$r[id_pertanyaan_penilaian]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=penilaianteman&hapus=$r[id_pertanyaan_penilaian]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=penilaianteman&act=edit&id=".(isset($r['id_pertanyaan_penilaian']) ? $r['id_pertanyaan_penilaian'] : '')."'><span class='glyphicon glyphicon-edit'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=penilaianteman&hapus=".(isset($r['id_pertanyaan_penilaian']) ? $r['id_pertanyaan_penilaian'] : '')."')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -91,8 +91,8 @@ if ($act==''){ ?>
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[id_pertanyaan_penilaian]'>
-                    <tr><th width='120px' scope='row'>Pertanyaan</th> <td><textarea style='height:100px' class='form-control' name='a'>$s[pertanyaan]</textarea> </td></tr>
+                    <input type='hidden' name='id' value='".(isset($s['id_pertanyaan_penilaian']) ? $s['id_pertanyaan_penilaian'] : '')."'>
+                    <tr><th width='120px' scope='row'>Pertanyaan</th> <td><textarea style='height:100px' class='form-control' name='a'>".(isset($s['pertanyaan']) ? $s['pertanyaan'] : '')."</textarea> </td></tr>
                   </tbody>
                   </table>
                 </div>

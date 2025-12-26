@@ -54,6 +54,8 @@
               </ul>
             </li>
 
+            <li><a href="index.php?view=jurnalkbmrekap"><i class="fa fa-clipboard"></i><span>Jurnal KBM</span></a></li>
+
         <!--    <li class="treeview">
               <a href="#"><i class="fa fa-send"></i> <span>SMS Gateway</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">

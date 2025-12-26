@@ -7,7 +7,7 @@ if ($act==''){ ?>
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Data Ruangan </h3>
-                  <?php if($_SESSION['level']!='kepala'){ ?>
+                  <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                   <a class='pull-right btn btn-primary btn-sm' href='index.php?view=ruangan&act=tambah'>Tambahkan Data</a>
                   <?php } ?>
                 </div><!-- /.box-header -->
@@ -23,7 +23,7 @@ if ($act==''){ ?>
                         <th>Kapasitas Ujian</th>
                         <th>Keterangan</th>
                         <th>Aktif</th>
-                        <?php if($_SESSION['level']!='kepala'){ ?>
+                        <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                         <th style='width:70px'>Action</th>
                         <?php } ?>
                       </tr>
@@ -36,17 +36,17 @@ if ($act==''){ ?>
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
-                              <td>$r[kode_ruangan]</td>
-                              <td>$r[nama_gedung]</td>
-                              <td>$r[nama_ruangan]</td>
-                              <td>$r[kapasitas_belajar] Orang</td>
-                              <td>$r[kapasitas_ujian] Orang</td>
-                              <td>$r[keterangan]</td>
-                              <td>$r[aktif]</td>";
-                              if($_SESSION['level']!='kepala'){
+                              <td>".(isset($r['kode_ruangan']) ? $r['kode_ruangan'] : '')."</td>
+                              <td>".(isset($r['nama_gedung']) ? $r['nama_gedung'] : '')."</td>
+                              <td>".(isset($r['nama_ruangan']) ? $r['nama_ruangan'] : '')."</td>
+                              <td>".(isset($r['kapasitas_belajar']) ? $r['kapasitas_belajar'] : '')." Orang</td>
+                              <td>".(isset($r['kapasitas_ujian']) ? $r['kapasitas_ujian'] : '')." Orang</td>
+                              <td>".(isset($r['keterangan']) ? $r['keterangan'] : '')."</td>
+                              <td>".(isset($r['aktif']) ? $r['aktif'] : '')."</td>";
+                              if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){
                         echo "<td><center>
-                                <a class='btn btn-success btn-xs' title='Edit Data' href='?view=ruangan&act=edit&id=$r[kode_ruangan]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=ruangan&hapus=$r[kode_ruangan]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-success btn-xs' title='Edit Data' href='?view=ruangan&act=edit&id=".(isset($r['kode_ruangan']) ? $r['kode_ruangan'] : '')."'><span class='glyphicon glyphicon-edit'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=ruangan&hapus=".(isset($r['kode_ruangan']) ? $r['kode_ruangan'] : '')."')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -111,25 +111,25 @@ if ($act==''){ ?>
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kode_ruangan]'>
-                    <tr><th width='120px' scope='row'>Kode Ruangan</th> <td><input type='text' class='form-control' name='a' value='$s[kode_ruangan]'> </td></tr>
+                    <input type='hidden' name='id' value='".(isset($s['kode_ruangan']) ? $s['kode_ruangan'] : '')."'>
+                    <tr><th width='120px' scope='row'>Kode Ruangan</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['kode_ruangan']) ? $s['kode_ruangan'] : '')."'> </td></tr>
                     <tr><th scope='row'>Nama Gedung</th>          <td><select class='form-control' name='b'> 
                                                                           <option value='0' selected>- Pilih Gedung -</option>"; 
                                                                             $wali = mysql_query("SELECT * FROM rb_gedung");
                                                                             while($a = mysql_fetch_array($wali)){
-                                                                              if ($a['kode_gedung'] == $s['kode_gedung']){
+                                                                              if (isset($s['kode_gedung']) && isset($a['kode_gedung']) && $a['kode_gedung'] == $s['kode_gedung']){
                                                                                 echo "<option value='$a[kode_gedung]' selected>$a[nama_gedung]</option>";
                                                                               }else{
-                                                                                echo "<option value='$a[kode_gedung]'>$a[nama_gedung]</option>";
+                                                                                echo "<option value='".(isset($a['kode_gedung']) ? $a['kode_gedung'] : '')."'>".(isset($a['nama_gedung']) ? $a['nama_gedung'] : '')."</option>";
                                                                               }
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c' value='$s[nama_ruangan]'></td></tr>
-                    <tr><th scope='row'>Kapasitas Belajar</th>              <td><input type='text' class='form-control' name='d' value='$s[kapasitas_belajar]'></td></tr>
-                    <tr><th scope='row'>Kapasitas Ujian</th>               <td><input type='text' class='form-control' name='e' value='$s[kapasitas_ujian]'></td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='f' value='$s[keterangan]'></td></tr>
+                    <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c' value='".(isset($s['nama_ruangan']) ? $s['nama_ruangan'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kapasitas Belajar</th>              <td><input type='text' class='form-control' name='d' value='".(isset($s['kapasitas_belajar']) ? $s['kapasitas_belajar'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kapasitas Ujian</th>               <td><input type='text' class='form-control' name='e' value='".(isset($s['kapasitas_ujian']) ? $s['kapasitas_ujian'] : '')."'></td></tr>
+                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='f' value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
-                                                                  if ($s['aktif']=='Ya'){
+                                                                  if (isset($s['aktif']) && $s['aktif']=='Ya'){
                                                                       echo "<input type='radio' name='g' value='Ya' checked> Ya
                                                                              <input type='radio' name='g' value='Tidak'> Tidak";
                                                                   }else{
@@ -181,7 +181,7 @@ if ($act==''){ ?>
                                                                           <option value='0' selected>- Pilih Gedung -</option>"; 
                                                                             $wali = mysql_query("SELECT * FROM rb_gedung");
                                                                             while($a = mysql_fetch_array($wali)){
-                                                                                echo "<option value='$a[kode_gedung]'>$a[nama_gedung]</option>";
+                                                                                echo "<option value='".(isset($a['kode_gedung']) ? $a['kode_gedung'] : '')."'>".(isset($a['nama_gedung']) ? $a['nama_gedung'] : '')."</option>";
                                                                             }
                                                                          echo "</select></td></tr>
                     <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c'></td></tr>

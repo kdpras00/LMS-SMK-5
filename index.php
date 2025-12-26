@@ -242,6 +242,11 @@
             echo "<div class='row'>";
                     include "application/laporannilai_siswa.php";
             echo "</div>";
+          }elseif ($_GET['view']=='jurnalkbmrekap'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/jurnalkbm_rekap.php";
+            echo "</div>";
           }
 
           elseif ($_GET['view']=='siswa'){
