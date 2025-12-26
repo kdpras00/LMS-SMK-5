@@ -55,21 +55,22 @@
     <tbody>
     <?php 
         $grafik = mysql_query("SELECT * FROM rb_users_aktivitas GROUP BY tanggal ORDER BY tanggal DESC LIMIT 7");
-        while ($r = mysql_fetch_array($grafik)){
-            $ale = tgl_grafik($r['tanggal']);
-            $siswa = mysql_num_rows(mysql_query("SELECT * FROM rb_users_aktivitas where status='siswa' AND tanggal='$r[tanggal]'"));
-            $guru = mysql_num_rows(mysql_query("SELECT * FROM rb_users_aktivitas where status='guru' AND tanggal='$r[tanggal]'"));
-            $superuser = mysql_num_rows(mysql_query("SELECT * FROM rb_users_aktivitas where status='superuser' AND tanggal='$r[tanggal]'"));
-            echo "<tr>
-                    <th>$ale</th>
-                    <td>$siswa</td>
-                    <td>$guru</td>
-                    <td>$superuser</td>
-                  </tr>";
+        if ($grafik) {
+            while ($r = mysql_fetch_array($grafik)){
+                $ale = tgl_grafik($r['tanggal']);
+                $siswa = mysql_num_rows(mysql_query("SELECT * FROM rb_users_aktivitas where status='siswa' AND tanggal='$r[tanggal]'"));
+                $guru = mysql_num_rows(mysql_query("SELECT * FROM rb_users_aktivitas where status='guru' AND tanggal='$r[tanggal]'"));
+                $superuser = mysql_num_rows(mysql_query("SELECT * FROM rb_users_aktivitas where status='superuser' AND tanggal='$r[tanggal]'"));
+                echo "<tr>
+                        <th>$ale</th>
+                        <td>$siswa</td>
+                        <td>$guru</td>
+                        <td>$superuser</td>
+                      </tr>";
+            }
         }
     ?>
     </tbody>
 </table>
 </div><!-- /.chat -->
 </div><!-- /.box (chat box) -->
-

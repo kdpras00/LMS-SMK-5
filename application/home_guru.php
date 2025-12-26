@@ -1,79 +1,112 @@
-            <div class="col-xs-12">  
-              <div class="box">
-                <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['tahun'])){ echo "Jadwal Mengajar Anda"; }else{ echo "Jadwal Mengajar Anda ".date('Y'); } ?></h3>
-                  <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
-                    <select name='tahun' style='padding:4px'>
-                        <?php 
-                            echo "<option value=''>- Pilih Tahun Akademik -</option>";
-                            $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
-                            while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
-                                echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
-                              }else{
-                                echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
-                              }
-                            }
-                        ?>
-                    </select>
-                    <input type="submit" style='margin-top:-4px' class='btn btn-success btn-sm' value='Lihat'>
-                  </form>
+<?php
+$hari_ini = date('w');
+$sem = mysql_fetch_array(mysql_query("SELECT * FROM rb_tahun_akademik WHERE aktif='Ya'"));
+$nama_hari = array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
+$hari_now = $nama_hari[$hari_ini];
 
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                  <table id="example1" class="table table-bordered table-striped">
+// Stats
+$total_mengajar = mysql_num_rows(mysql_query("SELECT * FROM rb_jadwal_pelajaran WHERE nip='$_SESSION[id]' AND id_tahun_akademik='$sem[id_tahun_akademik]'"));
+$total_materi = mysql_num_rows(mysql_query("SELECT * FROM rb_elearning WHERE id_kategori_elearning='1' AND kodejdwl IN (SELECT kodejdwl FROM rb_jadwal_pelajaran WHERE nip='$_SESSION[id]')"));
+$total_tugas = mysql_num_rows(mysql_query("SELECT * FROM rb_elearning WHERE id_kategori_elearning='2' AND kodejdwl IN (SELECT kodejdwl FROM rb_jadwal_pelajaran WHERE nip='$_SESSION[id]')"));
+
+?>
+
+<div class="row">
+    <!-- Info Login -->
+    <div class="col-md-12">
+        <div class="callout callout-info">
+            <h4>Selamat Datang, <?php echo $nama; ?>!</h4>
+            <p>Anda login sebagai <b><?php echo $level; ?></b>. Silahkan gunakan menu di sebelah kiri untuk mengelola kegiatan akademik.</p>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box bg-aqua">
+            <div class="inner">
+                <h3><?php echo $total_mengajar; ?></h3>
+                <p>Jam Mengajar</p>
+            </div>
+            <div class="icon"><i class="fa fa-calendar"></i></div>
+            <a href="index.php?view=absensiswa&act=detailabsenguru" class="small-box-footer">Lihat Detail <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3><?php echo $total_materi; ?></h3>
+                <p>Materi Diupload</p>
+            </div>
+            <div class="icon"><i class="fa fa-book"></i></div>
+            <a href="index.php?view=bahantugas&act=listbahantugasguru" class="small-box-footer">Lihat Detail <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <div class="col-lg-4 col-xs-6">
+        <div class="small-box bg-yellow">
+            <div class="inner">
+                <h3><?php echo $total_tugas; ?></h3>
+                <p>Tugas Diberikan</p>
+            </div>
+            <div class="icon"><i class="fa fa-pencil"></i></div>
+            <a href="index.php?view=bahantugas&act=listbahantugasguru" class="small-box-footer">Lihat Detail <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Jadwal Mengajar Hari Ini (<?php echo $hari_now; ?>)</h3>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-striped">
                     <thead>
-                      <tr>
-                        <th style='width:20px'>No</th>
-                        <th>Kode Pelajaran</th>
-                        <th>Jadwal Pelajaran</th>
-                        <th>Kelas</th>
-                        <th>Guru</th>
-                        <th>Hari</th>
-                        <th>Mulai</th>
-                        <th>Selesai</th>
-                        <th>Ruangan</th>
-                        <th>Semester</th>
-                      </tr>
+                        <tr>
+                            <th style='width:20px'>No</th>
+                            <th>Mata Pelajaran</th>
+                            <th>Kelas</th>
+                            <th>Jam</th>
+                            <th>Ruangan</th>
+                            <th>Aksi</th>
+                        </tr>
                     </thead>
                     <tbody>
-                  <?php
-                    if (isset($_GET['tahun'])){
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                  JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.nip='$_SESSION[id]' AND a.id_tahun_akademik='$_GET[tahun]' ORDER BY a.hari DESC");
-                    
-                    }else{
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
+                        <?php
+                        // Filter by Day
+                        // Note: Database 'hari' might depend on implementation. Assuming standard Indonesian names.
+                        // If empty, show message.
+                        $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, d.nama_ruangan FROM rb_jadwal_pelajaran a 
+                                                JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                 JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.nip='$_SESSION[id]' AND a.id_tahun_akademik LIKE '".date('Y')."%' ORDER BY a.hari DESC");
-                    }
-                    if (isset($tampil) && $tampil) {
+                                                WHERE a.nip='$_SESSION[id]' 
+                                                AND a.id_tahun_akademik='$sem[id_tahun_akademik]' 
+                                                AND a.hari='$hari_now' 
+                                                ORDER BY a.jam_mulai ASC");
                         $no = 1;
-                        while($r=mysql_fetch_array($tampil)){
-                        echo "<tr><td>$no</td>
-                                  <td>$r[kode_pelajaran]</td>
-                                  <td>$r[namamatapelajaran]</td>
-                                  <td>$r[nama_kelas]</td>
-                                  <td>$r[nama_guru]</td>
-                                  <td>$r[hari]</td>
-                                  <td>$r[jam_mulai]</td>
-                                  <td>$r[jam_selesai]</td>
-                                  <td>$r[nama_ruangan]</td>
-                                  <td>$r[id_tahun_akademik]</td>
-                              </tr>";
-                          $no++;
-                          }
-                    }
-                  ?>
+                        if (mysql_num_rows($tampil) > 0) {
+                            while ($r = mysql_fetch_array($tampil)) {
+                                echo "<tr>
+                                        <td>$no</td>
+                                        <td>$r[namamatapelajaran]</td>
+                                        <td>$r[nama_kelas]</td>
+                                        <td>$r[jam_mulai] - $r[jam_selesai]</td>
+                                        <td>$r[nama_ruangan]</td>
+                                        <td>
+                                            <a class='btn btn-success btn-xs' href='index.php?view=absensiswa&act=tampilabsen&id=$r[kode_kelas]&kd=$r[kode_pelajaran]'><i class='fa fa-check-square-o'></i> Absen</a>
+                                            <a class='btn btn-warning btn-xs' href='index.php?view=journalguru&act=lihat&id=$r[kodejdwl]'><i class='fa fa-book'></i> Jurnal</a>
+                                        </td>
+                                      </tr>";
+                                $no++;
+                            }
+                        } else {
+                            echo "<tr><td colspan='6' align='center' style='color:red'>Tidak ada jadwal mengajar hari ini.</td></tr>";
+                        }
+                        ?>
                     </tbody>
-                  </table>
-                </div><!-- /.box-body -->
-                </div>
+                </table>
             </div>
+        </div>
+    </div>
+</div>

@@ -1,18 +1,24 @@
-
 <?php 
-if ($_GET['act']==''){ 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+$get_delete = isset($_GET['delete']) ? $_GET['delete'] : '';
+$get_edit = isset($_GET['edit'])? $_GET['edit'] : '';
+$get_nisn = isset($_GET['nisn']) ? $_GET['nisn'] : '';
+
+if ($act==''){ 
     if (isset($_POST['simpan'])){
             if ($_POST['status']=='Update'){
               mysql_query("UPDATE rb_nilai_extrakulikuler SET kegiatan='$_POST[a]', nilai='$_POST[b]', deskripsi='$_POST[c]' where id_nilai_extrakulikuler='$_POST[id]'");
             }else{
-              mysql_query("INSERT INTO rb_nilai_extrakulikuler VALUES('','$_GET[tahun]','$_POST[nisn]','$_GET[kelas]','$_POST[a]','$_POST[b]','$_POST[c]','$_SESSION[id]','".date('Y-m-d H:i:s')."')");
+              mysql_query("INSERT INTO rb_nilai_extrakulikuler VALUES('','$get_tahun','$_POST[nisn]','$get_kelas','$_POST[a]','$_POST[b]','$_POST[c]','$_SESSION[id]','".date('Y-m-d H:i:s')."')");
             }
-        echo "<script>document.location='index.php?view=extrakulikuler&tahun=$_GET[tahun]&kelas=$_GET[kelas]#$_POST[nisn]';</script>";
+        echo "<script>document.location='index.php?view=extrakulikuler&tahun=$get_tahun&kelas=$get_kelas#$_POST[nisn]';</script>";
     }
 
-    if (isset($_GET['delete'])){
-        mysql_query("DELETE FROM rb_nilai_extrakulikuler where id_nilai_extrakulikuler='$_GET[delete]'");
-        echo "<script>document.location='index.php?view=extrakulikuler&tahun=$_GET[tahun]&kelas=$_GET[kelas]#$_POST[nisn]';</script>";
+    if ($get_delete != ''){
+        mysql_query("DELETE FROM rb_nilai_extrakulikuler where id_nilai_extrakulikuler='$get_delete'");
+        echo "<script>document.location='index.php?view=extrakulikuler&tahun=$get_tahun&kelas=$get_kelas#$get_nisn';</script>";
     }
 ?> 
             <div class="col-xs-12">  
@@ -26,7 +32,7 @@ if ($_GET['act']==''){
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -39,7 +45,7 @@ if ($_GET['act']==''){
                             echo "<option value=''>- Filter Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                              if ($get_kelas==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -65,24 +71,24 @@ if ($_GET['act']==''){
                     </thead>
                     <tbody>";
 
-                  if ($_GET['kelas'] != '' AND $_GET['tahun'] != ''){
+                  if ($get_kelas != '' AND $get_tahun != ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
-                                                  where a.kode_kelas='$_GET[kelas]' ORDER BY a.id_siswa");
+                                                  where a.kode_kelas='$get_kelas' ORDER BY a.id_siswa");
                   }
                   if (isset($tampil) && $tampil) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
-                          if (isset($_GET['edit'])){
-                              $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_extrakulikuler where id_nilai_extrakulikuler='$_GET[edit]'"));
+                          if ($get_edit != ''){
+                              $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_extrakulikuler where id_nilai_extrakulikuler='$get_edit'"));
                               $name = 'Update';
                           }else{
                               $name = 'Simpan';
                           }
 
-                      if ($_GET['nisn']==$r['nisn']){   
-                        echo "<form action='index.php?view=extrakulikuler&tahun=$_GET[tahun]&kelas=$_GET[kelas]' method='POST'>
+                      if ($get_nisn==$r['nisn']){   
+                        echo "<form action='index.php?view=extrakulikuler&tahun=$get_tahun&kelas=$get_kelas' method='POST'>
                                 <tr><td>$no</td>
                                   <td>$r[nisn]</td>
                                   <td style='font-size:12px' id='$r[nisn]'>$r[nama]</td>
@@ -96,7 +102,7 @@ if ($_GET['act']==''){
                                 </tr>
                               </form>";
                       }else{
-                        echo "<form action='index.php?view=extrakulikuler&tahun=$_GET[tahun]&kelas=$_GET[kelas]' method='POST'>
+                        echo "<form action='index.php?view=extrakulikuler&tahun=$get_tahun&kelas=$get_kelas' method='POST'>
                                 <tr><td>$no</td>
                                   <td>$r[nisn]</td>
                                   <td style='font-size:12px' id='$r[nisn]'>$r[nama]</td>
@@ -110,7 +116,7 @@ if ($_GET['act']==''){
                               </form>";
                       }
 
-                                $pe = mysql_query("SELECT * FROM rb_nilai_extrakulikuler where id_tahun_akademik='$_GET[tahun]' AND nisn='$r[nisn]' AND kode_kelas='$_GET[kelas]'");
+                                $pe = mysql_query("SELECT * FROM rb_nilai_extrakulikuler where id_tahun_akademik='$get_tahun' AND nisn='$r[nisn]' AND kode_kelas='$get_kelas'");
                                 while ($n = mysql_fetch_array($pe)){
                                     echo "<tr>
                                             <td></td>
@@ -119,8 +125,8 @@ if ($_GET['act']==''){
                                             <td>$n[kegiatan]</td>
                                             <td align=center>$n[nilai]</td>
                                             <td>$n[deskripsi]</td>
-                                            <td align=center><a href='index.php?view=extrakulikuler&tahun=".$_GET['tahun']."&kelas=".$_GET['kelas']."&edit=".$n['id_nilai_extrakulikuler']."&nisn=".$r['nisn']."#$r[nisn]' class='btn btn-xs btn-success'><span class='glyphicon glyphicon-edit'></span></a>
-                                                            <a href='index.php?view=extrakulikuler&tahun=".$_GET['tahun']."&kelas=".$_GET['kelas']."&delete=".$n['id_nilai_extrakulikuler']."&nisn=".$r['nisn']."' class='btn btn-xs btn-danger' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\"><span class='glyphicon glyphicon-remove'></span></a></td>
+                                            <td align=center><a href='index.php?view=extrakulikuler&tahun=".$get_tahun."&kelas=".$get_kelas."&edit=".$n['id_nilai_extrakulikuler']."&nisn=".$r['nisn']."#$r[nisn]' class='btn btn-xs btn-success'><span class='glyphicon glyphicon-edit'></span></a>
+                                                            <a href='index.php?view=extrakulikuler&tahun=".$get_tahun."&kelas=".$get_kelas."&delete=".$n['id_nilai_extrakulikuler']."&nisn=".$r['nisn']."' class='btn btn-xs btn-danger' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\"><span class='glyphicon glyphicon-remove'></span></a></td>
                                           </tr>";
                                 }
                           $no++;
@@ -131,7 +137,7 @@ if ($_GET['act']==''){
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if ($get_kelas == '' AND $get_tahun == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
                     }
                 ?>

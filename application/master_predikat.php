@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -41,7 +45,7 @@
                               if($_SESSION['level']!='kepala'){
                         echo "<td><center>
                                 <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=predikat&act=edit&id=$r[id_predikat]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=predikat&hapus=$r[id_predikat]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=predikat&hapus=$r[id_predikat]')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -71,7 +75,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_predikat SET kode_kelas = '$_POST[aa]', 
                                          nilai_a = '$_POST[a]',
@@ -92,7 +96,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_predikat where id_predikat='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_predikat where id_predikat='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -131,7 +135,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_predikat VALUES(NULL,'$_POST[aa]','$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]')") or die(mysql_error());
         echo "<script>

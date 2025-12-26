@@ -1,4 +1,9 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -51,8 +56,8 @@
                             echo "</tr>";
                       $no++;
                       }
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_menu where id_menu='$_GET[hapus]'");
+                      if ($get_hapus!=''){
+                          mysql_query("DELETE FROM rb_menu where id_menu='$get_hapus'");
                           echo "<script>document.location='index.php?view=psbmenu';</script>";
                       }
 
@@ -63,7 +68,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_menu SET id_parent = '$_POST[a]',
                                         nama_menu = '$_POST[b]',
@@ -73,7 +78,7 @@
                                         urutan = '$_POST[f]' where id_menu='$_POST[id]'");
       echo "<script>document.location='index.php?view=psbmenu';</script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_menu where id_menu='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_menu where id_menu='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -122,7 +127,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_menu VALUES('','$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','psb')");
         echo "<script>document.location='index.php?view=psbmenu';</script>";
@@ -151,7 +156,7 @@
                     <tr><th width='120px' scope='row'>Url</th> <td><input type='text' class='form-control' name='d'> </td></tr>
                     <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='e' value='Ya' checked> Ya
                                                                              <input type='radio' name='e' value='Tidak'> Tidak</td></tr>
-                  <tr><th width='120px' scope='row'>Urutan</th> <td><input type='text' class='form-control' name='f' value='$s[urutan]'> </td></tr>
+                  <tr><th width='120px' scope='row'>Urutan</th> <td><input type='text' class='form-control' name='f' value=''> </td></tr>
                   </tbody>
                   </table>
                 </div>

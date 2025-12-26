@@ -1,5 +1,6 @@
 <?php 
-if ($_GET['act']==''){ 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+if ($act==''){ 
     if (isset($_POST['submit'])){
        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM `rb_pertanyaan_penilaian` where status='diri'"));
        $n = $jml['jmlp'];

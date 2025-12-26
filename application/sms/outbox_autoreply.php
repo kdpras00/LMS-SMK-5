@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -30,8 +34,8 @@
                           </tr>";
                       $no++;
                       }
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_sms_outbox where id_outbox='$_GET[hapus]'");
+                      if ($get_hapus != ''){
+                          mysql_query("DELETE FROM rb_sms_outbox where id_outbox='$get_hapus'");
                           echo "<script>document.location='index.php?view=outboxautoreply';</script>";
                       }
 

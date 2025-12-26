@@ -1,9 +1,9 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php if (empty($_GET['act'])){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Data Jurusan </h3>
-                  <?php if($_SESSION['level']!='kepala'){ ?>
+                  <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                   <a class='pull-right btn btn-primary btn-sm' href='index.php?view=jurusan&act=tambah'>Tambahkan Data</a>
                   <?php } ?>
                 </div><!-- /.box-header -->
@@ -18,7 +18,7 @@
                         <th>Bidang Keahlian</th>
                         <th>Kompetensi Umum</th>
                         <th>Kompetensi Khusus</th>
-                        <?php if($_SESSION['level']!='kepala'){ ?>
+                        <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                         <th style='width:70px'>Action</th>
                         <?php } ?>
                       </tr>
@@ -29,17 +29,17 @@
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
-                              <td>$r[kode_jurusan]</td>
-                              <td>$r[nama_jurusan]</td>
-							  <td>$r[fase]</td>
-                              <td>$r[bidang_keahlian]</td>
-                              <td>$r[kompetensi_umum]</td>
-                              <td>$r[kompetensi_khusus]</td>";
-                              if($_SESSION['level']!='kepala'){
+                              <td>".(isset($r['kode_jurusan']) ? $r['kode_jurusan'] : '')."</td>
+                              <td>".(isset($r['nama_jurusan']) ? $r['nama_jurusan'] : '')."</td>
+                              <td>".(isset($r['fase']) ? $r['fase'] : '')."</td>
+                              <td>".(isset($r['bidang_keahlian']) ? $r['bidang_keahlian'] : '')."</td>
+                              <td>".(isset($r['kompetensi_umum']) ? $r['kompetensi_umum'] : '')."</td>
+                              <td>".(isset($r['kompetensi_khusus']) ? $r['kompetensi_khusus'] : '')."</td>";
+                              if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){
                         echo "<td><center>
-                                <a class='btn btn-primary btn-xs' title='Edit Data' href='?view=jurusan&act=detail&id=$r[kode_jurusan]'><span class='glyphicon glyphicon-search'></span></a>
-                                <a class='btn btn-success btn-xs' title='Edit Data' href='?view=jurusan&act=edit&id=$r[kode_jurusan]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=jurusan&hapus=$r[kode_jurusan]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-primary btn-xs' title='Edit Data' href='?view=jurusan&act=detail&id=".(isset($r['kode_jurusan']) ? $r['kode_jurusan'] : '')."'><span class='glyphicon glyphicon-search'></span></a>
+                                <a class='btn btn-success btn-xs' title='Edit Data' href='?view=jurusan&act=edit&id=".(isset($r['kode_jurusan']) ? $r['kode_jurusan'] : '')."'><span class='glyphicon glyphicon-edit'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=jurusan&hapus=".(isset($r['kode_jurusan']) ? $r['kode_jurusan'] : '')."')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -70,7 +70,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='detail'){
+}elseif(isset($_GET['act']) && $_GET['act']=='detail'){
     $edit = mysql_query("SELECT * FROM rb_jurusan where kode_jurusan='$_GET[id]'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
@@ -83,17 +83,17 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kode_jurusan]'>
-                    <tr><th width='140px' scope='row'>Kode Jurusan</th> <td>$s[kode_jurusan]</td></tr>
-                    <tr><th scope='row'>Nama Jurusan</th>       <td>$s[nama_jurusan]</td></tr>
-                    <tr><th scope='row'>Nama Jurusan En</th>    <td>$s[nama_jurusan_en]</td></tr>
-                    <tr><th scope='row'>Bidang Keahlian</th>    <td>$s[bidang_keahlian]</td></tr>
-                    <tr><th scope='row'>Kompetensi Umum</th>    <td>$s[kompetensi_umum]</td></tr>
-                    <tr><th scope='row'>Kompetensi Khusus</th>  <td>$s[kompetensi_khusus]</td></tr>
-                    <tr><th scope='row'>Pejabat</th>            <td>$s[pejabat]</td></tr>
-                    <tr><th scope='row'>Jabataan</th>           <td>$s[jabatan]</td></tr>
-                    <tr><th scope='row'>Keterangan</th>         <td>$s[keterangan]</td></tr>
-                    <tr><th scope='row'>Aktif</th>              <td>$s[aktif]</td></tr>
+                    <input type='hidden' name='id' value='".(isset($s['kode_jurusan']) ? $s['kode_jurusan'] : '')."'>
+                    <tr><th width='140px' scope='row'>Kode Jurusan</th> <td>".(isset($s['kode_jurusan']) ? $s['kode_jurusan'] : '')."</td></tr>
+                    <tr><th scope='row'>Nama Jurusan</th>       <td>".(isset($s['nama_jurusan']) ? $s['nama_jurusan'] : '')."</td></tr>
+                    <tr><th scope='row'>Nama Jurusan En</th>    <td>".(isset($s['nama_jurusan_en']) ? $s['nama_jurusan_en'] : '')."</td></tr>
+                    <tr><th scope='row'>Bidang Keahlian</th>    <td>".(isset($s['bidang_keahlian']) ? $s['bidang_keahlian'] : '')."</td></tr>
+                    <tr><th scope='row'>Kompetensi Umum</th>    <td>".(isset($s['kompetensi_umum']) ? $s['kompetensi_umum'] : '')."</td></tr>
+                    <tr><th scope='row'>Kompetensi Khusus</th>  <td>".(isset($s['kompetensi_khusus']) ? $s['kompetensi_khusus'] : '')."</td></tr>
+                    <tr><th scope='row'>Pejabat</th>            <td>".(isset($s['pejabat']) ? $s['pejabat'] : '')."</td></tr>
+                    <tr><th scope='row'>Jabataan</th>           <td>".(isset($s['jabatan']) ? $s['jabatan'] : '')."</td></tr>
+                    <tr><th scope='row'>Keterangan</th>         <td>".(isset($s['keterangan']) ? $s['keterangan'] : '')."</td></tr>
+                    <tr><th scope='row'>Aktif</th>              <td>".(isset($s['aktif']) ? $s['aktif'] : '')."</td></tr>
                   </tbody>
                   </table>
                 </div>
@@ -103,17 +103,13 @@
               </div>
               </form>
             </div>";
-}elseif($_GET['act']=='edit'){
+}elseif(isset($_GET['act']) && $_GET['act']=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_jurusan SET kode_jurusan = '$_POST[a]',
                                          nama_jurusan = '$_POST[b]',
-                                         nama_jurusan_en = '$_POST[c]',
                                          bidang_keahlian = '$_POST[d]',
                                          kompetensi_umum = '$_POST[e]',
                                          kompetensi_khusus = '$_POST[f]',
-                                         pejabat = '$_POST[g]',
-                                         jabatan = '$_POST[h]',
-                                         keterangan = '$_POST[i]',
                                          aktif = '$_POST[j]' where kode_jurusan='$_POST[id]'") or die(mysql_error());
       echo "<script>
             setTimeout(function() {
@@ -141,18 +137,14 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kode_jurusan]'>
-                    <tr><th width='140px' scope='row'>Kode Jurusan</th> <td><input type='text' class='form-control' name='a' value='$s[kode_jurusan]'> </td></tr>
-                    <tr><th scope='row'>Nama Jurusan</th>       <td><input type='text' class='form-control' name='b' value='$s[nama_jurusan]'></td></tr>
-                    <tr><th scope='row'>Nama Jurusan En</th>    <td><input type='text' class='form-control' name='c' value='$s[nama_jurusan_en]'></td></tr>
-                    <tr><th scope='row'>Bidang Keahlian</th>    <td><input type='text' class='form-control' name='d' value='$s[bidang_keahlian]'></td></tr>
-                    <tr><th scope='row'>Kompetensi Umum</th>    <td><input type='text' class='form-control' name='e' value='$s[kompetensi_umum]'></td></tr>
-                    <tr><th scope='row'>Kompetensi Khusus</th>  <td><input type='text' class='form-control' name='f' value='$s[kompetensi_khusus]'></td></tr>
-                    <tr><th scope='row'>Pejabat</th>            <td><input type='text' class='form-control' name='g' value='$s[pejabat]'></td></tr>
-                    <tr><th scope='row'>Jabataan</th>           <td><input type='text' class='form-control' name='h' value='$s[jabatan]'></td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='i' value='$s[keterangan]'></td></tr>
+                    <input type='hidden' name='id' value='".(isset($s['kode_jurusan']) ? $s['kode_jurusan'] : '')."'>
+                    <tr><th width='140px' scope='row'>Kode Jurusan</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['kode_jurusan']) ? $s['kode_jurusan'] : '')."'> </td></tr>
+                    <tr><th scope='row'>Nama Jurusan</th>       <td><input type='text' class='form-control' name='b' value='".(isset($s['nama_jurusan']) ? $s['nama_jurusan'] : '')."'></td></tr>
+                    <tr><th scope='row'>Bidang Keahlian</th>    <td><input type='text' class='form-control' name='d' value='".(isset($s['bidang_keahlian']) ? $s['bidang_keahlian'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kompetensi Umum</th>    <td><input type='text' class='form-control' name='e' value='".(isset($s['kompetensi_umum']) ? $s['kompetensi_umum'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kompetensi Khusus</th>  <td><input type='text' class='form-control' name='f' value='".(isset($s['kompetensi_khusus']) ? $s['kompetensi_khusus'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
-                                                                  if ($s['aktif']=='Ya'){
+                                                                  if (isset($s['aktif']) && $s['aktif']=='Ya'){
                                                                       echo "<input type='radio' name='j' value='Ya' checked> Ya
                                                                              <input type='radio' name='j' value='Tidak'> Tidak";
                                                                   }else{
@@ -166,12 +158,12 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='update' class='btn btn-info'>Update</button>
-                    <a href='index.php?view=jurusan'><button class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=jurusan'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}?>elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_jurusan VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]','$_POST[h]','$_POST[i]','$_POST[j]')") or die(mysql_error());
         echo "<script>

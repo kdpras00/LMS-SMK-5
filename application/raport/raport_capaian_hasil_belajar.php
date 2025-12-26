@@ -1,8 +1,11 @@
-
 <?php 
-if ($_GET['act']==''){ 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+
+if ($act==''){ 
     if (isset($_POST['simpan'])){
-        $juml = mysql_num_rows(mysql_query("SELECT * FROM rb_siswa where kode_kelas='$_GET[kelas]'"));
+        $juml = mysql_num_rows(mysql_query("SELECT * FROM rb_siswa where kode_kelas='$get_kelas'"));
         for ($ia=1; $ia<=$juml; $ia++){
           $a   = $_POST['a'.$ia];
           $b   = $_POST['b'.$ia];
@@ -32,7 +35,7 @@ if ($_GET['act']==''){
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -45,7 +48,7 @@ if ($_GET['act']==''){
                             echo "<option value=''>- Filter Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                               if ($get_kelas==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -58,8 +61,8 @@ if ($_GET['act']==''){
                 </div><!-- /.box-header -->
                 <div class="box-body">
                 <form action='' method='POST'>
-                <input type="hidden" name='tahun' value='<?php echo $_GET['tahun']; ?>'>
-                <input type="hidden" name='kelas' value='<?php echo $_GET['kelas']; ?>'>
+                <input type="hidden" name='tahun' value='<?php echo $get_tahun; ?>'>
+                <input type="hidden" name='kelas' value='<?php echo $get_kelas; ?>'>
                 <?php 
                   echo "<table id='example' class='table table-bordered table-striped'>
                     <thead>
@@ -78,16 +81,16 @@ if ($_GET['act']==''){
                     </thead>
                     <tbody>";
 
-                  if ($_GET['kelas'] != '' AND $_GET['tahun'] != ''){
+                  if ($get_kelas != '' AND $get_tahun != ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
-                                                  where a.kode_kelas='$_GET[kelas]' ORDER BY a.id_siswa");
+                                                  where a.kode_kelas='$get_kelas' ORDER BY a.id_siswa");
                   }
                   if (isset($tampil) && $tampil) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
-                          $n = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_sikap_semester where id_tahun_akademik='$_GET[tahun]' AND nisn='$r[nisn]' AND kode_kelas='$_GET[kelas]'"));
+                          $n = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_sikap_semester where id_tahun_akademik='$get_tahun' AND nisn='$r[nisn]' AND kode_kelas='$get_kelas'"));
                         echo "<tr><td>$no</td>
                                   <td>$r[nisn]</td>
                                   <td>$r[nama]</td>
@@ -105,7 +108,7 @@ if ($_GET['act']==''){
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if ($get_kelas == '' AND $get_tahun == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
                     }
                 ?>

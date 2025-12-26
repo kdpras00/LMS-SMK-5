@@ -1,16 +1,21 @@
-
 <?php 
-if ($_GET['act']==''){ 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$view = isset($_GET['view']) ? $_GET['view'] : '';
+
+if ($act == ''){ 
   cek_session_admin();
-  if ($_GET['view']=='psbsma'){
+  if ($view == 'psbsma'){
       $status = 'SMA';
       $filter = 'sma';
-  }elseif ($_GET['view']=='psbsmk'){
+  }elseif ($view == 'psbsmk'){
       $status = 'SMK';
       $filter = 'smk';
-  }elseif ($_GET['view']=='psbsmp'){
+  }elseif ($view == 'psbsmp'){
       $status = 'SMP';
       $filter = 'smp';
+  }else{
+      $status = 'SMK'; // Default
+      $filter = 'smk';
   }
 ?> 
             <div class="col-xs-12">  
@@ -67,12 +72,12 @@ if ($_GET['act']==''){
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='editsiswa'){
+}elseif($act=='editsiswa'){
   cek_session_siswa();
   if (isset($_POST['update1'])){
       $rtrw = explode('/',$_POST['ai']);
-      $rt = $rtrw[0];
-      $rw = $rtrw[1];
+      $rt = isset($rtrw[0]) ? $rtrw[0] : '';
+      $rw = isset($rtrw[1]) ? $rtrw[1] : '';
       $dir_gambar = 'foto_siswa/';
       $filename = basename($_FILES['ao']['name']);
       $filenamee = date("YmdHis").'-'.basename($_FILES['ao']['name']);
@@ -180,7 +185,7 @@ if ($_GET['act']==''){
         $nisn = $_SESSION['id'];
         $close = 'readonly=on';
     }else{
-        $nisn = $_GET['id'];
+        $nisn = isset($_GET['id']) ? $_GET['id'] : '';
         $close = '';
     }
     $edit = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
@@ -385,29 +390,33 @@ if ($_GET['act']==''){
                 </div>
             </div>";
 
-}elseif($_GET['act']=='detailsiswa'){
+}elseif($act=='detailsiswa'){
   cek_session_siswa();
+    $id = isset($_GET['id']) ? $_GET['id'] : '';
     $detail = mysql_query("SELECT a.*, b.*, c.nama_agama, d.nama_agama as nama_agama_ayah, e.nama_agama as nama_agama_ibu 
                             FROM rb_psb_pendaftaran a JOIN rb_jenis_kelamin b ON a.id_jenis_kelamin=b.id_jenis_kelamin
                               JOIN rb_agama c ON a.id_agama=c.id_agama 
                                 JOIN rb_agama d ON a.agama_ayah=d.id_agama 
                                   JOIN rb_agama e ON a.agama_ibu=e.id_agama 
-                                    where a.id_pendaftaran='$_GET[id]'");
+                                    where a.id_pendaftaran='$id'");
     $s = mysql_fetch_array($detail);
-      if ($_GET['view']=='psbsma'){
+      if ($view == 'psbsma'){
           $status = 'SMA';
           $filter = 'sma';
-      }elseif ($_GET['view']=='psbsmk'){
+      }elseif ($view == 'psbsmk'){
           $status = 'SMK';
           $filter = 'smk';
-      }elseif ($_GET['view']=='psbsmp'){
+      }elseif ($view == 'psbsmp'){
           $status = 'SMP';
           $filter = 'smp';
+      }else{
+        $status = 'SMK';
+        $filter = 'smk';
       }
-
+      
       $ex = explode(' ',$s['waktu_daftar']);
-      $tanggal = $ex[0];
-      $jam = $ex[1];
+      $tanggal = isset($ex[0]) ? $ex[0] : '';
+      $jam = isset($ex[1]) ? $ex[1] : '';
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
@@ -433,7 +442,7 @@ if ($_GET['act']==''){
                                 }else{
                                   echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/$s[foto]'>";
                                 }
-                                echo "<a href='index.php?view=psb$filter&act=editsiswa&id=$_GET[id]' class='btn btn-success btn-block'>Edit Profile</a>
+                                echo "<a href='index.php?view=psb$filter&act=editsiswa&id=$id' class='btn btn-success btn-block'>Edit Profile</a>
                                 </th>
                             </tr>
                             <tr><th width='120px' scope='row'>No Induk</th> <td>$s[no_induk]</td></tr>
@@ -480,7 +489,7 @@ if ($_GET['act']==''){
                                 }else{
                                   echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/$s[foto]'>";
                                 }
-                                echo "<a href='index.php?view=psb$filter&act=editsiswa&id=$_GET[id]' class='btn btn-success btn-block'>Edit Profile</a>
+                                echo "<a href='index.php?view=psb$filter&act=editsiswa&id=$id' class='btn btn-success btn-block'>Edit Profile</a>
                                 </th>
                             </tr>
                             <tr bgcolor=#e3e3e3><th width='120px' scope='row'>Nama Ayah</th> <td>$s[nama_ayah]</td></tr>
@@ -495,7 +504,7 @@ if ($_GET['act']==''){
                             <tr><th scope='row'>Telpon Kantor</th> <td>$s[telpon_kantor_ayah]</td></tr>
 
                             <tr><th scope='row' coslpan='2'><br></th></tr>
-                            <tr bgcolor=#e3e3e3><th width='120px' scope='row'>Nama Ayah</th> <td>$s[nama_ibu]</td></tr>
+                            <tr bgcolor=#e3e3e3><th width='120px' scope='row'>Nama Ibu</th> <td>$s[nama_ibu]</td></tr>
                             <tr><th scope='row'>Tempat Lahir</th> <td>$s[tempat_lahir_ibu]</td></tr>
                             <tr><th scope='row'>Tanggal Lahir</th> <td>".tgl_indo($s['tanggal_lahir_ibu'])."</td></tr>
                             <tr><th scope='row'>Agama</th> <td>$s[nama_agama_ibu]</td></tr>

@@ -1,4 +1,7 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+if ($act==''){ 
+?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">

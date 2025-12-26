@@ -1,7 +1,10 @@
+<?php
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['tahun'])){ echo "Input Nilai Raport Siswa"; }else{ echo "Input Nilai Raport Siswa ".date('Y'); } ?></h3>
+                  <h3 class="box-title"><?php if ($get_tahun != ''){ echo "Input Nilai Raport Siswa"; }else{ echo "Input Nilai Raport Siswa ".date('Y'); } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='raport'>
                     <input type="hidden" name='act' value='detailguru'>
@@ -10,7 +13,7 @@
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -36,7 +39,7 @@
                         <th>Ruangan</th>
                         <th>Semester</th>
                         <?php 
-                          if (isset($_GET['tahun'])){
+                          if ($get_tahun != ''){
                             echo "<th>Action</th>";
                           }
                         ?>
@@ -44,14 +47,14 @@
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['tahun'])){
+                    if ($get_tahun != ''){
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.nip='$_SESSION[id]' 
-                                                    AND a.id_tahun_akademik='$_GET[tahun]' 
+                                                    AND a.id_tahun_akademik='$get_tahun' 
                                                       AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
                     
                     }else{
@@ -75,10 +78,10 @@
                               <td>$r[jam_selesai]</td>
                               <td>$r[nama_ruangan]</td>
                               <td>$r[id_tahun_akademik]</td>";
-                              if (isset($_GET['tahun'])){
+                              if ($get_tahun != ''){
                                 echo "<td style='width:255px !important'><center>
-                                          <a class='btn btn-warning btn-xs' title='Lihat Nilai Sikap Siswa' href='index.php?view=raport&act=listsiswasikap&jdwl=$r[kodejdwl]&kd=$r[kode_pelajaran]&id=$r[kode_kelas]&tahun=$_GET[tahun]'><span class='glyphicon glyphicon-th-list'></span> Sikap</a>
-                                          <a class='btn btn-success btn-xs' title='Lihat Nilai Pengetahuan Siswa' href='index.php?view=raport&act=listsiswa&jdwl=$r[kodejdwl]&kd=$r[kode_pelajaran]&id=$r[kode_kelas]&tahun=$_GET[tahun]'><span class='glyphicon glyphicon-th-list'></span> Data Nilai</a>
+                                          <a class='btn btn-warning btn-xs' title='Lihat Nilai Sikap Siswa' href='index.php?view=raport&act=listsiswasikap&jdwl=$r[kodejdwl]&kd=$r[kode_pelajaran]&id=$r[kode_kelas]&tahun=$get_tahun'><span class='glyphicon glyphicon-th-list'></span> Sikap</a>
+                                          <a class='btn btn-success btn-xs' title='Lihat Nilai Pengetahuan Siswa' href='index.php?view=raport&act=listsiswa&jdwl=$r[kodejdwl]&kd=$r[kode_pelajaran]&id=$r[kode_kelas]&tahun=$get_tahun'><span class='glyphicon glyphicon-th-list'></span> Data Nilai</a>
                                        
                                         </center></td>";
                               }

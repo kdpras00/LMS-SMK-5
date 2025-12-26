@@ -1,4 +1,9 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -36,8 +41,8 @@
                             echo "</tr>";
                       $no++;
                       }
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_sms_autoreply where id_autoreply='$_GET[hapus]'");
+                      if ($get_hapus != ''){
+                          mysql_query("DELETE FROM rb_sms_autoreply where id_autoreply='$get_hapus'");
                           echo "<script>document.location='index.php?view=autoreply';</script>";
                       }
 
@@ -48,13 +53,13 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_sms_autoreply SET keyword = '$_POST[a]',
                                          isi_pesan = '$_POST[b]' where id_autoreply='$_POST[id]'");
       echo "<script>document.location='index.php?view=autoreply';</script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_sms_autoreply where id_autoreply='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_sms_autoreply where id_autoreply='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -81,7 +86,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_sms_autoreply VALUES('','$_POST[a]','$_POST[b]','".date('Y-m-d H:i:s')."')");
         echo "<script>document.location='index.php?view=autoreply';</script>";

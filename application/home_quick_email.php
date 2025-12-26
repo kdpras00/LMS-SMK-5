@@ -21,20 +21,22 @@
                       <?php 
                         if (isset($_POST['kirim'])){
                           $name='sisteminformasi-sekolah.co';
-                          $email=$_POST['emailto'];
-                          $subject=$_POST['subject'];
-                          $message=$_POST['message'];
+                          $email = isset($_POST['emailto']) ? $_POST['emailto'] : '';
+                          $subject = isset($_POST['subject']) ? $_POST['subject'] : '';
+                          $message_content = isset($_POST['message']) ? $_POST['message'] : '';
 
                           $to=$email;
-                          $message="From:$name <br />".$message;
+                          $message="From:$name <br />".$message_content;
                           $headers = "MIME-Version: 1.0" . "\r\n";
                           $headers .= "Content-type:text/html;charset=iso-8859-1" . "\r\n";
                           // More headers
                           $headers .= 'From: admin@sman3bukittinggi.sch.id <noreply@sman3bukittinggi.sch.id>'."\r\n" . 'Reply-To: '.$name.' <'.$email.'>'."\r\n";
                           $headers .= 'Cc: admin@sman3bukittinggi.sch.id' . "\r\n"; //untuk cc lebih dari satu tinggal kasih koma
-                          @mail($to,$subject,$message,$headers);
-                          if(@mail){
+                          $sent = @mail($to,$subject,$message,$headers);
+                          if($sent){
                             echo "<center>Email sent successfully !!</center>";  
+                          } else {
+                            echo "<center>Email failed to send !!</center>";
                           }
                         }
                       ?>

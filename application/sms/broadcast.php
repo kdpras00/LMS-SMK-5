@@ -30,7 +30,7 @@
                       mysql_query("INSERT INTO rb_sms VALUES('','$target','$_POST[b]')");
                   }
 
-                    if ($_POST['aa']=='2'){ $ket = 'Orang Tua (Ayah)'; }elseif($_POST['aa']=='3'){ $ket = 'Orang Tua (Ibu)'; }else{}
+                    if ($_POST['aa']=='2'){ $ket = 'Orang Tua (Ayah)'; }elseif($_POST['aa']=='3'){ $ket = 'Orang Tua (Ibu)'; }else{ $ket = 'Siswa'; }
                     echo "<div class='alert alert-success alert-dismissible fade in' role='alert'> 
                         <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
                         <span aria-hidden='true'>×</span></button> <strong>Success!</strong> - Pesan SMS ke $ket siswa kelas $_POST[a] Sebanyak $total dari $totalsiswa Orang siswa Telah dikirim,...

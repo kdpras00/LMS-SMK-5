@@ -1,11 +1,20 @@
 <?php 
-if ($_GET['act']==''){
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_kd = isset($_GET['kd']) ? $_GET['kd'] : '';
+$get_jdwl = isset($_GET['jdwl']) ? $_GET['jdwl'] : '';
+$get_idtopic = isset($_GET['idtopic']) ? $_GET['idtopic'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+
+if ($act==''){
 cek_session_admin(); 
 ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['kelas']) AND isset($_GET['tahun'])){ echo "Jadwal Pelajaran"; }else{ echo "Jadwal Pelajaran Pada Tahun ".date('Y'); } ?></h3>
+                  <h3 class="box-title"><?php if ($get_kelas != '' AND $get_tahun != ''){ echo "Jadwal Pelajaran"; }else{ echo "Jadwal Pelajaran Pada Tahun ".date('Y'); } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='forum'>
                     <select name='tahun' style='padding:4px'>
@@ -13,7 +22,7 @@ cek_session_admin();
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -26,7 +35,7 @@ cek_session_admin();
                             echo "<option value=''>- Pilih Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                              if ($get_kelas==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -56,18 +65,22 @@ cek_session_admin();
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['kelas']) AND isset($_GET['tahun'])){
+                    $tampil = null;
+                    if ($get_kelas != '' AND $get_tahun != ''){
+                      // Ensure kurikulum is set
+                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
+                      
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$_GET[kelas]' 
-                                                    AND a.id_tahun_akademik='$_GET[tahun]' 
-                                                      AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                  where a.kode_kelas='$get_kelas' 
+                                                    AND a.id_tahun_akademik='$get_tahun' 
+                                                      AND b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }
-                    if (isset($tampil) && $tampil) {
+                    if ($tampil) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
                         $total = mysql_num_rows(mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$r[kodejdwl]'"));
@@ -92,25 +105,24 @@ cek_session_admin();
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if ($get_kelas == '' AND $get_tahun == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
                     }
                 ?>
                 </div>
             </div>
                                 
-
 <?php 
-}elseif($_GET['act']=='list'){
+}elseif($act=='list'){
 cek_session_siswa();
-    $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$_GET[id]'"));
-    $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$_GET[kd]'"));
+    $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$get_id'"));
+    $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$get_kd'"));
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
                   <h3 class='box-title'>Daftar Topic Forum Diskusi</b></h3>";
                   if ($_SESSION['level']!='siswa' AND $_SESSION['level']!='kepala'){
-                    echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=forum&act=tambah&jdwl=$_GET[jdwl]&id=$_GET[id]&kd=$_GET[kd]'>Buat Topic Baru</a>";
+                    echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=forum&act=tambah&jdwl=$get_jdwl&id=$get_id&kd=$get_kd'>Buat Topic Baru</a>";
                   }
                 echo "</div>
               <div class='box-body'>
@@ -118,7 +130,7 @@ cek_session_siswa();
               <div class='col-md-12'>
               <table class='table table-condensed table-hover'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kodekelas]'>
+                    <input type='hidden' name='id' value='$get_id'>
                     <tr><th width='120px' scope='row'>Kode Kelas</th> <td>$d[kode_kelas]</td></tr>
                     <tr><th scope='row'>Nama Kelas</th>               <td>$d[nama_kelas]</td></tr>
                     <tr><th scope='row'>Mata Pelajaran</th>           <td>$m[namamatapelajaran]</td></tr>
@@ -140,7 +152,7 @@ cek_session_siswa();
                     <tbody>";
                     
                     $no = 1;
-                    $tampil = mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$_GET[jdwl]' ORDER BY id_forum_topic DESC");
+                    $tampil = mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$get_jdwl' ORDER BY id_forum_topic DESC");
                     while($r=mysql_fetch_array($tampil)){
                     $ko = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM rb_forum_komentar where id_forum_topic='$r[id_forum_topic]'"));
                     echo "<tr>
@@ -149,10 +161,10 @@ cek_session_siswa();
                             <td>$ko[total] Balasan</td>
                             <td>$r[waktu] WIB</td>";
                             if ($_SESSION['level']=='siswa' OR $_SESSION['level']=='kepala'){
-                              echo "<td style='width:100px'><a class='btn btn-success btn-xs' title='Lihat Detail' href='index.php?view=forum&act=detailtopic&jdwl=$_GET[jdwl]&idtopic=$r[id_forum_topic]&id=$_GET[id]&kd=$_GET[kd]'><span class='glyphicon glyphicon-th-list'></span> Lihat Balasan</a></td>";
+                              echo "<td style='width:100px'><a class='btn btn-success btn-xs' title='Lihat Detail' href='index.php?view=forum&act=detailtopic&jdwl=$get_jdwl&idtopic=$r[id_forum_topic]&id=$get_id&kd=$get_kd'><span class='glyphicon glyphicon-th-list'></span> Lihat Balasan</a></td>";
                             }else{
-                              echo "<td style='width:140px'><a class='btn btn-success btn-xs' title='Lihat Detail' href='index.php?view=forum&act=detailtopic&jdwl=$_GET[jdwl]&idtopic=$r[id_forum_topic]&id=$_GET[id]&kd=$_GET[kd]'><span class='glyphicon glyphicon-th-list'></span> Lihat Balasan</a>
-                                  <a class='btn btn-danger btn-xs' title='Delete Topic' href='index.php?view=forum&act=list&jdwl=$_GET[jdwl]&id=$_GET[id]&kd=$_GET[kd]&hapus=$r[id_forum_topic]' onclick=\"return confirm('Apakah anda Yakin Data ini Dihapus?')\"><span class='glyphicon glyphicon-remove'></span></a>
+                              echo "<td style='width:140px'><a class='btn btn-success btn-xs' title='Lihat Detail' href='index.php?view=forum&act=detailtopic&jdwl=$get_jdwl&idtopic=$r[id_forum_topic]&id=$get_id&kd=$get_kd'><span class='glyphicon glyphicon-th-list'></span> Lihat Balasan</a>
+                                  <a class='btn btn-danger btn-xs' title='Delete Topic' href='index.php?view=forum&act=list&jdwl=$get_jdwl&id=$get_id&kd=$get_kd&hapus=$r[id_forum_topic]' onclick=\"return confirm('Apakah anda Yakin Data ini Dihapus?')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </td>";
                             }
 
@@ -160,9 +172,9 @@ cek_session_siswa();
                       $no++;
                       }
 
-                      if (isset($_GET['hapus'])){
-                        mysql_query("DELETE FROM rb_quiz_ujian where id_quiz_ujian='$_GET[hapus]'");
-                        echo "<script>document.location='index.php?view=soal&act=listsoal&jdwl=".$_GET['jdwl']."&id=".$_GET['id']."&kd=".$_GET['kd']."';</script>";
+                      if ($get_hapus != ''){
+                        mysql_query("DELETE FROM rb_quiz_ujian where id_quiz_ujian='$get_hapus'");
+                        echo "<script>document.location='index.php?view=soal&act=listsoal&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
                       }
 
                     echo "</tbody>
@@ -172,7 +184,7 @@ cek_session_siswa();
               </form>
             </div>";
 
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
 cek_session_guru();
   if (isset($_POST['tambah'])){
     $waktu = date("Y-m-d H:i:s");
@@ -181,8 +193,8 @@ cek_session_guru();
         $filename = basename($_FILES['f']['name']);
         move_uploaded_file($_FILES['f']['tmp_name'], "files/".$filename);
     }
-    mysql_query("INSERT INTO rb_forum_topic VALUES (NULL,'$_GET[jdwl]','$_POST[a]','$_POST[b]','$waktu', '$filename')");
-      echo "<script>document.location='index.php?view=forum&act=detailguru&jdwl=".$_GET['jdwl']."&id=".$_GET['id']."&kd=".$_GET['kd']."';</script>";
+    mysql_query("INSERT INTO rb_forum_topic VALUES (NULL,'$get_jdwl','$_POST[a]','$_POST[b]','$waktu', '$filename')");
+      echo "<script>document.location='index.php?view=forum&act=detailguru&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
   }
 
     echo "<div class='col-md-12'>
@@ -211,28 +223,32 @@ cek_session_guru();
               </form>
             </div>";
 
-}elseif($_GET['act']=='detailtopic'){
+}elseif($act=='detailtopic'){
 cek_session_siswa();
-  $topic = mysql_fetch_array(mysql_query("SELECT * FROM rb_forum_topic a 
+  $topic_query = mysql_query("SELECT * FROM rb_forum_topic a 
               JOIN rb_jadwal_pelajaran b ON a.kodejdwl=b.kodejdwl
-                JOIN rb_guru c ON b.nip=c.nip where a.id_forum_topic='$_GET[idtopic]'"));
+                JOIN rb_guru c ON b.nip=c.nip where a.id_forum_topic='$get_idtopic'");
+  $topic = mysql_fetch_array($topic_query);
 
   if (isset($_GET['deletetopic'])){
-      mysql_query("DELETE FROM rb_forum_topic where id_forum_topic='$_GET[idtopic]'");
-      echo "<script>document.location='index.php?view=forum&act=detailtopic&jdwl=".$_GET['jdwl']."&idtopic=".$_GET['idtopic']."&id=".$_GET['id']."&kd=".$_GET['kd']."';</script>";
+      mysql_query("DELETE FROM rb_forum_topic where id_forum_topic='$get_idtopic'");
+      echo "<script>document.location='index.php?view=forum&act=detailtopic&jdwl=".$get_jdwl."&idtopic=".$get_idtopic."&id=".$get_id."&kd=".$get_kd."';</script>";
   }
 
   if (isset($_GET['deletekomentar'])){
-      mysql_query("DELETE FROM rb_forum_komentar where id_forum_komentar='$_GET[deletekomentar]' AND id_forum_topic='$_GET[idtopic]'");
-      echo "<script>document.location='index.php?view=forum&act=detailtopic&jdwl=".$_GET['jdwl']."&idtopic=".$_GET['idtopic']."&id=".$_GET['id']."&kd=".$_GET['kd']."';</script>";
+      $get_deletekomentar = isset($_GET['deletekomentar']) ? $_GET['deletekomentar'] : '';
+      mysql_query("DELETE FROM rb_forum_komentar where id_forum_komentar='$get_deletekomentar' AND id_forum_topic='$get_idtopic'");
+      echo "<script>document.location='index.php?view=forum&act=detailtopic&jdwl=".$get_jdwl."&idtopic=".$get_idtopic."&id=".$get_id."&kd=".$get_kd."';</script>";
   }
 
+  // Handle case where topic might be deleted or not found
+  if ($topic) {
     echo "<div class='col-md-12'>
               <div class='box box-success'>
                 <div class='box-header'>
                   <i class='fa fa-comments-o'></i>
                   <h3 class='box-title'>Topic Forum - $topic[judul_topic] </h3> 
-                  <a href='index.php?view=forum&act=detailtopic&jdwl=$_GET[jdwl]&idtopic=$_GET[idtopic]&id=$_GET[id]&kd=$_GET[kd]&deletetopic' onclick=\"return confirm('Apakah anda Yakin Data ini Dihapus?')\"><i class='fa fa-remove pull-right'></i></a>
+                  <a href='index.php?view=forum&act=detailtopic&jdwl=$get_jdwl&idtopic=$get_idtopic&id=$get_id&kd=$get_kd&deletetopic' onclick=\"return confirm('Apakah anda Yakin Data ini Dihapus?')\"><i class='fa fa-remove pull-right'></i></a>
                 </div>
                 <div class='box-body chat' id='chat-box'>
                   <div class='item'>";
@@ -262,7 +278,7 @@ cek_session_siswa();
                 <div class='box-body chat' id='chat-box'>";
                 $komentar = mysql_query("SELECT * FROM rb_forum_komentar a 
                               LEFT JOIN rb_siswa b ON a.nisn_nip=b.nisn
-                                where a.id_forum_topic='$_GET[idtopic]' 
+                                where a.id_forum_topic='$get_idtopic' 
                                   ORDER BY a.id_forum_komentar ASC");
                 while ($k = mysql_fetch_array($komentar)){
                     if ($k['nama']==''){
@@ -273,7 +289,7 @@ cek_session_siswa();
                             echo "<img src='foto_pegawai/$topic[foto]' alt='user image' class='online'>";
                           }
                           echo "<p class='message'><small class='text-muted'>
-                                <a href='index.php?view=forum&act=detailtopic&jdwl=$_GET[jdwl]&idtopic=$_GET[idtopic]&id=$_GET[id]&kd=$_GET[kd]&deletekomentar=$k[id_forum_komentar]' onclick=\"return confirm('Apakah anda Yakin Data ini Dihapus?')\"><i class='fa fa-remove pull-right'></i></a> <i class='fa fa-clock-o'></i> $k[waktu_komentar] WIB </small>
+                                <a href='index.php?view=forum&act=detailtopic&jdwl=$get_jdwl&idtopic=$get_idtopic&id=$get_id&kd=$get_kd&deletekomentar=$k[id_forum_komentar]' onclick=\"return confirm('Apakah anda Yakin Data ini Dihapus?')\"><i class='fa fa-remove pull-right'></i></a> <i class='fa fa-clock-o'></i> $k[waktu_komentar] WIB </small>
                                 <a href='#' class='name'>$topic[nama_guru] (Guru)</a> $k[isi_komentar]</p>
                         </div>";
                     }else{
@@ -284,7 +300,7 @@ cek_session_siswa();
                             echo "<img src='foto_siswa/$k[foto]' alt='user image' class='offline'>";
                           }
                           echo "<p class='message'><small class='text-muted'>
-                                <a href='index.php?view=forum&act=detailtopic&jdwl=$_GET[jdwl]&idtopic=$_GET[idtopic]&id=$_GET[id]&kd=$_GET[kd]&deletekomentar=$k[id_forum_komentar]'><i class='fa fa-remove pull-right'></i></a> <i class='fa fa-clock-o'></i> $k[waktu_komentar] WIB</small> 
+                                <a href='index.php?view=forum&act=detailtopic&jdwl=$get_jdwl&idtopic=$get_idtopic&id=$get_id&kd=$get_kd&deletekomentar=$k[id_forum_komentar]'><i class='fa fa-remove pull-right'></i></a> <i class='fa fa-clock-o'></i> $k[waktu_komentar] WIB</small> 
                                 <a href='#' class='name'>$k[nama] (Siswa)</a>$k[isi_komentar]</p>
                         </div>";
                     }
@@ -303,19 +319,20 @@ cek_session_siswa();
                 </form>
               </div>
           </div>";
+    }
 
           if (isset($_POST['komentar'])){
               $waktu = date("Y-m-d H:i:s");
-              mysql_query("INSERT INTO rb_forum_komentar VALUES('','$_GET[idtopic]','$_SESSION[id]','$_POST[a]','$waktu')");
-              echo "<script>document.location='index.php?view=forum&act=detailtopic&jdwl=".$_GET['jdwl']."&idtopic=".$_GET['idtopic']."&id=".$_GET['id']."&kd=".$_GET['kd']."';</script>";
+              mysql_query("INSERT INTO rb_forum_komentar VALUES('','$get_idtopic','$_SESSION[id]','$_POST[a]','$waktu')");
+              echo "<script>document.location='index.php?view=forum&act=detailtopic&jdwl=".$get_jdwl."&idtopic=".$get_idtopic."&id=".$get_id."&kd=".$get_kd."';</script>";
           }
-}elseif($_GET['act']=='detailguru'){
+}elseif($act=='detailguru'){
 cek_session_guru(); 
 ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['tahun'])){ echo "Forum Diskusi"; }else{ echo "Forum Diskusi Pada ".date('Y'); } ?></h3>
+                  <h3 class="box-title"><?php if ($get_tahun != ''){ echo "Forum Diskusi"; }else{ echo "Forum Diskusi Pada ".date('Y'); } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='forum'>
                     <input type="hidden" name='act' value='detailguru'>
@@ -324,7 +341,7 @@ cek_session_guru();
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -355,15 +372,18 @@ cek_session_guru();
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['tahun'])){
+                    // Ensure kurikulum is set
+                    $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
+
+                    if ($get_tahun != ''){
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.nip='$_SESSION[id]' 
-                                                    AND a.id_tahun_akademik='$_GET[tahun]' 
-                                                      AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                    AND a.id_tahun_akademik='$get_tahun' 
+                                                      AND b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }else{
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
@@ -372,26 +392,28 @@ cek_session_guru();
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                 JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.nip='$_SESSION[id]'
-                                                    AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' 
+                                                    AND b.kode_kurikulum='$kode_kurikulum' 
                                                       AND a.id_tahun_akademik LIKE '".date('Y')."%' ORDER BY a.hari DESC");
                     }
                     $no = 1;
-                    while($r=mysql_fetch_array($tampil)){
-                    $total = mysql_num_rows(mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$r[kodejdwl]'"));
-                    echo "<tr><td>$no</td>
-                              <td>$r[namamatapelajaran]</td>
-                              <td>$r[nama_kelas]</td>
-                              <td>$r[nama_guru]</td>
-                              <td>$r[hari]</td>
-                              <td>$r[jam_mulai]</td>
-                              <td>$r[jam_selesai]</td>
-                              <td>$r[nama_ruangan]</td>
-                              <td>$r[id_tahun_akademik]</td>
-                              <td style='color:red'>$total Record</td>
-                              <td><a class='btn btn-success btn-xs' title='List Forum Diskusi' href='index.php?view=forum&act=list&jdwl=$r[kodejdwl]&id=$r[kode_kelas]&kd=$r[kode_pelajaran]'><span class='glyphicon glyphicon-th-list'></span> Tampilkan</a></td>
-                          </tr>";
-                      $no++;
-                      }
+                    if(isset($tampil) && $tampil){
+                        while($r=mysql_fetch_array($tampil)){
+                        $total = mysql_num_rows(mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$r[kodejdwl]'"));
+                        echo "<tr><td>$no</td>
+                                  <td>$r[namamatapelajaran]</td>
+                                  <td>$r[nama_kelas]</td>
+                                  <td>$r[nama_guru]</td>
+                                  <td>$r[hari]</td>
+                                  <td>$r[jam_mulai]</td>
+                                  <td>$r[jam_selesai]</td>
+                                  <td>$r[nama_ruangan]</td>
+                                  <td>$r[id_tahun_akademik]</td>
+                                  <td style='color:red'>$total Record</td>
+                                  <td><a class='btn btn-success btn-xs' title='List Forum Diskusi' href='index.php?view=forum&act=list&jdwl=$r[kodejdwl]&id=$r[kode_kelas]&kd=$r[kode_pelajaran]'><span class='glyphicon glyphicon-th-list'></span> Tampilkan</a></td>
+                              </tr>";
+                          $no++;
+                          }
+                    }
                   ?>
                     </tbody>
                   </table>
@@ -400,13 +422,13 @@ cek_session_guru();
             </div>
                                 
 <?php
-}elseif($_GET['act']=='detailsiswa'){
+}elseif($act=='detailsiswa'){
 cek_session_siswa(); 
 ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['kelas']) AND isset($_GET['tahun'])){ echo "Forum Diskusi"; }else{ echo "Forum Diskusi ".date('Y'); } ?></h3>
+                  <h3 class="box-title"><?php if ($get_kelas != '' AND $get_tahun != ''){ echo "Forum Diskusi"; }else{ echo "Forum Diskusi ".date('Y'); } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='forum'>
                     <input type="hidden" name='act' value='detailsiswa'>
@@ -415,7 +437,7 @@ cek_session_siswa();
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -446,15 +468,18 @@ cek_session_siswa();
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['tahun'])){
+                    // Ensure kurikulum is set
+                    $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
+
+                    if ($get_tahun != ''){
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.kode_kelas='$_SESSION[kode_kelas]' 
-                                                    AND a.id_tahun_akademik='$_GET[tahun]' 
-                                                      AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                    AND a.id_tahun_akademik='$get_tahun' 
+                                                      AND b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }else{
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
@@ -463,27 +488,29 @@ cek_session_siswa();
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                 JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.kode_kelas='$_SESSION[kode_kelas]'
-                                                    AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' 
+                                                    AND b.kode_kurikulum='$kode_kurikulum' 
                                                       AND a.id_tahun_akademik LIKE '".date('Y')."%' ORDER BY a.hari DESC");
                     }
                     $no = 1;
-                    while($r=mysql_fetch_array($tampil)){
-                    $total = mysql_num_rows(mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$r[kodejdwl]'"));
-                    echo "<tr><td>$no</td>
-                              <td>$r[kode_pelajaran]</td>
-                              <td>$r[namamatapelajaran]</td>
-                              <td>$r[nama_kelas]</td>
-                              <td>$r[nama_guru]</td>
-                              <td>$r[hari]</td>
-                              <td>$r[jam_mulai]</td>
-                              <td>$r[jam_selesai]</td>
-                              <td>$r[nama_ruangan]</td>
-                              <td>$r[id_tahun_akademik]</td>
-                              <td style='color:red'>$total Record</td>
-                              <td><a class='btn btn-success btn-xs' title='Masuk Forum Diskusi' href='index.php?view=forum&act=list&jdwl=$r[kodejdwl]&id=$r[kode_kelas]&kd=$r[kode_pelajaran]'><span class='glyphicon glyphicon-th-list'></span> Tampilkan</a></td>
-                          </tr>";
-                      $no++;
-                      }
+                    if(isset($tampil) && $tampil){
+                        while($r=mysql_fetch_array($tampil)){
+                        $total = mysql_num_rows(mysql_query("SELECT * FROM rb_forum_topic where kodejdwl='$r[kodejdwl]'"));
+                        echo "<tr><td>$no</td>
+                                  <td>$r[kode_pelajaran]</td>
+                                  <td>$r[namamatapelajaran]</td>
+                                  <td>$r[nama_kelas]</td>
+                                  <td>$r[nama_guru]</td>
+                                  <td>$r[hari]</td>
+                                  <td>$r[jam_mulai]</td>
+                                  <td>$r[jam_selesai]</td>
+                                  <td>$r[nama_ruangan]</td>
+                                  <td>$r[id_tahun_akademik]</td>
+                                  <td style='color:red'>$total Record</td>
+                                  <td><a class='btn btn-success btn-xs' title='Masuk Forum Diskusi' href='index.php?view=forum&act=list&jdwl=$r[kodejdwl]&id=$r[kode_kelas]&kd=$r[kode_pelajaran]'><span class='glyphicon glyphicon-th-list'></span> Tampilkan</a></td>
+                              </tr>";
+                          $no++;
+                          }
+                    }
                   ?>
                     </tbody>
                   </table>

@@ -1,4 +1,12 @@
-<?php if ($_GET['act']==''){ ?>
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_jdwl = isset($_GET['jdwl']) ? $_GET['jdwl'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+
+if ($act==''){ ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -10,7 +18,7 @@
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -23,7 +31,7 @@
                             echo "<option value=''>- Pilih Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                              if ($get_kelas==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -52,14 +60,18 @@
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['kelas']) AND isset($_GET['tahun'])){
+                    $tampil = null;
+                    if ($get_kelas != '' AND $get_tahun != ''){
+                      // Ensure kurikulum is set
+                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
+
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_kurikulum, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$_GET[kelas]' AND a.id_tahun_akademik='$_GET[tahun]' AND
-                                                      b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                  where a.kode_kelas='$get_kelas' AND a.id_tahun_akademik='$get_tahun' AND
+                                                      b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }
                     if (isset($tampil) && $tampil) {
@@ -81,11 +93,11 @@
                           }
                     }
                   ?>
-                    <tbody>
+                    </tbody>
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if ($get_kelas == '' AND $get_tahun == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Memilih Kelas dan Tahun akademik Terlebih dahulu...</center>";
                     }
                 ?>
@@ -93,15 +105,15 @@
             </div>
 
 <?php 
-}elseif($_GET['act']=='lihat'){
-    $d = mysql_fetch_array(mysql_query("SELECT a.kode_kelas, b.nama_kelas, c.namamatapelajaran, d.nama_guru FROM `rb_jadwal_pelajaran` a JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas JOIN rb_mata_pelajaran c ON a.kode_pelajaran=c.kode_pelajaran JOIN rb_guru d ON a.nip=d.nip where a.kodejdwl='$_GET[id]'"));
+}elseif($act=='lihat'){
+    $d = mysql_fetch_array(mysql_query("SELECT a.kode_kelas, b.nama_kelas, c.namamatapelajaran, d.nama_guru FROM `rb_jadwal_pelajaran` a JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas JOIN rb_mata_pelajaran c ON a.kode_pelajaran=c.kode_pelajaran JOIN rb_guru d ON a.nip=d.nip where a.kodejdwl='$get_id'"));
             echo "<div class='col-xs-12'>  
               <div class='box'>
                 <div class='box-header'>
                   <h3 class='box-title'>Journal Kegiatan Belajar Mengajar</h3>
-                      <a style='margin-left:5px' class='pull-right btn btn-success btn-sm' href='index.php?view=kompetensidasar&act=lihat&id=$_GET[id]'>Lihat Kompetensi Dasar</a>";
+                      <a style='margin-left:5px' class='pull-right btn btn-success btn-sm' href='index.php?view=kompetensidasar&act=lihat&id=$get_id'>Lihat Kompetensi Dasar</a>";
                   if($_SESSION['level']!='kepala' AND $_SESSION['level']!='siswa'){
-                      echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=journalkbm&act=tambah&jdwl=$_GET[id]'>Tambahkan Journal</a>";
+                      echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=journalkbm&act=tambah&jdwl=$get_id'>Tambahkan Journal</a>";
                   }
                 echo "</div>
                 <div class='box-body'>
@@ -130,7 +142,7 @@
                       echo "</tr>
                     </thead>
                     <tbody>";
-                      $tampil = mysql_query("SELECT * FROM rb_journal_list where kodejdwl='$_GET[id]' ORDER BY id_journal DESC");
+                      $tampil = mysql_query("SELECT * FROM rb_journal_list where kodejdwl='$get_id' ORDER BY id_journal DESC");
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
@@ -141,17 +153,17 @@
                               <td>$r[keterangan]</td>";
                               if($_SESSION['level']!='kepala' AND $_SESSION['level']!='siswa'){
                                 echo "<td style='width:80px !important'><center>
-                                        <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=journalkbm&act=edit&id=$r[id_journal]&jdwl=$_GET[id]'><span class='glyphicon glyphicon-edit'></span></a>
-                                        <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=journalkbm&hapus=$r[id_journal]&jdwl=$_GET[id]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                        <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=journalkbm&act=edit&id=$r[id_journal]&jdwl=$get_id'><span class='glyphicon glyphicon-edit'></span></a>
+                                        <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=journalkbm&hapus=$r[id_journal]&jdwl=$get_id')\"><span class='glyphicon glyphicon-remove'></span></a>
                                       </center></td>";
                               }
                             echo "</tr>";
                       $no++;
                       }
 
-                      if (isset($_GET['hapus'])){
-                        mysql_query("DELETE FROM rb_journal_list where id_journal='$_GET[hapus]'");
-                        echo "<script>document.location='index.php?view=journalkbm&act=lihat&id=$_GET[jdwl]';</script>";
+                      if ($get_hapus != ''){
+                        mysql_query("DELETE FROM rb_journal_list where id_journal='$get_hapus'");
+                        echo "<script>document.location='index.php?view=journalkbm&act=lihat&id=$get_id';</script>";
                       }
 
                     echo "<tbody>
@@ -160,7 +172,7 @@
                 </div>
             </div>";
 
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         $d = tgl_simpan($_POST['d']);
         mysql_query("INSERT INTO rb_journal_list VALUES('','$_POST[jdwl]','$_POST[c]','$d','$_POST[e]','$_POST[f]','$_POST[g]','".date('Y-m-d H:i:s')."','$_SESSION[id]')");
@@ -173,14 +185,15 @@
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function() {
-                  window.location = 'index.php?view=journalkbm&act=lihat&id=$_POST[jdwl]';
+                  window.location = 'index.php?view=journalkbm&act=lihat&id=". (isset($_POST['jdwl']) ? $_POST['jdwl'] : '') ."';
                 });
               }, 100);
             </script>";
     }
 
-    $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_jadwal_pelajaran where kodejdwl='$_GET[jdwl]'"));
-    $jam = mysql_num_rows(mysql_query("SELECT * FROM rb_journal_list where kodejdwl='$_GET[jdwl]'"))+1;
+    $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_jadwal_pelajaran where kodejdwl='$get_jdwl'"));
+    $jam = mysql_num_rows(mysql_query("SELECT * FROM rb_journal_list where kodejdwl='$get_jdwl'"))+1;
+    $hari_ini = isset($hari_ini) ? $hari_ini : date('l'); // Fallback
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
@@ -191,7 +204,7 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                  <input type='hidden' name='jdwl' value='$_GET[jdwl]'>
+                  <input type='hidden' name='jdwl' value='$get_jdwl'>
                     <tr><th width='140px' scope='row'>Kelas</th>   <td><select class='form-control' name='a'>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -229,7 +242,7 @@
               </form>
             </div>";
 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         $d = tgl_simpan($_POST['d']);
         mysql_query("UPDATE rb_journal_list SET hari = '$_POST[c]',
@@ -247,12 +260,12 @@
                 showConfirmButton: false,
                 timer: 1500
               }).then(function() {
-                window.location = 'index.php?view=journalkbm&act=lihat&id=$_POST[jdwl]';
+                window.location = 'index.php?view=journalkbm&act=lihat&id=" . (isset($_POST['jdwl']) ? $_POST['jdwl'] : '') . "';
               });
             }, 100);
           </script>";
     }
-    $e = mysql_fetch_array(mysql_query("SELECT a.*, b.kode_pelajaran, b.kode_kelas FROM rb_journal_list a JOIN rb_jadwal_pelajaran b ON a.kodejdwl=b.kodejdwl where a.id_journal='$_GET[id]'"));
+    $e = mysql_fetch_array(mysql_query("SELECT a.*, b.kode_pelajaran, b.kode_kelas FROM rb_journal_list a JOIN rb_jadwal_pelajaran b ON a.kodejdwl=b.kodejdwl where a.id_journal='$get_id'"));
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
@@ -263,8 +276,8 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                  <input type='hidden' name='jdwl' value='$_GET[jdwl]'>
-                  <input type='hidden' name='id' value='$_GET[id]'>
+                  <input type='hidden' name='jdwl' value='$get_jdwl'>
+                  <input type='hidden' name='id' value='$get_id'>
                     <tr><th width='140px' scope='row'>Kelas</th>   <td><select class='form-control' name='a'>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -283,7 +296,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                   
+                    
                     <tr><th scope='row'>Hari</th>  <td><input type='text' class='form-control' value='$e[hari]' name='c' required></td></tr>
                     <tr><th scope='row'>Tanggal</th>  <td><input type='text' style='border-radius:0px; padding-left:12px' class='datepicker form-control' value='".tgl_view($e['tanggal'])."' name='d' data-date-format='dd-mm-yyyy' required></td></tr>
                     <tr><th scope='row'>Jam Ke</th>  <td><input type='number' class='form-control' value='$e[jam_ke]' name='e' required></td></tr>

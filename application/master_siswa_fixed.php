@@ -1,19 +1,32 @@
 
 <?php 
-if ($_GET['act']==''){ 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$get_angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+$get_nisn = isset($_GET['nisn']) ? $_GET['nisn'] : '';
+
+if ($act==''){ 
   cek_session_admin();
     if (isset($_POST['pindahkelas'])){
-      if ($_POST['angkatan']!='' AND $_POST['kelas'] != ''){
-        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$_POST[kelas]' AND angkatan='$_POST[angkatan]'"));
-      }elseif ($_POST['angkatan']=='' AND $_POST['kelas'] != ''){
-        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$_POST[kelas]'"));
-      }elseif ($_POST['angkatan']!='' AND $_POST['kelas'] == ''){
-        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where angkatan='$_POST[angkatan]'"));
+      $p_angkatan = isset($_POST['angkatan']) ? $_POST['angkatan'] : '';
+      $p_kelas = isset($_POST['kelas']) ? $_POST['kelas'] : '';
+      $p_kelaspindah = isset($_POST['kelaspindah']) ? $_POST['kelaspindah'] : '';
+      $p_angkatanpindah = isset($_POST['angkatanpindah']) ? $_POST['angkatanpindah'] : '';
+
+      if ($p_angkatan!='' AND $p_kelas != ''){
+        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$p_kelas' AND angkatan='$p_angkatan'"));
+      }elseif ($p_angkatan=='' AND $p_kelas != ''){
+        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$p_kelas'"));
+      }elseif ($p_angkatan!='' AND $p_kelas == ''){
+        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where angkatan='$p_angkatan'"));
       }
 
        $n = $jml['jmlp'];
-       $kelas = $_POST['kelaspindah'];
-       $angkatan = $_POST['angkatanpindah'];
+       $kelas = $p_kelaspindah;
+       $angkatan = $p_angkatanpindah;
        for ($i=0; $i<=$n; $i++){
          if (isset($_POST['pilih'.$i])){
            $nisn = $_POST['pilih'.$i];
@@ -34,19 +47,19 @@ if ($_GET['act']==''){
                 <div class="box-header">
                   <h3 class="box-title">Semua Data Siswa </h3>
                    <?php if($_SESSION['level']!='kepala'){ ?>
-                  <a class='pull-right btn btn-success btn-sm' target='_BLANK' href='print-siswa.php?kelas=<?php echo $_GET['kelas']; ?>&angkatan=<?php echo $_GET['angkatan']; ?>'>Print Siswa</a>
+                  <a class='pull-right btn btn-success btn-sm' target='_BLANK' href='print-siswa.php?kelas=<?php echo $get_kelas; ?>&angkatan=<?php echo $get_angkatan; ?>'>Print Siswa</a>
                   <a style='margin-right:5px' class='pull-right btn btn-primary btn-sm' href='index.php?view=siswa&act=tambahsiswa'>Tambahkan Data Siswa</a>
                   <?php } ?>
 
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='siswa'>
-                    <input type="number" name='angkatan' style='padding:3px' placeholder='Angkatan' value='<?php echo $_GET['angkatan']; ?>'>
+                    <input type="number" name='angkatan' style='padding:3px' placeholder='Angkatan' value='<?php echo $get_angkatan; ?>'>
                     <select name='kelas' style='padding:4px'>
                         <?php 
                             echo "<option value=''>- Filter Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                              if ($get_kelas==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -59,10 +72,10 @@ if ($_GET['act']==''){
                 </div><!-- /.box-header -->
                 <div class="box-body">
                 <form action='' method='POST'>
-                <input type="hidden" name='angkatan' value='<?php echo $_GET['angkatan']; ?>'>
-                <input type="hidden" name='kelas' value='<?php echo $_GET['kelas']; ?>'>
+                <input type="hidden" name='angkatan' value='<?php echo $get_angkatan; ?>'>
+                <input type="hidden" name='kelas' value='<?php echo $get_kelas; ?>'>
                 <?php 
-                  if (isset($_GET['kelas'])){
+                  if ($get_kelas!=''){
                     echo "<table id='myTable' class='table table-bordered table-striped'>
                             <tr><th></th>";
                   }else{
@@ -82,26 +95,26 @@ if ($_GET['act']==''){
                     </thead>
                     <tbody>";
 
-                  if ($_GET['kelas'] != '' AND $_GET['angkatan'] != ''){
+                  if ($get_kelas != '' AND $get_angkatan != ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
-                                                  where a.kode_kelas='$_GET[kelas]' AND a.angkatan='$_GET[angkatan]' ORDER BY a.id_siswa");
-                  }elseif ($_GET['kelas'] != '' AND $_GET['angkatan'] == ''){
+                                                  where a.kode_kelas='$get_kelas' AND a.angkatan='$get_angkatan' ORDER BY a.id_siswa");
+                  }elseif ($get_kelas != '' AND $get_angkatan == ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
-                                                  where a.kode_kelas='$_GET[kelas]' ORDER BY a.id_siswa");
-                  }elseif ($_GET['kelas'] == '' AND $_GET['angkatan'] != ''){
+                                                  where a.kode_kelas='$get_kelas' ORDER BY a.id_siswa");
+                  }elseif ($get_kelas == '' AND $get_angkatan != ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
-                                                  where a.angkatan='$_GET[angkatan]' ORDER BY a.id_siswa");
+                                                  where a.angkatan='$get_angkatan' ORDER BY a.id_siswa");
                   }
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr>";
-                            if (isset($_GET['kelas'])){
+                            if ($get_kelas!=''){
                                 echo "<td><input type='checkbox' name='pilih".$no."' value='$r[nisn]'/></td>";
                             }
                               echo "<td>$no</td>
@@ -129,8 +142,8 @@ if ($_GET['act']==''){
                             echo "</tr>";
                       $no++;
                       }
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_siswa where nisn='$_GET[hapus]'");
+                      if ($get_hapus!=''){
+                          mysql_query("DELETE FROM rb_siswa where nisn='$get_hapus'");
                           echo "<script>document.location='index.php?view=siswa';</script>";
                       }
                   ?>
@@ -138,16 +151,16 @@ if ($_GET['act']==''){
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if ($get_kelas == '' AND $get_tahun == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Input Angkatan dan Memilih Kelas Terlebih dahulu...</center>";
                     }
                 ?>
               </div><!-- /.box -->
               <?php if($_SESSION['level']!='kepala'){
-                    if (isset($_GET['kelas'])){ ?>
+                    if ($get_kelas!=''){ ?>
               <div class='box-footer'>
                   Pindah Ke : 
-                  <input type="number" name='angkatanpindah' style='padding:3px' placeholder='Angkatan' value='<?php echo $_GET['angkatan']; ?>'>
+                  <input type="number" name='angkatanpindah' style='padding:3px' placeholder='Angkatan' value='<?php echo $get_angkatan; ?>'>
                   <select name='kelaspindah' style='padding:4px' required>
                         <?php 
                             echo "<option value=''>- Pilih Kelas -</option>";
@@ -165,7 +178,7 @@ if ($_GET['act']==''){
               </form>
             </div>
 <?php 
-}elseif($_GET['act']=='tambahsiswa'){
+}elseif($act=='tambahsiswa'){
   cek_session_admin();
   if (isset($_POST['tambah'])){
       $rtrw = explode('/',$_POST['ai']);
@@ -339,7 +352,7 @@ if ($_GET['act']==''){
                 </div>
             </div>
         </div>";
-}elseif($_GET['act']=='editsiswa'){
+}elseif($act=='editsiswa'){
   cek_session_siswa();
   if (isset($_POST['update1'])){
       $rtrw = explode('/',$_POST['ai']);
@@ -457,7 +470,7 @@ if ($_GET['act']==''){
         $nisn = $_SESSION['id'];
         $close = 'readonly=on';
     }else{
-        $nisn = $_GET['id'];
+        $nisn = $get_id;
         $close = '';
     }
     $edit = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
@@ -665,12 +678,12 @@ if ($_GET['act']==''){
                 </div>
             </div>";
 
-}elseif($_GET['act']=='detailsiswa'){
+}elseif($act=='detailsiswa'){
   cek_session_siswa();
     if ($_SESSION['level'] == 'siswa'){
         $nisn = $_SESSION['id'];
     }else{
-        $nisn = $_GET['id'];
+        $nisn = $get_id;
     }
     $detail = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
@@ -704,7 +717,7 @@ if ($_GET['act']==''){
                                   echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/$s[foto]'>";
                                 }
                               if($_SESSION['level']!='kepala'){
-                                echo "<a href='index.php?view=siswa&act=editsiswa&id=$_GET[id]' class='btn btn-success btn-block'>Edit Profile</a>";
+                                echo "<a href='index.php?view=siswa&act=editsiswa&id=$get_id' class='btn btn-success btn-block'>Edit Profile</a>";
                               }
                                 echo "</th>
                             </tr>
@@ -764,7 +777,7 @@ if ($_GET['act']==''){
                                   echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/$s[foto]'>";
                                 }
                               if($_SESSION['level']!='kepala'){
-                                echo "<a href='index.php?view=siswa&act=editsiswa&id=$_GET[id]' class='btn btn-success btn-block'>Edit Profile</a>";
+                                echo "<a href='index.php?view=siswa&act=editsiswa&id=$get_id' class='btn btn-success btn-block'>Edit Profile</a>";
                               }
                                 echo "</th>
                             </tr>
@@ -795,8 +808,8 @@ if ($_GET['act']==''){
 
                 </div>
             </div>";
-}elseif($_GET['act']=='penilaiandiri'){
-            $t = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa a JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas where a.nisn='$_GET[id]'"));
+}elseif($act=='penilaiandiri'){
+            $t = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa a JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas where a.nisn='$get_id'"));
             echo "<div class='col-xs-12'>  
               <div class='box'>
                 <div class='box-header'>
@@ -826,7 +839,7 @@ if ($_GET['act']==''){
                     $tampil = mysql_query("SELECT * FROM rb_pertanyaan_penilaian where status='diri' ORDER BY id_pertanyaan_penilaian DESC");
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
-                    $jwb = mysql_fetch_array(mysql_query("SELECT * FROM rb_pertanyaan_penilaian_jawab where nisn='$_GET[id]' AND id_pertanyaan_penilaian='$r[id_pertanyaan_penilaian]' AND status='diri' AND kode_kelas='$t[kode_kelas]'"));
+                    $jwb = mysql_fetch_array(mysql_query("SELECT * FROM rb_pertanyaan_penilaian_jawab where nisn='$get_id' AND id_pertanyaan_penilaian='$r[id_pertanyaan_penilaian]' AND status='diri' AND kode_kelas='$t[kode_kelas]'"));
                     if (trim($jwb['jawaban'])==''){
                       $jawab = "<i style='color:red'>Belum Ada Jawaban...</i>";
                     }else{
@@ -842,7 +855,7 @@ if ($_GET['act']==''){
                 </div>
               </div>
             </div>";
-}elseif($_GET['act']=='penilaianteman'){
+}elseif($act=='penilaianteman'){
           echo "<div class='col-xs-12'>  
               <div class='box'>
               <form action='' method='POST'>
@@ -865,11 +878,11 @@ if ($_GET['act']==''){
                     </thead>
                     <tbody>";
 
-                    $cs = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$_GET[id]'"));
+                    $cs = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$get_id'"));
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
-                                                  where a.kode_kelas='$cs[kode_kelas]' AND a.angkatan='$cs[angkatan]' AND nisn!='$_GET[id]' ORDER BY a.id_siswa");
+                                                  where a.kode_kelas='$cs[kode_kelas]' AND a.angkatan='$cs[angkatan]' AND nisn!='$get_id' ORDER BY a.id_siswa");
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
@@ -879,7 +892,7 @@ if ($_GET['act']==''){
                               <td>$r[angkatan]</td>
                               <td>$r[nama_jurusan]</td>
                               <td>$r[nama_kelas]</td>
-                              <td align=center><a class='btn btn-success btn-xs' title='Lihat Penilaian' href='index.php?view=siswa&act=pertanyaan&nisn=$r[nisn]&id=$_GET[id]'><span class='glyphicon glyphicon-search'></span> Lihat Penilaian</a></td>
+                              <td align=center><a class='btn btn-success btn-xs' title='Lihat Penilaian' href='index.php?view=siswa&act=pertanyaan&nisn=$r[nisn]&id=$get_id'><span class='glyphicon glyphicon-search'></span> Lihat Penilaian</a></td>
                           </tr>";
                       $no++;
                       }
@@ -889,7 +902,7 @@ if ($_GET['act']==''){
               </form>
               </div>
             </div>";
-}elseif($_GET['act']=='pertanyaan'){ ?>
+}elseif($act=='pertanyaan'){ ?>
             <div class="col-xs-12">  
               <div class="box">
               <form action='' method='POST'>
@@ -898,9 +911,9 @@ if ($_GET['act']==''){
                 </div><!-- /.box-header -->
                 <div class="box-body">
                   <?php
-                      echo "<input type='hidden' value='$_GET[nisn]' name='nisnteman'>";
-                      $t = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$_GET[nisn]'"));
-                      $tt = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$_GET[id]'"));
+                      echo "<input type='hidden' value='$get_nisn' name='nisnteman'>";
+                      $t = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$get_nisn'"));
+                      $tt = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$get_id'"));
                       echo "<div class='col-md-12'>
                             <table class='table table-condensed table-hover'>
                                 <tbody>
@@ -926,7 +939,7 @@ if ($_GET['act']==''){
                     $tampil = mysql_query("SELECT * FROM rb_pertanyaan_penilaian where status='teman' ORDER BY id_pertanyaan_penilaian DESC");
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
-                    $jwb = mysql_fetch_array(mysql_query("SELECT * FROM rb_pertanyaan_penilaian_jawab where nisn='$_GET[id]' AND nisn_teman='$_GET[nisn]' AND id_pertanyaan_penilaian='$r[id_pertanyaan_penilaian]' AND status='teman' AND kode_kelas='$tt[kode_kelas]'"));
+                    $jwb = mysql_fetch_array(mysql_query("SELECT * FROM rb_pertanyaan_penilaian_jawab where nisn='$get_id' AND nisn_teman='$get_nisn' AND id_pertanyaan_penilaian='$r[id_pertanyaan_penilaian]' AND status='teman' AND kode_kelas='$tt[kode_kelas]'"));
                     if (trim($jwb['jawaban'])==''){
                       $jawab = "<i style='color:red'>Belum Ada Jawaban...</i>";
                     }else{

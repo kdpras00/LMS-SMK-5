@@ -1,5 +1,8 @@
 <?php 
-if ($_GET['act']==''){ 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_nisn = isset($_GET['nisn']) ? $_GET['nisn'] : '';
+
+if ($act==''){ 
 ?>
             <div class="col-xs-12">  
               <div class="box">
@@ -51,7 +54,7 @@ if ($_GET['act']==''){
 
 
 <?php 
-}elseif ($_GET['act']=='pertanyaan'){
+}elseif ($act=='pertanyaan'){
     if (isset($_POST['submit'])){
        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM `rb_pertanyaan_penilaian` where status='teman'"));
        $n = $jml['jmlp'];
@@ -81,8 +84,8 @@ if ($_GET['act']==''){
                 </div><!-- /.box-header -->
                 <div class="box-body">
                   <?php
-                      echo "<input type='hidden' value='$_GET[nisn]' name='nisnteman'>";
-                      $t = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$_GET[nisn]'"));
+                      echo "<input type='hidden' value='$get_nisn' name='nisnteman'>";
+                      $t = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$get_nisn'"));
                       $tt = mysql_fetch_array(mysql_query("SELECT * FROM rb_siswa where nisn='$_SESSION[id]'"));
                       echo "<div class='col-md-12'>
                             <table class='table table-condensed table-hover'>
@@ -106,14 +109,14 @@ if ($_GET['act']==''){
                     $tampil = mysql_query("SELECT * FROM rb_pertanyaan_penilaian where status='teman' ORDER BY id_pertanyaan_penilaian DESC");
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
-                    $jwb = mysql_fetch_array(mysql_query("SELECT * FROM rb_pertanyaan_penilaian_jawab where nisn='$_SESSION[id]' AND nisn_teman='$_GET[nisn]' AND id_pertanyaan_penilaian='$r[id_pertanyaan_penilaian]' AND status='teman' AND kode_kelas='$tt[kode_kelas]'"));
+                    $jwb = mysql_fetch_array(mysql_query("SELECT * FROM rb_pertanyaan_penilaian_jawab where nisn='$_SESSION[id]' AND nisn_teman='$get_nisn' AND id_pertanyaan_penilaian='$r[id_pertanyaan_penilaian]' AND status='teman' AND kode_kelas='$tt[kode_kelas]'"));
                     echo "<tr><td>$no</td>
                               <td>$r[pertanyaan]</td>
                           </tr>
                           <tr><td></td>
                                   <input type='hidden' value='$tt[kode_kelas]' name='kelas".$no."'>
                                   <input type='hidden' value='$r[id_pertanyaan_penilaian]' name='id".$no."'>
-                                  <input type='hidden' value='$_GET[nisn]' name='nisn".$no."'>
+                                  <input type='hidden' value='$get_nisn' name='nisn".$no."'>
                               <td><textarea style='height:60px; width:100%' class='form-control' name='jawab".$no."' placeholder='Tulis Jawaban disini...'>$jwb[jawaban]</textarea></td>
                           </tr>";
                       $no++;

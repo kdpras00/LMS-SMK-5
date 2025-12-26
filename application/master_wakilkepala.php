@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -46,7 +50,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
       $data = md5($_POST['b']);
       $passs=hash("sha512",$data);
@@ -66,7 +70,7 @@
       }
       echo "<script>document.location='index.php?view=wakilkepala';</script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_users a where a.id_user='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_users a where a.id_user='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>

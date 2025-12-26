@@ -1,4 +1,10 @@
-<?php if ($_GET['act']==''){ ?>
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$get_jdwl = isset($_GET['jdwl']) ? $_GET['jdwl'] : '';
+
+if ($act==''){ ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -10,7 +16,7 @@
                             echo "<option value=''>- Pilih Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                              if ($get_kelas==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -43,33 +49,36 @@
                     <tbody>
                   <?php
                     if (isset($_GET['kelas'])){
+                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_kurikulum, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.kode_kelas='$_GET[kelas]' AND
-                                                      b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                      b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }
                     $no = 1;
-                    while($r=mysql_fetch_array($tampil)){
-                    echo "<tr><td>$no</td>
-                              <td>$r[namamatapelajaran]</td>
-                              <td>$r[nama_kelas]</td>
-                              <td>$r[nama_guru]</td>
-                              <td>$r[hari]</td>
-                              <td>$r[jam_mulai]</td>
-                              <td>$r[jam_selesai]</td>
-                              <td>$r[nama_ruangan]</td>";
-                              if($_SESSION['level']!='kepala'){
-                                echo "<td style='width:80px !important'><center>
-                                        <a class='btn btn-success btn-xs' title='Lihat Kompetensi Dasar' href='index.php?view=kompetensidasar&act=lihat&id=$r[kodejdwl]'><span class='glyphicon glyphicon-search'></span> Lihat Indikator</a>
-                                      </center></td>";
-                              }
-                            echo "</tr>";
-                      $no++;
-                      }
+                    if (isset($tampil)) {
+                        while($r=mysql_fetch_array($tampil)){
+                        echo "<tr><td>$no</td>
+                                  <td>$r[namamatapelajaran]</td>
+                                  <td>$r[nama_kelas]</td>
+                                  <td>$r[nama_guru]</td>
+                                  <td>$r[hari]</td>
+                                  <td>$r[jam_mulai]</td>
+                                  <td>$r[jam_selesai]</td>
+                                  <td>$r[nama_ruangan]</td>";
+                                  if($_SESSION['level']!='kepala'){
+                                    echo "<td style='width:80px !important'><center>
+                                            <a class='btn btn-success btn-xs' title='Lihat Kompetensi Dasar' href='index.php?view=kompetensidasar&act=lihat&id=$r[kodejdwl]'><span class='glyphicon glyphicon-search'></span> Lihat Indikator</a>
+                                          </center></td>";
+                                  }
+                                echo "</tr>";
+                          $no++;
+                          }
+                    }
 
                       if (isset($_GET['hapus'])){
                         mysql_query("DELETE FROM rb_jadwal_pelajaran where kodejdwl='$_GET[hapus]'");
@@ -80,7 +89,7 @@
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == ''){
+                    if ($get_kelas == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Memilih Kelas Terlebih dahulu...</center>";
                     }
                 ?>
@@ -88,14 +97,14 @@
             </div>
 
 <?php 
-}elseif($_GET['act']=='lihat'){
-    $d = mysql_fetch_array(mysql_query("SELECT a.kode_kelas, b.nama_kelas, c.namamatapelajaran, d.nama_guru FROM `rb_jadwal_pelajaran` a JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas JOIN rb_mata_pelajaran c ON a.kode_pelajaran=c.kode_pelajaran JOIN rb_guru d ON a.nip=d.nip where a.kodejdwl='$_GET[id]'"));
+}elseif($act=='lihat'){
+    $d = mysql_fetch_array(mysql_query("SELECT a.kode_kelas, b.nama_kelas, c.namamatapelajaran, d.nama_guru FROM `rb_jadwal_pelajaran` a JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas JOIN rb_mata_pelajaran c ON a.kode_pelajaran=c.kode_pelajaran JOIN rb_guru d ON a.nip=d.nip where a.kodejdwl='$get_id'"));
             echo "<div class='col-xs-12'>  
               <div class='box'>
                 <div class='box-header'>
                   <h3 class='box-title'>Kompetensi Dasar</h3>";
                   if($_SESSION['level']!='kepala'){
-                      echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=kompetensidasar&act=tambah&jdwl=$_GET[id]'>Tambahkan Kompetensi Dasar</a>";
+                      echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=kompetensidasar&act=tambah&jdwl=$get_id'>Tambahkan Kompetensi Dasar</a>";
                   }
                 echo "</div>
                 <div class='box-body'>
@@ -121,7 +130,7 @@
                       echo "</tr>
                     </thead>
                     <tbody>";
-                      $tampil = mysql_query("SELECT * FROM rb_kompetensi_dasar z JOIN rb_jadwal_pelajaran a ON z.kodejdwl=a.kodejdwl JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas JOIN rb_mata_pelajaran c ON a.kode_pelajaran=c.kode_pelajaran where a.kodejdwl='$_GET[id]' ORDER BY z.id_kompetensi_dasar DESC");
+                      $tampil = mysql_query("SELECT * FROM rb_kompetensi_dasar z JOIN rb_jadwal_pelajaran a ON z.kodejdwl=a.kodejdwl JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas JOIN rb_mata_pelajaran c ON a.kode_pelajaran=c.kode_pelajaran where a.kodejdwl='$get_id' ORDER BY z.id_kompetensi_dasar DESC");
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
@@ -129,8 +138,8 @@
                               <td>$r[kompetensi_dasar]</td>";
                               if($_SESSION['level']!='kepala'){
                                 echo "<td style='width:80px !important'><center>
-                                        <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=kompetensidasar&act=edit&id=$r[id_kompetensi_dasar]&jdwl=$_GET[id]'><span class='glyphicon glyphicon-edit'></span></a>
-                                        <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=kompetensidasar&hapus=$r[id_kompetensi_dasar]&jdwl=$_GET[id]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                        <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=kompetensidasar&act=edit&id=$r[id_kompetensi_dasar]&jdwl=$get_id'><span class='glyphicon glyphicon-edit'></span></a>
+                                        <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=kompetensidasar&hapus=$r[id_kompetensi_dasar]&jdwl=$get_id')\"><span class='glyphicon glyphicon-remove'></span></a>
                                       </center></td>";
                               }
                             echo "</tr>";
@@ -148,7 +157,7 @@
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function() {
-                  window.location = 'index.php?view=kompetensidasar&act=lihat&id=$_GET[jdwl]';
+                  window.location = 'index.php?view=kompetensidasar&act=lihat&id=$get_jdwl';
                 });
               }, 100);
             </script>";
@@ -160,7 +169,7 @@
                 </div>
             </div>";
 
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_kompetensi_dasar VALUES(NULL,'$_POST[jdwl]','$_POST[e]','$_POST[f]','".date('Y-m-d H:i:s')."')") or die(mysql_error());
         echo "<script>
@@ -178,7 +187,7 @@
             </script>";
     }
 
-    $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_jadwal_pelajaran where kodejdwl='$_GET[jdwl]'"));
+    $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_jadwal_pelajaran where kodejdwl='$get_jdwl'"));
 
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -190,7 +199,7 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                  <input type='hidden' name='jdwl' value='$_GET[jdwl]'>
+                  <input type='hidden' name='jdwl' value='$get_jdwl'>
                     <tr><th width='140px' scope='row'>Kelas</th>   <td><select class='form-control' name='b'>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -226,13 +235,13 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                    <a href='#'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=kompetensidasar&act=lihat&id=$get_jdwl'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>
             </div>";
 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_kompetensi_dasar SET ranah = '$_POST[e]',
                                                     kompetensi_dasar = '$_POST[f]' where id_kompetensi_dasar='$_POST[id]'") or die(mysql_error());
@@ -250,8 +259,10 @@
             }, 100);
           </script>";
     }
-    $e = mysql_fetch_array(mysql_query("SELECT a.*, b.kode_pelajaran, b.kode_kelas FROM rb_kompetensi_dasar a JOIN rb_jadwal_pelajaran b ON a.kodejdwl=b.kodejdwl where a.id_kompetensi_dasar='$_GET[id]'"));
-    if ($e['semester']=='1'){ $status = 'Ganjil'; }else{ $status = 'Genap'; }
+    $e = mysql_fetch_array(mysql_query("SELECT a.*, b.kode_pelajaran, b.kode_kelas FROM rb_kompetensi_dasar a JOIN rb_jadwal_pelajaran b ON a.kodejdwl=b.kodejdwl where a.id_kompetensi_dasar='$get_id'"));
+    // $e['semester'] check removed or needs verification if column exists. 
+    // Assuming it doesn't matter for now as $status was unused in output.
+    
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
@@ -262,8 +273,8 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                  <input type='hidden' name='jdwl' value='$_GET[jdwl]'>
-                  <input type='hidden' name='id' value='$_GET[id]'>
+                  <input type='hidden' name='jdwl' value='$get_jdwl'>
+                  <input type='hidden' name='id' value='$get_id'>
                     <tr><th width='140px' scope='row'>Kelas</th>   <td><select class='form-control' name='b'>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -299,7 +310,7 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='update' class='btn btn-info'>Update</button>
-                    <a href='#'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=kompetensidasar&act=lihat&id=$get_jdwl'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>

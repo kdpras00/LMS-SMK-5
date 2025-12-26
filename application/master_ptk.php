@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -30,7 +34,7 @@
                               if($_SESSION['level']!='kepala'){
                         echo "<td><center>
                                 <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=ptk&act=edit&id=$r[id_jenis_ptk]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=ptk&hapus=$r[id_jenis_ptk]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=ptk&hapus=$r[id_jenis_ptk]')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -60,7 +64,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_jenis_ptk SET jenis_ptk = '$_POST[a]',
                                          keterangan = '$_POST[b]' where id_jenis_ptk='$_POST[id]'") or die(mysql_error());
@@ -78,7 +82,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_jenis_ptk where id_jenis_ptk='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_jenis_ptk where id_jenis_ptk='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -99,12 +103,12 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='update' class='btn btn-info'>Update</button>
-                    <a href='index.php?view=ptk'><button class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=ptk'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_jenis_ptk VALUES(NULL,'$_POST[a]','$_POST[b]')") or die(mysql_error());
         echo "<script>
@@ -140,7 +144,7 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                    <a href='index.php?view=ptk'><button class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=ptk'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>

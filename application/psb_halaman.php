@@ -1,4 +1,9 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -36,8 +41,8 @@
                             echo "</tr>";
                       $no++;
                       }
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_halaman where id_halaman='$_GET[hapus]'");
+                      if ($get_hapus!=''){
+                          mysql_query("DELETE FROM rb_halaman where id_halaman='$get_hapus'");
                           echo "<script>document.location='index.php?view=psbhalaman';</script>";
                       }
 
@@ -48,7 +53,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
       $judul = seo_title($_POST['a']);
       mysql_query("UPDATE rb_halaman SET judul = '$_POST[a]',
@@ -58,7 +63,7 @@
       echo "<script>document.location='index.php?view=psbhalaman';</script>";
     }
 
-    $edit = mysql_query("SELECT * FROM rb_halaman where id_halaman='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_halaman where id_halaman='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -84,7 +89,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         $judul = seo_title($_POST['a']);
         mysql_query("INSERT INTO rb_halaman VALUES('','$_POST[a]','$judul','$_POST[b]','$_SESSION[id]','journal')");
@@ -101,7 +106,7 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[id_halaman]'>
+                    <input type='hidden' name='id' value=''>
                     <tr><th width='120px' scope='row'>Judul</th> <td><input type='text' class='form-control' name='a'> </td></tr>
                     <tr><th scope='row'>Isi Halaman</th>        <td><textarea class='form-control' name='b' style='height:350px'></textarea></td></tr>
                   </tbody>

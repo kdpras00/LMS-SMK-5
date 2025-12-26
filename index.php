@@ -227,6 +227,21 @@
             echo "<div class='row'>";
                     include "application/kompetensidasar_guru.php";
             echo "</div>";
+          }elseif ($_GET['view']=='jadwalsiswa'){
+            cek_session_siswa();
+            echo "<div class='row'>";
+                    include "application/jadwal_siswa.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='absensisiswa'){
+            cek_session_siswa();
+            echo "<div class='row'>";
+                    include "application/absensi_siswa_history.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='laporannilai'){
+            cek_session_siswa();
+            echo "<div class='row'>";
+                    include "application/laporannilai_siswa.php";
+            echo "</div>";
           }
 
           elseif ($_GET['view']=='siswa'){
@@ -435,6 +450,19 @@
             cek_session_guru();
             echo "<div class='row'>";
                     include "application/rekap_nilai.php";
+            echo "</div>";
+          }
+
+
+          elseif ($_GET['view']=='rekapkegiatan'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/rekap_data_kegiatan.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='cetakrekapkegiatan'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/cetak_rekap_kegiatan.php";
             echo "</div>";
           }
 

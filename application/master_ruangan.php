@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -42,7 +46,7 @@
                               if($_SESSION['level']!='kepala'){
                         echo "<td><center>
                                 <a class='btn btn-success btn-xs' title='Edit Data' href='?view=ruangan&act=edit&id=$r[kode_ruangan]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=ruangan&hapus=$r[kode_ruangan]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=ruangan&hapus=$r[kode_ruangan]')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -72,7 +76,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_ruangan SET kode_ruangan = '$_POST[a]',
                                          kode_gedung = '$_POST[b]',
@@ -95,7 +99,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_ruangan where kode_ruangan='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_ruangan where kode_ruangan='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -139,12 +143,12 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='update' class='btn btn-info'>Update</button>
-                    <a href='index.php?view=ruangan'><button class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=ruangan'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_ruangan VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]')") or die(mysql_error());
         echo "<script>

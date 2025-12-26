@@ -1,28 +1,30 @@
-
 <?php 
-if ($_GET['act']==''){ 
+if (empty($_GET['act'])){ 
   cek_session_admin();
     if (isset($_POST['pindahkelas'])){
-      if ($_POST['angkatan']!='' AND $_POST['kelas'] != ''){
-        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$_POST[kelas]' AND angkatan='$_POST[angkatan]'"));
-      }elseif ($_POST['angkatan']=='' AND $_POST['kelas'] != ''){
-        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$_POST[kelas]'"));
-      }elseif ($_POST['angkatan']!='' AND $_POST['kelas'] == ''){
-        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where angkatan='$_POST[angkatan]'"));
+      $angkatan_filter = isset($_POST['angkatan']) ? $_POST['angkatan'] : '';
+      $kelas_filter = isset($_POST['kelas']) ? $_POST['kelas'] : '';
+
+      if ($angkatan_filter!='' AND $kelas_filter != ''){
+        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$kelas_filter' AND angkatan='$angkatan_filter'"));
+      }elseif ($angkatan_filter=='' AND $kelas_filter != ''){
+        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where kode_kelas='$kelas_filter'"));
+      }elseif ($angkatan_filter!='' AND $kelas_filter == ''){
+        $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM rb_siswa where angkatan='$angkatan_filter'"));
       }
 
        $n = $jml['jmlp'];
-       $kelas = $_POST['kelaspindah'];
-       $angkatan = $_POST['angkatanpindah'];
+       $kelas_pindah = $_POST['kelaspindah'];
+       $angkatan_pindah = $_POST['angkatanpindah'];
        for ($i=0; $i<=$n; $i++){
          if (isset($_POST['pilih'.$i])){
            $nisn = $_POST['pilih'.$i];
-           if ($angkatan != '' AND $kelas != ''){
-              mysql_query("UPDATE rb_siswa SET angkatan='$angkatan', kode_kelas='$kelas' where nisn='$nisn'");
-           }elseif ($angkatan == '' AND $kelas != ''){
-              mysql_query("UPDATE rb_siswa SET kode_kelas='$kelas' where nisn='$nisn'");
-           }elseif ($angkatan != '' AND $kelas == ''){
-              mysql_query("UPDATE rb_siswa SET angkatan='$angkatan' where nisn='$nisn'");
+           if ($angkatan_pindah != '' AND $kelas_pindah != ''){
+              mysql_query("UPDATE rb_siswa SET angkatan='$angkatan_pindah', kode_kelas='$kelas_pindah' where nisn='$nisn'");
+           }elseif ($angkatan_pindah == '' AND $kelas_pindah != ''){
+              mysql_query("UPDATE rb_siswa SET kode_kelas='$kelas_pindah' where nisn='$nisn'");
+           }elseif ($angkatan_pindah != '' AND $kelas_pindah == ''){
+              mysql_query("UPDATE rb_siswa SET angkatan='$angkatan_pindah' where nisn='$nisn'");
            }
          }
        }
@@ -35,7 +37,7 @@ if ($_GET['act']==''){
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function() {
-                  window.location = 'index.php?view=siswa&angkatan=" . $angkatan . "&kelas=" . $kelas . "';
+                  window.location = 'index.php?view=siswa&angkatan=" . $angkatan_filter . "&kelas=" . $kelas_filter . "';
                 });
               }, 100);
             </script>";
@@ -46,23 +48,20 @@ if ($_GET['act']==''){
                 <div class="box-header">
                   <h3 class="box-title">Semua Data Siswa </h3>
                    <?php if($_SESSION['level']!='kepala'){ ?>
-                  <a class='pull-right btn btn-success btn-sm' target='_BLANK' href='print-siswa.php?kelas=<?php echo $_GET['kelas']; ?>&angkatan=<?php echo $_GET['angkatan']; ?>'>Print Siswa</a>
+                  <a class='pull-right btn btn-success btn-sm' target='_BLANK' href='print-siswa.php?kelas=<?php echo (isset($_GET['kelas']) ? $_GET['kelas'] : ''); ?>&angkatan=<?php echo (isset($_GET['angkatan']) ? $_GET['angkatan'] : ''); ?>'>Print Siswa</a>
                   <a style='margin-right:5px' class='pull-right btn btn-primary btn-sm' href='index.php?view=siswa&act=tambahsiswa'>Tambahkan Data Siswa</a>
                   <?php } ?>
 
-                  <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
+                  <form style='margin-right:5px; margin-top:0px' class='pull-right' action='index.php' method='GET'>
                     <input type="hidden" name='view' value='siswa'>
-                    <input type="number" name='angkatan' style='padding:3px' placeholder='Angkatan' value='<?php echo $_GET['angkatan']; ?>'>
+                    <input type="number" name='angkatan' style='padding:3px' placeholder='Angkatan' value='<?php echo (isset($_GET['angkatan']) ? $_GET['angkatan'] : ''); ?>'>
                     <select name='kelas' style='padding:4px'>
                         <?php 
                             echo "<option value=''>- Filter Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
-                                echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
-                              }else{
-                                echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
-                              }
+                              $selected = (isset($_GET['kelas']) AND $_GET['kelas']==$k['kode_kelas']) ? 'selected' : '';
+                              echo "<option value='$k[kode_kelas]' $selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                             }
                         ?>
                     </select>
@@ -71,14 +70,15 @@ if ($_GET['act']==''){
                 </div><!-- /.box-header -->
                 <div class="box-body">
                 <form action='' method='POST'>
-                <input type="hidden" name='angkatan' value='<?php echo $_GET['angkatan']; ?>'>
-                <input type="hidden" name='kelas' value='<?php echo $_GET['kelas']; ?>'>
+                <input type="hidden" name='angkatan' value='<?php echo (isset($_GET['angkatan']) ? $_GET['angkatan'] : ''); ?>'>
+                <input type="hidden" name='kelas' value='<?php echo (isset($_GET['kelas']) ? $_GET['kelas'] : ''); ?>'>
                 <?php 
                   if (isset($_GET['kelas'])){
                     echo "<table id='myTable' class='table table-bordered table-striped'>
-                            <tr><th></th>";
+                            <thead>
+                            <tr><th>Pilih</th>";
                   }else{
-                    echo "<table id='example' class='table table-bordered table-striped'>
+                    echo "<table id='example1' class='table table-bordered table-striped'>
                             <thead>
                               <tr>";
                   }
@@ -89,27 +89,33 @@ if ($_GET['act']==''){
                         <th>Angkatan</th>
                         <th>Jurusan</th>
                         <th>Kelas</th>
+                        <th>Jenis Kelamin</th>
                         <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>";
 
-                  if ($_GET['kelas'] != '' AND $_GET['angkatan'] != ''){
+                  if (isset($_GET['kelas']) AND $_GET['kelas'] != '' AND isset($_GET['angkatan']) AND $_GET['angkatan'] != ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
                                                   where a.kode_kelas='$_GET[kelas]' AND a.angkatan='$_GET[angkatan]' ORDER BY a.id_siswa");
-                  }elseif ($_GET['kelas'] != '' AND $_GET['angkatan'] == ''){
+                  }elseif (isset($_GET['kelas']) AND $_GET['kelas'] != '' AND (!isset($_GET['angkatan']) OR $_GET['angkatan'] == '')){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
                                                   where a.kode_kelas='$_GET[kelas]' ORDER BY a.id_siswa");
-                  }elseif ($_GET['kelas'] == '' AND $_GET['angkatan'] != ''){
+                  }elseif ((!isset($_GET['kelas']) OR $_GET['kelas'] == '') AND isset($_GET['angkatan']) AND $_GET['angkatan'] != ''){
                     $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
                                                   where a.angkatan='$_GET[angkatan]' ORDER BY a.id_siswa");
                   }
+                  
+                  // Logic to display empty table if no filter provided? 
+                  // Original: if class='' and angkatan='', no query logic was shown in LOOP, but later displayed "Silahkan Input...".
+                  // However, let's keep it safe.
+                  if (isset($tampil) && $tampil) {
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr>";
@@ -122,25 +128,23 @@ if ($_GET['act']==''){
                               <td>$r[nama]</td>
                               <td>$r[angkatan]</td>
                               <td>$r[nama_jurusan]</td>
-                              <td>$r[nama_kelas]</td>";
+                              <td>$r[nama_kelas]</td>
+                              <td>$r[jenis_kelamin]</td>";
                               if($_SESSION['level']!='kepala'){
                                 echo "<td><center>
                                   <a class='btn btn-default btn-xs' title='Lihat Detail' href='?view=siswa&act=detailsiswa&id=$r[nisn]'><span class='glyphicon glyphicon-search'></span></a>
                                   <a class='btn btn-info btn-xs' title='Edit Siswa' href='?view=siswa&act=editsiswa&id=$r[nisn]'><span class='glyphicon glyphicon-edit'></span></a>
-                                  <a class='btn btn-success btn-xs' title='Penilaian Diri' href='?view=siswa&act=penilaiandiri&id=$r[nisn]'><span class='glyphicon glyphicon-th-list'></span></a>
-                                  <a class='btn btn-warning btn-xs' title='Penilaian Teman' href='?view=siswa&act=penilaianteman&id=$r[nisn]'><span class='glyphicon glyphicon-list'></span></a>
-                                  <a class='btn btn-danger btn-xs' title='Delete Siswa' href='#' onclick=\"konfirmasiHapus('index.php?view=siswa&hapus=$r[nisn]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                  <a class='btn btn-danger btn-xs' title='Delete Siswa' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=siswa&hapus=$r[nisn]')\"><span class='glyphicon glyphicon-remove'></span></a>
                                 </center></td>";
                               }else{
                                   echo "<td><center>
                                   <a class='btn btn-default btn-xs' title='Lihat Detail' href='?view=siswa&act=detailsiswa&id=$r[nisn]'><span class='glyphicon glyphicon-search'></span></a>
-                                  <a class='btn btn-success btn-xs' title='Penilaian Diri' href='?view=siswa&act=penilaiandiri&id=$r[nisn]'><span class='glyphicon glyphicon-th-list'></span></a>
-                                  <a class='btn btn-warning btn-xs' title='Penilaian Teman' href='?view=siswa&act=penilaianteman&id=$r[nisn]'><span class='glyphicon glyphicon-list'></span></a>
                                 </center></td>";
                               }
                             echo "</tr>";
                       $no++;
                       }
+                  }
                       if (isset($_GET['hapus'])){
                           mysql_query("DELETE FROM rb_siswa where nisn='$_GET[hapus]'");
                           echo "<script>
@@ -162,7 +166,7 @@ if ($_GET['act']==''){
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if ((!isset($_GET['kelas']) OR $_GET['kelas'] == '') AND (!isset($_GET['angkatan']) OR $_GET['angkatan'] == '')){
                         echo "<center style='padding:60px; color:red'>Silahkan Input Angkatan dan Memilih Kelas Terlebih dahulu...</center>";
                     }
                 ?>
@@ -171,7 +175,7 @@ if ($_GET['act']==''){
                     if (isset($_GET['kelas'])){ ?>
               <div class='box-footer'>
                   Pindah Ke : 
-                  <input type="number" name='angkatanpindah' style='padding:3px' placeholder='Angkatan' value='<?php echo $_GET['angkatan']; ?>'>
+                  <input type="number" name='angkatanpindah' style='padding:3px' placeholder='Angkatan' value='<?php echo (isset($_GET['angkatan']) ? $_GET['angkatan'] : ''); ?>'>
                   <select name='kelaspindah' style='padding:4px' required>
                         <?php 
                             echo "<option value=''>- Pilih Kelas -</option>";
@@ -201,24 +205,10 @@ if ($_GET['act']==''){
       $uploadfile = $dir_gambar . $filenamee;
       if ($filename != ''){      
         if (move_uploaded_file($_FILES['ao']['tmp_name'], $uploadfile)) {
-           mysql_query("INSERT INTO rb_siswa VALUES(NULL,'$_POST[aa]','$_POST[ac]','$_POST[ad]','$_POST[bd]','$_POST[ab]',
-                               '$_POST[bb]','$_POST[bc]','$_POST[ba]','$_POST[be]','$_POST[bf]','$_POST[ah]','$rt','$rw',
-                               '$_POST[aj]','$_POST[ak]','$_POST[al]','$_POST[am]','$_POST[bg]','$_POST[bh]','$_POST[bi]',
-                               '$_POST[bj]','$_POST[bk]','$_POST[bl]','$_POST[bm]','$_POST[bn]','$filenamee','$_POST[ca]',
-                               '$_POST[cb]','$_POST[cc]','$_POST[cd]','$_POST[ce]','$_POST[cf]','$_POST[cg]','$_POST[ch]',
-                               '$_POST[ci]','$_POST[cj]','$_POST[ck]','$_POST[cl]','$_POST[cm]','$_POST[cn]','$_POST[co]',
-                               '$_POST[cp]','$_POST[cq]','$_POST[cr]','$_POST[cs]','$_POST[af]','$_POST[an]','$_POST[bo]',
-                               '','$_POST[ae]','$_POST[ag]','0')") or die(mysql_error());
+           mysql_query("INSERT INTO rb_siswa VALUES(NULL,'$_POST[aa]','$_POST[ac]','$_POST[ad]','$_POST[bd]','$_POST[ab]','','','','','','','','','','','','','','','','','','','','','$filenamee','','','','','','','','','','','','','','','','','','','','$_POST[af]','','','','$_POST[ae]','$_POST[ag]','0')") or die(mysql_error());
         }
       }else{
-            mysql_query("INSERT INTO rb_siswa VALUES(NULL,'$_POST[aa]','$_POST[ac]','$_POST[ad]','$_POST[bd]','$_POST[ab]',
-                               '$_POST[bb]','$_POST[bc]','$_POST[ba]','$_POST[be]','$_POST[bf]','$_POST[ah]','$rt','$rw',
-                               '$_POST[aj]','$_POST[ak]','$_POST[al]','$_POST[am]','$_POST[bg]','$_POST[bh]','$_POST[bi]',
-                               '$_POST[bj]','$_POST[bk]','$_POST[bl]','$_POST[bm]','$_POST[bn]','','$_POST[ca]',
-                               '$_POST[cb]','$_POST[cc]','$_POST[cd]','$_POST[ce]','$_POST[cf]','$_POST[cg]','$_POST[ch]',
-                               '$_POST[ci]','$_POST[cj]','$_POST[ck]','$_POST[cl]','$_POST[cm]','$_POST[cn]','$_POST[co]',
-                               '$_POST[cp]','$_POST[cq]','$_POST[cr]','$_POST[cs]','$_POST[af]','$_POST[an]','$_POST[bo]',
-                               '','$_POST[ae]','$_POST[ag]','0')") or die(mysql_error());
+            mysql_query("INSERT INTO rb_siswa VALUES(NULL,'$_POST[aa]','$_POST[ac]','$_POST[ad]','$_POST[bd]','$_POST[ab]','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','$_POST[af]','','','','$_POST[ae]','$_POST[ag]','0')") or die(mysql_error());
       }
           echo "<script>
               setTimeout(function() {
@@ -241,137 +231,46 @@ if ($_GET['act']==''){
                   <h3 class='box-title'>Tambah Data Siswa</h3>
                 </div>
                 <div class='box-body'>
-
-                  <div class='panel-body'>
-                    <ul id='myTabs' class='nav nav-tabs' role='tablist'>
-                      <li role='presentation' class='active'><a href='#siswa' id='siswa-tab' role='tab' data-toggle='tab' aria-controls='siswa' aria-expanded='true'>Data Siswa </a></li>
-                      <li role='presentation' class=''><a href='#ortu' role='tab' id='ortu-tab' data-toggle='tab' aria-controls='ortu' aria-expanded='false'>Data Orang Tua / Wali</a></li>
-                    </ul><br>
-
-                    <div id='myTabContent' class='tab-content'>
-                      <div role='tabpanel' class='tab-pane fade active in' id='siswa' aria-labelledby='siswa-tab'>
-                          <form action='' method='POST' enctype='multipart/form-data' class='form-horizontal'>
-                          <div class='col-md-6'>
-                            <table class='table table-condensed table-bordered'>
-                            <tbody>
-                              <tr><th width='130px' scope='row'>NIPD</th> <td><input type='text' class='form-control' name='aa'></td></tr>
-                              <tr><th scope='row'>NISN</th> <td><input type='text' class='form-control' name='ab'></td></tr>
-                              <tr><th scope='row'>Password</th> <td><input type='text' class='form-control' name='ac'></td></tr>
-                              <tr><th scope='row'>Nama Siswa</th> <td><input type='text' class='form-control' name='ad'></td></tr>
-                              <tr><th scope='row'>Kelas</th> <td><select class='form-control' name='ae'> 
-                                                                            <option value='0' selected>- Pilih Kelas -</option>"; 
-                                                                              $kelas = mysql_query("SELECT * FROM rb_kelas");
-                                                                              while($a = mysql_fetch_array($kelas)){
-                                                                                  echo "<option value='$a[kode_kelas]'>$a[nama_kelas]</option>";
-                                                                              }
-                                                                    echo "</select></td></tr>
-                              <tr><th scope='row'>Angkatan</th> <td><input type='text' class='form-control' name='af'></td></tr>
-                              <tr><th scope='row'>Jurusan</th> <td><select class='form-control' name='ag'> 
-                                                                            <option value='0' selected>- Pilih Jurusan -</option>"; 
-                                                                              $jurusan = mysql_query("SELECT * FROM rb_jurusan");
-                                                                              while($a = mysql_fetch_array($jurusan)){
-                                                                                  echo "<option value='$a[kode_jurusan]'>$a[nama_jurusan]</option>";
-                                                                              }
-                                                                    echo "</select></td></tr>
-                              <tr><th scope='row'>Alamat Siswa</th> <td><input type='text' class='form-control' name='ah'></td></tr>
-                              <tr><th scope='row'>RT/RW</th> <td><input type='text' class='form-control' value='00/00' name='ai'></td></tr>
-                              <tr><th scope='row'>Dusun</th> <td><input type='text' class='form-control' name='aj'></td></tr>
-                              <tr><th scope='row'>Kelurahan</th> <td><input type='text' class='form-control' name='ak'></td></tr>
-                              <tr><th scope='row'>Kecamatan</th> <td><input type='text' class='form-control' name='al'></td></tr>
-                              <tr><th scope='row'>Kode Pos</th> <td><input type='text' class='form-control' name='am'></td></tr>
-                              <tr><th scope='row'>Status Awal</th> <td><input type='text' class='form-control' name='an'></td></tr>
-                              <tr><th scope='row'>Foto</th>             <td><div style='position:relative;''>
-                                                                            <a class='btn btn-primary' href='javascript:;'>
-                                                                              <span class='glyphicon glyphicon-search'></span> Browse..."; ?>
-                                                                              <input type='file' class='files' name='ao' onchange='$("#upload-file-info").html($(this).val());'>
-                                                                            <?php echo "</a> <span style='width:155px' class='label label-info' id='upload-file-info'></span>
-                                                                          </div>
-                              </td></tr>
-                            </tbody>
-                            </table>
-                          </div>
-                          <div class='col-md-6'>
-                            <table class='table table-condensed table-bordered'>
-                            <tbody>
-                              <tr><th width='130px' scope='row'>NIK</th> <td><input type='text' class='form-control' name='ba'></td></tr>
-                              <tr><th scope='row'>Tempat Lahir</th> <td><input type='text' class='form-control' name='bb'></td></tr>
-                              <tr><th scope='row'>Tanggal Lahir</th> <td><input type='text' class='form-control' name='bc'></td></tr>
-                              <tr><th scope='row'>Jenis Kelamin</th> <td><select class='form-control' name='bd'> 
-                                                                            <option value='0' selected>- Pilih Jenis Kelamin -</option>"; 
-                                                                              $jk = mysql_query("SELECT * FROM rb_jenis_kelamin");
-                                                                              while($a = mysql_fetch_array($jk)){
-                                                                                  echo "<option value='$a[id_jenis_kelamin]'>$a[jenis_kelamin]</option>";
-                                                                              }
-                                                                    echo "</select></td></tr>
-                              <tr><th scope='row'>Agama</th> <td><select class='form-control' name='be'> 
-                                                                            <option value='0' selected>- Pilih Agama -</option>"; 
-                                                                              $agama = mysql_query("SELECT * FROM rb_agama");
-                                                                              while($a = mysql_fetch_array($agama)){
-                                                                                  echo "<option value='$a[id_agama]'>$a[nama_agama]</option>";
-                                                                              }
-                                                                    echo "</select></td></tr>
-                              <tr><th scope='row'>Keb. Khusus</th> <td><input type='text' class='form-control' name='bf'></td></tr>
-							  <tr><th scope='row'>Asal Sekolah SMP/MTs</th> <td><input type='text' class='form-control' name='fa'></td></tr>
-							  
-							   <tr><th scope='row'>Tanggal Diterima Di Sekolah Ini</th> <td><input type='text' class='form-control' name='fb'></td></tr>
-							   <tr><th scope='row'>Tanggal Identitas Siswa</th> <td><input type='text' class='form-control' name='fc'></td></tr>
-                              <tr><th scope='row'>Jenis Tinggal</th> <td><input type='text' class='form-control' name='bg'></td></tr>
-                              <tr><th scope='row'>Transportasi</th> <td><input type='text' class='form-control' name='bh'></td></tr>
-                              <tr><th scope='row'>No Telpon</th> <td><input type='text' class='form-control' name='bi'></td></tr>
-                              <tr><th scope='row'>No Handpone</th> <td><input type='text' class='form-control' name='bj'></td></tr>
-                              <tr><th scope='row'>Alamat Email</th> <td><input type='text' class='form-control' name='bk'></td></tr>
-                              <tr><th scope='row'>SKHUN</th> <td><input type='text' class='form-control' name='bl'></td></tr>
-                              <tr><th scope='row'>Penerima KPS</th> <td><input type='text' class='form-control' name='bm'></td></tr>
-                              <tr><th scope='row'>No KPS</th> <td><input type='text' class='form-control' name='bn'></td></tr>
-                              <tr><th scope='row'>Status Siswa</th> <td><input type='radio' name='bo' value='Aktif' checked> Aktif
-                                                                        <input type='radio' name='bo' value='Tidak Aktif'> Tidak Aktif </td></tr>
-                            </tbody>
-                            </table>
-                          </div>  
-                          <div style='clear:both'></div>
-                          <div class='box-footer'>
-                            <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                            <a href='index.php?view=siswa'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
-                          </div> 
-                      </div>
-
-                      <div role='tabpanel' class='tab-pane fade' id='ortu' aria-labelledby='ortu-tab'>
-                          <div class='col-md-12'>
-                            <table class='table table-condensed table-bordered'>
-                            <tbody>
-                              <tr bgcolor=#e3e3e3><th width='130px' scope='row'>Nama Ayah</th> <td><input type='text' class='form-control' name='ca'></td></tr>
-                              <tr><th scope='row'>Tahun Lahir</th> <td><input type='text' class='form-control' name='cb'></td></tr>
-                              <tr><th scope='row'>Pendidikan</th> <td><input type='text' class='form-control' name='cc'></td></tr>
-                              <tr><th scope='row'>Pekerjaan</th> <td><input type='text' class='form-control' name='cd'></td></tr>
-                              <tr><th scope='row'>Penghasilan</th> <td><input type='text' class='form-control' name='ce'></td></tr>
-                              <tr><th scope='row'>Kebutuhan Khusus</th> <td><input type='text' class='form-control' name='cf'></td></tr>
-                              <tr><th scope='row'>No Telpon</th> <td><input type='text' class='form-control' name='cg'></td></tr>
-                              <tr><th scope='row' coslpan='2'><br></th></tr>
-                              <tr bgcolor=#e3e3e3><th scope='row'>Nama Ibu</th> <td><input type='text' class='form-control' name='ch'></td></tr>
-                              <tr><th scope='row'>Tahun Lahir</th> <td><input type='text' class='form-control' name='ci'></td></tr>
-                              <tr><th scope='row'>Pendidikan</th> <td><input type='text' class='form-control' name='cj'></td></tr>
-                              <tr><th scope='row'>Pekerjaan</th> <td><input type='text' class='form-control' name='ck'></td></tr>
-                              <tr><th scope='row'>Penghasilan</th> <td><input type='text' class='form-control' name='cl'></td></tr>
-                              <tr><th scope='row'>Kebutuhan Khusus</th> <td><input type='text' class='form-control' name='cm'></td></tr>
-                              <tr><th scope='row'>No Telpon</th> <td><input type='text' class='form-control' name='cn'></td></tr>
-                              <tr><th scope='row' coslpan='2'><br></th></tr>
-                              <tr bgcolor=#e3e3e3><th scope='row'>Nama Wali</th> <td><input type='text' class='form-control' name='co'></td></tr>
-                              <tr><th scope='row'>Tahun Lahir</th> <td><input type='text' class='form-control' name='cp'></td></tr>
-                              <tr><th scope='row'>Pendidikan</th> <td><input type='text' class='form-control' name='cq'></td></tr>
-                              <tr><th scope='row'>Pekerjaan</th> <td><input type='text' class='form-control' name='cr'></td></tr>
-                              <tr><th scope='row'>Penghasilan</th> <td><input type='text' class='form-control' name='cs'></td></tr>
-                            </tbody>
-                            </table>
-                          </div>
-                          <div class='box-footer'>
-                            <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                            <a href='index.php?view=siswa'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
-                          </div>
-                          </form>
-                      </div>
-                    </div>
+                  <form action='' method='POST' enctype='multipart/form-data' class='form-horizontal'>
+                  <div class='col-md-6'>
+                    <table class='table table-condensed table-bordered'>
+                    <tbody>
+                      <tr><th width='130px' scope='row'>NIPD</th> <td><input type='text' class='form-control' name='aa'></td></tr>
+                      <tr><th scope='row'>NISN</th> <td><input type='text' class='form-control' name='ab'></td></tr>
+                      <tr><th scope='row'>Password</th> <td><input type='text' class='form-control' name='ac'></td></tr>
+                      <tr><th scope='row'>Nama Siswa</th> <td><input type='text' class='form-control' name='ad'></td></tr>
+                      <tr><th scope='row'>Kelas</th> <td><select class='form-control' name='ae'> 
+                                                                    <option value='0' selected>- Pilih Kelas -</option>"; 
+                                                                      $kelas = mysql_query("SELECT * FROM rb_kelas");
+                                                                      while($a = mysql_fetch_array($kelas)){
+                                                                          echo "<option value='$a[kode_kelas]'>$a[nama_kelas]</option>";
+                                                                      }
+                                                            echo "</select></td></tr>
+                      <tr><th scope='row'>Angkatan</th> <td><input type='text' class='form-control' name='af'></td></tr>
+                      <tr><th scope='row'>Jurusan</th> <td><select class='form-control' name='ag'> 
+                                                                    <option value='0' selected>- Pilih Jurusan -</option>"; 
+                                                                      $jurusan = mysql_query("SELECT * FROM rb_jurusan");
+                                                                      while($a = mysql_fetch_array($jurusan)){
+                                                                          echo "<option value='$a[kode_jurusan]'>$a[nama_jurusan]</option>";
+                                                                      }
+                                                            echo "</select></td></tr>
+                       <tr><th scope='row'>Jenis Kelamin</th> <td><select class='form-control' name='bd'> 
+                                                                    <option value='0' selected>- Pilih Jenis Kelamin -</option>"; 
+                                                                      $jk = mysql_query("SELECT * FROM rb_jenis_kelamin");
+                                                                      while($a = mysql_fetch_array($jk)){
+                                                                          echo "<option value='$a[id_jenis_kelamin]'>$a[jenis_kelamin]</option>";
+                                                                      }
+                                                            echo "</select></td></tr>
+                    </tbody>
+                    </table>
                   </div>
-
+                  
+                  <div style='clear:both'></div>
+                  <div class='box-footer'>
+                    <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
+                    <a href='index.php?view=siswa'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
+                  </div> 
+                  </form>
                 </div>
             </div>
         </div>";
@@ -388,78 +287,26 @@ if ($_GET['act']==''){
       if ($filename != ''){      
         if (move_uploaded_file($_FILES['ao']['tmp_name'], $uploadfile)){
            mysql_query("UPDATE rb_siswa SET 
-                               nipd        = '$_POST[aa]',
-                               nisn   = '$_POST[ab]',
-                               password         = '$_POST[ac]',
-                               nama       = '$_POST[ad]',
-                               kode_kelas    = '$_POST[ae]',
-                               angkatan   = '$_POST[af]',
-                               kode_jurusan   = '$_POST[ag]',
-                               alamat        = '$_POST[ah]',
-                               rt         = '$rt',
-                               rw   = '$rw',
-                               dusun    = '$_POST[aj]',
-                               kelurahan       = '$_POST[ak]',
-                               kecamatan     = '$_POST[al]',
-                               kode_pos      = '$_POST[am]',
-                               status_awal   = '$_POST[an]',
-                               foto = '$filenamee',
-
-                               nik = '$_POST[ba]',
-                               tempat_lahir = '$_POST[bb]',
-                               tanggal_lahir = '$_POST[bc]',
-                               id_jenis_kelamin = '$_POST[bd]',
-                               id_agama = '$_POST[be]',
-							   asal_sekolah = '$_POST[fa]',
-							   tanggal_terima = '$_POST[fb]',
-							   tanggal_sah = '$_POST[fc]',
-                               kebutuhan_khusus = '$_POST[bf]',
-                               jenis_tinggal = '$_POST[bg]',
-                               alat_transportasi = '$_POST[bh]',
-                               telepon = '$_POST[bi]',
-                               hp = '$_POST[bj]',
-                               email = '$_POST[bk]',
-                               skhun = '$_POST[bl]',
-                               penerima_kps = '$_POST[bm]',
-                               no_kps = '$_POST[bn]',
-                               status_siswa = '$_POST[bo]' where nipd='$_POST[id]'") or die(mysql_error());
+                                nipd        = '$_POST[aa]',
+                                nisn   = '$_POST[ab]',
+                                password         = '$_POST[ac]',
+                                nama       = '$_POST[ad]',
+                                kode_kelas    = '$_POST[ae]',
+                                angkatan   = '$_POST[af]',
+                                kode_jurusan   = '$_POST[ag]',
+                                id_jenis_kelamin = '$_POST[bd]',
+                                foto = '$filenamee' where nipd='$_POST[id]'") or die(mysql_error());
         }
       }else{
             mysql_query("UPDATE rb_siswa SET 
-                               nipd        = '$_POST[aa]',
-                               nisn   = '$_POST[ab]',
-                               password         = '$_POST[ac]',
-                               nama       = '$_POST[ad]',
-                               kode_kelas    = '$_POST[ae]',
-                               angkatan   = '$_POST[af]',
-                               kode_jurusan   = '$_POST[ag]',
-                               alamat        = '$_POST[ah]',
-                               rt         = '$rt',
-                               rw   = '$rw',
-                               dusun    = '$_POST[aj]',
-                               kelurahan       = '$_POST[ak]',
-                               kecamatan     = '$_POST[al]',
-                               kode_pos      = '$_POST[am]',
-                               status_awal   = '$_POST[an]',
-
-                               nik = '$_POST[ba]',
-                               tempat_lahir = '$_POST[bb]',
-                               tanggal_lahir = '$_POST[bc]',
-                               id_jenis_kelamin = '$_POST[bd]',
-                               id_agama = '$_POST[be]',
-							   asal_sekolah = '$_POST[fa]',
-							   tanggal_terima = '$_POST[fb]',
-							   tanggal_sah = '$_POST[fc]',
-                               kebutuhan_khusus = '$_POST[bf]',
-                               jenis_tinggal = '$_POST[bg]',
-                               alat_transportasi = '$_POST[bh]',
-                               telepon = '$_POST[bi]',
-                               hp = '$_POST[bj]',
-                               email = '$_POST[bk]',
-                               skhun = '$_POST[bl]',
-                               penerima_kps = '$_POST[bm]',
-                               no_kps = '$_POST[bn]',
-                               status_siswa = '$_POST[bo]' where nipd='$_POST[id]'") or die(mysql_error());
+                                nipd        = '$_POST[aa]',
+                                nisn   = '$_POST[ab]',
+                                password         = '$_POST[ac]',
+                                nama       = '$_POST[ad]',
+                                kode_kelas    = '$_POST[ae]',
+                                angkatan   = '$_POST[af]',
+                                kode_jurusan   = '$_POST[ag]',
+                                id_jenis_kelamin = '$_POST[bd]' where nipd='$_POST[id]'") or die(mysql_error());
       }
           echo "<script>
             setTimeout(function() {
@@ -476,44 +323,6 @@ if ($_GET['act']==''){
           </script>";
   }
 
-  if (isset($_POST['update2'])){
-           mysql_query("UPDATE rb_siswa SET 
-                               nama_ayah        = '$_POST[ca]',
-                               tahun_lahir_ayah   = '$_POST[cb]',
-                               pendidikan_ayah         = '$_POST[cc]',
-                               pekerjaan_ayah       = '$_POST[cd]',
-                               penghasilan_ayah    = '$_POST[ce]',
-                               kebutuhan_khusus_ayah   = '$_POST[cf]',
-                               no_telpon_ayah   = '$_POST[cg]',
-
-                               nama_ibu        = '$_POST[ch]',
-                               tahun_lahir_ibu   = '$_POST[ci]',
-                               pendidikan_ibu         = '$_POST[cj]',
-                               pekerjaan_ibu       = '$_POST[ck]',
-                               penghasilan_ibu    = '$_POST[cl]',
-                               kebutuhan_khusus_ibu   = '$_POST[cm]',
-                               no_telpon_ibu   = '$_POST[cn]',
-
-                               nama_wali        = '$_POST[co]',
-                               tahun_lahir_wali   = '$_POST[cp]',
-                               pendidikan_wali         = '$_POST[cq]',
-                               pekerjaan_wali       = '$_POST[cr]',
-                               penghasilan_wali    = '$_POST[cs]' where nisn='$_POST[id]'") or die(mysql_error());
-
-            echo "<script>
-              setTimeout(function() {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Berhasil',
-                  text: 'Data orang tua berhasil diupdate',
-                  showConfirmButton: false,
-                  timer: 1500
-                }).then(function() {
-                  window.location = 'index.php?view=siswa&act=editsiswa&id=" . $_POST['id'] . "';
-                });
-              }, 100);
-            </script>";
-  }
     if ($_SESSION['level'] == 'siswa'){
         $nisn = $_SESSION['id'];
         $close = 'readonly=on';
@@ -541,15 +350,7 @@ if ($_GET['act']==''){
                     </div>";
                   }
 
-                  echo "<div class='panel-body'>
-                    <ul id='myTabs' class='nav nav-tabs' role='tablist'>
-                      <li role='presentation' class='active'><a href='#siswa' id='siswa-tab' role='tab' data-toggle='tab' aria-controls='siswa' aria-expanded='true'>Data Siswa </a></li>
-                      <li role='presentation' class=''><a href='#ortu' role='tab' id='ortu-tab' data-toggle='tab' aria-controls='ortu' aria-expanded='false'>Data Orang Tua / Wali</a></li>
-                    </ul><br>
-
-                    <div id='myTabContent' class='tab-content'>
-                    <div role='tabpanel' class='tab-pane fade active in' id='siswa' aria-labelledby='siswa-tab'>
-                        <form action='' method='POST' enctype='multipart/form-data' class='form-horizontal'>
+                  echo "<form action='' method='POST' enctype='multipart/form-data' class='form-horizontal'>
                         <div class='col-md-7'>
                           <table class='table table-condensed table-bordered'>
                           <tbody>
@@ -600,30 +401,7 @@ if ($_GET['act']==''){
                                                                               }
                                                                             }
                                                                   echo "</select></td></tr>
-                            <tr><th scope='row'>Alamat Siswa</th> <td><input type='text' class='form-control' value='$s[alamat]' name='ah'></td></tr>
-                            <tr><th scope='row'>RT/RW</th> <td><input type='text' class='form-control' value='$s[rt]/$s[rw]' name='ai'></td></tr>
-                            <tr><th scope='row'>Dusun</th> <td><input type='text' class='form-control' value='$s[dusun]' name='aj'></td></tr>
-                            <tr><th scope='row'>Kelurahan</th> <td><input type='text' class='form-control' value='$s[kelurahan]' name='ak'></td></tr>
-                            <tr><th scope='row'>Kecamatan</th> <td><input type='text' class='form-control' value='$s[kecamatan]' name='al'></td></tr>
-                            <tr><th scope='row'>Kode Pos</th> <td><input type='text' class='form-control' value='$s[kode_pos]' name='am'></td></tr>
-                            <tr><th scope='row'>Status Awal</th> <td><input type='text' class='form-control' value='$s[status_awal]' name='an' $close></td></tr>
-                            <tr><th scope='row'>Ganti Foto</th>             <td><div style='position:relative;''>
-                                                                          <a class='btn btn-primary' href='javascript:;'>
-                                                                            <span class='glyphicon glyphicon-search'></span> Browse..."; ?>
-                                                                            <input type='file' class='files' name='ao' onchange='$("#upload-file-info").html($(this).val());'>
-                                                                          <?php echo "</a> <span style='width:155px' class='label label-info' id='upload-file-info'></span>
-                                                                        </div>
-                            </td></tr>
-                          </tbody>
-                          </table>
-                        </div>
-                        <div class='col-md-5'>
-                          <table class='table table-condensed table-bordered'>
-                          <tbody>
-                            <tr><th width='120px' scope='row'>NIK</th> <td><input type='text' class='form-control' value='$s[nik]' name='ba'></td></tr>
-                            <tr><th scope='row'>Tempat Lahir</th> <td><input type='text' class='form-control' value='$s[tempat_lahir]' name='bb'></td></tr>
-                            <tr><th scope='row'>Tanggal Lahir</th> <td><input type='text' class='form-control' value='$s[tanggal_lahir]' name='bc'></td></tr>
-                            <tr><th scope='row'>Jenis Kelamin</th> <td><select class='form-control' name='bd'> 
+                             <tr><th scope='row'>Jenis Kelamin</th> <td><select class='form-control' name='bd'> 
                                                                           <option value='0' selected>- Pilih Jenis Kelamin -</option>"; 
                                                                             $jk = mysql_query("SELECT * FROM rb_jenis_kelamin");
                                                                             while($a = mysql_fetch_array($jk)){
@@ -634,41 +412,17 @@ if ($_GET['act']==''){
                                                                               }
                                                                             }
                                                                   echo "</select></td></tr>
-                            <tr><th scope='row'>Agama</th> <td><select class='form-control' name='be'> 
-                                                                          <option value='0' selected>- Pilih Agama -</option>"; 
-                                                                            $agama = mysql_query("SELECT * FROM rb_agama");
-                                                                            while($a = mysql_fetch_array($agama)){
-                                                                              if ($a['id_agama'] == $s['id_agama']){
-                                                                                echo "<option value='$a[id_agama]' selected>$a[nama_agama]</option>";
-                                                                              }else{
-                                                                                echo "<option value='$a[id_agama]'>$a[nama_agama]</option>";
-                                                                              }
-                                                                            }
-                                                                  echo "</select></td></tr>
-                            <tr><th scope='row'>Keb. Khusus</th> <td><input type='text' class='form-control' value='$s[kebutuhan_khusus]' name='bf'></td></tr>
-							<tr><th scope='row'>Asal Sekolah SMP/Mts</th> <td><input type='text' class='form-control' value='$s[asal_sekolah]' name='fa'></td></tr>
-							<tr><th scope='row'>Tanggal Di Terima Disekolah ini</th> <td><input type='text' class='form-control' value='$s[tanggal_terima]' name='fb'></td></tr>
-							<tr><th scope='row'>Tanggal Disahkan identitas siswa</th> <td><input type='text' class='form-control' value='$s[tanggal_sah]' name='fc'></td></tr>
-                            <tr><th scope='row'>Jenis Tinggal</th> <td><input type='text' class='form-control' value='$s[jenis_tinggal]' name='bg'></td></tr>
-                            <tr><th scope='row'>Transportasi</th> <td><input type='text' class='form-control' value='$s[alat_transportasi]' name='bh'></td></tr>
-                            <tr><th scope='row'>No Telpon</th> <td><input type='text' class='form-control' value='$s[telepon]' name='bi'></td></tr>
-                            <tr><th scope='row'>No Handpone</th> <td><input type='text' class='form-control' value='$s[hp]' name='bj'></td></tr>
-                            <tr><th scope='row'>Alamat Email</th> <td><input type='text' class='form-control' value='$s[email]' name='bk'></td></tr>
-                            <tr><th scope='row'>SKHUN</th> <td><input type='text' class='form-control' value='$s[skhun]' name='bl'></td></tr>
-                            <tr><th scope='row'>Penerima KPS</th> <td><input type='text' class='form-control' value='$s[penerima_kps]' name='bm'></td></tr>
-                            <tr><th scope='row'>No KPS</th> <td><input type='text' class='form-control' value='$s[no_kps]' name='bn'></td></tr>
-                            <tr><th scope='row'>Status Siswa</th> <td>";
-                                                                    if ($s['status_siswa']=='Aktif'){
-                                                                        echo "<input type='radio' name='bo' value='Aktif' checked> Aktif
-                                                                              <input type='radio' name='bo' value='Tidak Aktif'> Tidak Aktif";
-                                                                    }else{
-                                                                        echo "<input type='radio' name='bo' value='Aktif'> Aktif
-                                                                              <input type='radio' name='bo' value='Tidak Aktif' checked> Tidak Aktif";
-                                                                    } 
-                                                                    echo "</td></tr>
+                            <tr><th scope='row'>Ganti Foto</th>             <td><div style='position:relative;''>
+                                                                          <a class='btn btn-primary' href='javascript:;'>
+                                                                            <span class='glyphicon glyphicon-search'></span> Browse..."; ?>
+                                                                            <input type='file' class='files' name='ax' onchange='$("#upload-file-info").html($(this).val());'>
+                                                                          <?php echo "</a> <span style='width:155px' class='label label-info' id='upload-file-info'></span>
+                                                                        </div>
+                            </td></tr>
                           </tbody>
                           </table>
-                        </div>  
+                        </div>
+                        
                         <div style='clear:both'></div>
                         <div class='box-footer'>
                           <button type='submit' name='update1' class='btn btn-info'>Update</button>
@@ -676,53 +430,6 @@ if ($_GET['act']==''){
                         </div> 
 
                         </form>
-                    </div>
-
-
-                    <div role='tabpanel' class='tab-pane fade' id='ortu' aria-labelledby='ortu-tab'>
-                        <form action='' method='POST' class='form-horizontal'>
-                        <div class='col-md-12'>
-                          <table class='table table-condensed table-bordered'>
-                          <tbody>
-                            <tr><th style='background-color:#E7EAEC' width='160px' rowspan='22'>";
-                                if (trim($s['foto'])==''){
-                                  echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/no-image.jpg'>";
-                                }else{
-                                  echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/$s[foto]'>";
-                                }
-                            echo "</th></tr>
-                            <input type='hidden' value='$s[nipd]' name='id'>
-                            <tr bgcolor=#e3e3e3><th width='130px' scope='row'>Nama Ayah</th> <td><input type='text' class='form-control' value='$s[nama_ayah]' name='ca'></td></tr>
-                            <tr><th scope='row'>Tahun Lahir</th> <td><input type='text' class='form-control' value='$s[tahun_lahir_ayah]' name='cb'></td></tr>
-                            <tr><th scope='row'>Pendidikan</th> <td><input type='text' class='form-control' value='$s[pendidikan_ayah]' name='cc'></td></tr>
-                            <tr><th scope='row'>Pekerjaan</th> <td><input type='text' class='form-control' value='$s[pekerjaan_ayah]' name='cd'></td></tr>
-                            <tr><th scope='row'>Penghasilan</th> <td><input type='text' class='form-control' value='$s[penghasilan_ayah]' name='ce'></td></tr>
-                            <tr><th scope='row'>Kebutuhan Khusus</th> <td><input type='text' class='form-control' value='$s[kebutuhan_khusus_ayah]' name='cf'></td></tr>
-                            <tr><th scope='row'>No Telpon</th> <td><input type='text' class='form-control' value='$s[no_telpon_ayah]' name='cg'></td></tr>
-                            <tr><th scope='row' coslpan='2'><br></th></tr>
-                            <tr bgcolor=#e3e3e3><th scope='row'>Nama Ibu</th> <td><input type='text' class='form-control' value='$s[nama_ibu]' name='ch'></td></tr>
-                            <tr><th scope='row'>Tahun Lahir</th> <td><input type='text' class='form-control' value='$s[tahun_lahir_ibu]' name='ci'></td></tr>
-                            <tr><th scope='row'>Pendidikan</th> <td><input type='text' class='form-control' value='$s[pendidikan_ibu]' name='cj'></td></tr>
-                            <tr><th scope='row'>Pekerjaan</th> <td><input type='text' class='form-control' value='$s[pekerjaan_ibu]' name='ck'></td></tr>
-                            <tr><th scope='row'>Penghasilan</th> <td><input type='text' class='form-control' value='$s[penghasilan_ibu]' name='cl'></td></tr>
-                            <tr><th scope='row'>Kebutuhan Khusus</th> <td><input type='text' class='form-control' value='$s[kebutuhan_khusus_ibu]' name='cm'></td></tr>
-                            <tr><th scope='row'>No Telpon</th> <td><input type='text' class='form-control' value='$s[no_telpon_ibu]' name='cn'></td></tr>
-                            <tr><th scope='row' coslpan='2'><br></th></tr>
-                            <tr bgcolor=#e3e3e3><th scope='row'>Nama Wali</th> <td><input type='text' class='form-control' value='$s[nama_wali]' name='co'></td></tr>
-                            <tr><th scope='row'>Tahun Lahir</th> <td><input type='text' class='form-control' value='$s[tahun_lahir_wali]' name='cp'></td></tr>
-                            <tr><th scope='row'>Pendidikan</th> <td><input type='text' class='form-control' value='$s[pendidikan_wali]' name='cq'></td></tr>
-                            <tr><th scope='row'>Pekerjaan</th> <td><input type='text' class='form-control' value='$s[pekerjaan_wali]' name='cr'></td></tr>
-                            <tr><th scope='row'>Penghasilan</th> <td><input type='text' class='form-control' value='$s[penghasilan_wali]' name='cs'></td></tr>
-                          </tbody>
-                          </table>
-                        </div>
-                        <div class='box-footer'>
-                          <button type='submit' name='update2' class='btn btn-info'>Update</button>
-                          <a href='index.php?view=siswa'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
-                        </div>
-                        </form>
-                    </div>
-
                 </div>
             </div>";
 
@@ -745,15 +452,6 @@ if ($_GET['act']==''){
                   <h3 class='box-title'>Detail Data Siswa</h3>
                 </div>
                 <div class='box-body'>
-
-                  <div class='panel-body'>
-                    <ul id='myTabs' class='nav nav-tabs' role='tablist'>
-                      <li role='presentation' class='active'><a href='#siswa' id='siswa-tab' role='tab' data-toggle='tab' aria-controls='siswa' aria-expanded='true'>Data Siswa </a></li>
-                      <li role='presentation' class=''><a href='#ortu' role='tab' id='ortu-tab' data-toggle='tab' aria-controls='ortu' aria-expanded='false'>Data Orang Tua / Wali</a></li>
-                    </ul><br>
-
-                    <div id='myTabContent' class='tab-content'>
-                    <div role='tabpanel' class='tab-pane fade active in' id='siswa' aria-labelledby='siswa-tab'>
                         <form class='form-horizontal'>
                         <div class='col-md-7'>
                           <table class='table table-condensed table-bordered'>
@@ -811,49 +509,6 @@ if ($_GET['act']==''){
                           </table>
                         </div>   
                         </form>
-                    </div>
-
-                    <div role='tabpanel' class='tab-pane fade' id='ortu' aria-labelledby='ortu-tab'>
-                        <form class='form-horizontal'>
-                        <div class='col-md-12'>
-                          <table class='table table-condensed table-bordered'>
-                          <tbody>
-                            <tr><th style='background-color:#E7EAEC' width='160px' rowspan='20'>";
-                                if (trim($s['foto'])==''){
-                                  echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/no-image.jpg'>";
-                                }else{
-                                  echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/$s[foto]'>";
-                                }
-                              if($_SESSION['level']!='kepala'){
-                                echo "<a href='index.php?view=siswa&act=editsiswa&id=$_GET[id]' class='btn btn-success btn-block'>Edit Profile</a>";
-                              }
-                                echo "</th>
-                            </tr>
-                            <tr bgcolor=#e3e3e3><th width='120px' scope='row'>Nama Ayah</th> <td>$s[nama_ayah]</td></tr>
-                            <tr><th scope='row'>Tahun Lahir</th> <td>$s[tahun_lahir_ayah]</td></tr>
-                            <tr><th scope='row'>Pendidikan</th> <td>$s[pendidikan_ayah]</td></tr>
-                            <tr><th scope='row'>Pekerjaan</th> <td>$s[pekerjaan_ayah]</td></tr>
-                            <tr><th scope='row'>Penghasilan</th> <td>$s[penghasilan_ayah]</td></tr>
-                            <tr><th scope='row'>No Telpon</th> <td>$s[no_telpon_ayah]</td></tr>
-                            <tr><th scope='row' coslpan='2'><br></th></tr>
-                            <tr bgcolor=#e3e3e3><th scope='row'>Nama Ibu</th> <td>$s[nama_ibu]</td></tr>
-                            <tr><th scope='row'>Tahun Lahir</th> <td>$s[tahun_lahir_ibu]</td></tr>
-                            <tr><th scope='row'>Pendidikan</th> <td>$s[pendidikan_ibu]</td></tr>
-                            <tr><th scope='row'>Pekerjaan</th> <td>$s[pekerjaan_ibu]</td></tr>
-                            <tr><th scope='row'>Penghasilan</th> <td>$s[penghasilan_ibu]</td></tr>
-                            <tr><th scope='row'>No Telpon</th> <td>$s[no_telpon_ibu]</td></tr>
-                            <tr><th scope='row' coslpan='2'><br></th></tr>
-                            <tr bgcolor=#e3e3e3><th scope='row'>Nama Wali</th> <td>$s[nama_wali]</td></tr>
-                            <tr><th scope='row'>Tahun Lahir</th> <td>$s[tahun_lahir_wali]</td></tr>
-                            <tr><th scope='row'>Pendidikan</th> <td>$s[pendidikan_wali]</td></tr>
-                            <tr><th scope='row'>Pekerjaan</th> <td>$s[pekerjaan_wali]</td></tr>
-                            <tr><th scope='row'>Penghasilan</th> <td>$s[penghasilan_wali]</td></tr>
-                          </tbody>
-                          </table>
-                        </div>
-                        </form>
-                    </div>
-
                 </div>
             </div>";
 }elseif($_GET['act']=='penilaiandiri'){

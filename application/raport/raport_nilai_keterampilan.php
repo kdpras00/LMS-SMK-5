@@ -1,20 +1,28 @@
-<?php 
+<?php
+$get_jdwl = isset($_GET['jdwl']) ? $_GET['jdwl'] : '';
+$get_kd = isset($_GET['kd']) ? $_GET['kd'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+$get_delete = isset($_GET['delete']) ? $_GET['delete'] : '';
+$get_edit = isset($_GET['edit']) ? $_GET['edit'] : '';
+$get_nisn = isset($_GET['nisn']) ? $_GET['nisn'] : '';
+
     if (isset($_POST['simpan'])){
             if ($_POST['status']=='Update'){
               mysql_query("UPDATE rb_nilai_keterampilan SET kd='$_POST[a]', nilai1='$_POST[b]', nilai2='$_POST[c]', nilai3='$_POST[d]', nilai4='$_POST[e]', nilai5='$_POST[f]', nilai6='$_POST[g]', deskripsi='$_POST[h]' where id_nilai_keterampilan='$_POST[id]'");
             }else{
-              mysql_query("INSERT INTO rb_nilai_keterampilan VALUES('','$_GET[jdwl]','$_POST[nisn]','$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]','$_POST[h]','$_SESSION[id]','".date('Y-m-d H:i:s')."')");
+              mysql_query("INSERT INTO rb_nilai_keterampilan VALUES('','$get_jdwl','$_POST[nisn]','$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]','$_POST[h]','$_SESSION[id]','".date('Y-m-d H:i:s')."')");
             }
-        echo "<script>document.location='index.php?view=raport&act=listsiswaketerampilan&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]#$_POST[nisn]';</script>";
+        echo "<script>document.location='index.php?view=raport&act=listsiswaketerampilan&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun#$_POST[nisn]';</script>";
     }
 
-    if (isset($_GET['delete'])){
-        mysql_query("DELETE FROM rb_nilai_keterampilan where id_nilai_keterampilan='$_GET[delete]'");
-        echo "<script>document.location='index.php?view=raport&act=listsiswaketerampilan&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]#$_GET[nisn]';</script>";
+    if ($get_delete != ''){
+        mysql_query("DELETE FROM rb_nilai_keterampilan where id_nilai_keterampilan='$get_delete'");
+        echo "<script>document.location='index.php?view=raport&act=listsiswaketerampilan&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun#$get_nisn';</script>";
     }
 
-    $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$_GET[id]'"));
-    $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$_GET[kd]'"));
+    $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$get_id'"));
+    $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$get_kd'"));
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
@@ -52,17 +60,17 @@
                                 </tr>
                               <tbody>";
                               $no = 1;
-                              $tampil = mysql_query("SELECT * FROM rb_siswa where kode_kelas='$_GET[id]' ORDER BY id_siswa");
+                              $tampil = mysql_query("SELECT * FROM rb_siswa where kode_kelas='$get_id' ORDER BY id_siswa");
                               if ($tampil) {
                                   while($r=mysql_fetch_array($tampil)){
-                                      if (isset($_GET['edit'])){
-                                          $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_keterampilan where id_nilai_keterampilan='$_GET[edit]'"));
+                                      if ($get_edit != ''){
+                                          $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_keterampilan where id_nilai_keterampilan='$get_edit'"));
                                           $name = 'Update';
                                       }else{
                                           $name = 'Simpan';
                                       }
-                                      if ($_GET['nisn']==$r['nisn']){
-                                        echo "<form action='index.php?view=raport&act=listsiswaketerampilan&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]' method='POST'>
+                                      if ($get_nisn==$r['nisn']){
+                                        echo "<form action='index.php?view=raport&act=listsiswaketerampilan&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun' method='POST'>
                                           <tr>
                                             <td>$no</td>
                                             <td style='font-size:12px' id='$r[nisn]'>$r[nama]</td>
@@ -83,7 +91,7 @@
                                           </tr>
                                           </form>";
                                       }else{
-                                        echo "<form action='index.php?view=raport&act=listsiswaketerampilan&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]' method='POST'>
+                                        echo "<form action='index.php?view=raport&act=listsiswaketerampilan&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun' method='POST'>
                                           <tr>
                                             <td>$no</td>
                                             <td style='font-size:12px' id='$r[nisn]'>$r[nama]</td>
@@ -105,12 +113,12 @@
                                           </form>";
                                       }
 
-                                        $pe = mysql_query("SELECT * FROM rb_nilai_keterampilan where kodejdwl='$_GET[jdwl]' AND nisn='$r[nisn]'");
+                                        $pe = mysql_query("SELECT * FROM rb_nilai_keterampilan where kodejdwl='$get_jdwl' AND nisn='$r[nisn]'");
                                         while ($n = mysql_fetch_array($pe)){
                                         $ratarata = max($n['nilai1'],$n['nilai2'],$n['nilai3'],$n['nilai4'],$n['nilai5'],$n['nilai6']);
-                                        $cekpredikat = mysql_num_rows(mysql_query("SELECT * FROM rb_predikat where kode_kelas='$_GET[id]'"));
+                                        $cekpredikat = mysql_num_rows(mysql_query("SELECT * FROM rb_predikat where kode_kelas='$get_id'"));
                                           if ($cekpredikat >= 1){
-                                            $grade1 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($ratarata)." >=nilai_a) AND (".number_format($ratarata)." <= nilai_b) AND kode_kelas='$_GET[id]'"));
+                                            $grade1 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($ratarata)." >=nilai_a) AND (".number_format($ratarata)." <= nilai_b) AND kode_kelas='$get_id'"));
                                           }else{
                                             $grade1 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($ratarata)." >=nilai_a) AND (".number_format($ratarata)." <= nilai_b) AND kode_kelas='0'"));
                                           }
@@ -128,23 +136,23 @@
                                             <td align=center>".number_format($ratarata)."</td>
                                             <td align=center>$grade1[grade]</td>
                                             <td>$n[deskripsi]</td>
-                                            <td align=center><a href='index.php?view=raport&act=listsiswaketerampilan&jdwl=".$_GET['jdwl']."&kd=".$_GET['kd']."&id=".$_GET['id']."&tahun=".$_GET['tahun']."&edit=".$n['id_nilai_keterampilan']."&nisn=".$r['nisn']."#$r[nisn]' class='btn btn-xs btn-success'><span class='glyphicon glyphicon-edit'></span></a>
-                                                            <a href='index.php?view=raport&act=listsiswaketerampilan&jdwl=".$_GET['jdwl']."&kd=".$_GET['kd']."&id=".$_GET['id']."&tahun=".$_GET['tahun']."&delete=".$n['id_nilai_keterampilan']."&nisn=".$r['nisn']."' class='btn btn-xs btn-danger' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\"><span class='glyphicon glyphicon-remove'></span></a></td>
+                                            <td align=center><a href='index.php?view=raport&act=listsiswaketerampilan&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun&edit=".$n['id_nilai_keterampilan']."&nisn=".$r['nisn']."#$r[nisn]' class='btn btn-xs btn-success'><span class='glyphicon glyphicon-edit'></span></a>
+                                                            <a href='index.php?view=raport&act=listsiswaketerampilan&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun&delete=".$n['id_nilai_keterampilan']."&nisn=".$r['nisn']."' class='btn btn-xs btn-danger' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\"><span class='glyphicon glyphicon-remove'></span></a></td>
                                           </tr>";
                                         }
-                                          $maxn = mysql_fetch_array(mysql_query("SELECT deskripsi, GREATEST(nilai1,nilai2,nilai3,nilai4,nilai5,nilai6) as tertinggi FROM rb_nilai_keterampilan where kodejdwl='$_GET[jdwl]' AND nisn='$r[nisn]' ORDER BY tertinggi DESC LIMIT 1"));
-                                          $cekpredikat1 = mysql_num_rows(mysql_query("SELECT * FROM rb_predikat where kode_kelas='$_GET[id]'"));
+                                          $maxn = mysql_fetch_array(mysql_query("SELECT deskripsi, GREATEST(nilai1,nilai2,nilai3,nilai4,nilai5,nilai6) as tertinggi FROM rb_nilai_keterampilan where kodejdwl='$get_jdwl' AND nisn='$r[nisn]' ORDER BY tertinggi DESC LIMIT 1"));
+                                          $cekpredikat1 = mysql_num_rows(mysql_query("SELECT * FROM rb_predikat where kode_kelas='$get_id'"));
                                           if ($cekpredikat1 >= 1){
-                                            $grade2 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($maxn['tertinggi'])." >=nilai_a) AND (".number_format($maxn['tertinggi'])." <= nilai_b) AND kode_kelas='$_GET[id]'"));
+                                            $grade2 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($maxn['tertinggi'])." >=nilai_a) AND (".number_format($maxn['tertinggi'])." <= nilai_b) AND kode_kelas='$get_id'"));
                                           }else{
                                             $grade2 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($maxn['tertinggi'])." >=nilai_a) AND (".number_format($maxn['tertinggi'])." <= nilai_b) AND kode_kelas='0'"));
                                           }
 
                                           
-                                          $rapn = mysql_fetch_array(mysql_query("SELECT sum(GREATEST(nilai1,nilai2,nilai3,nilai4,nilai5,nilai6))/count(nisn) as raport FROM rb_nilai_keterampilan where kodejdwl='$_GET[jdwl]' AND nisn='$r[nisn]'"));
-                                          $cekpredikat2 = mysql_num_rows(mysql_query("SELECT * FROM rb_predikat where kode_kelas='$_GET[id]'"));
+                                          $rapn = mysql_fetch_array(mysql_query("SELECT sum(GREATEST(nilai1,nilai2,nilai3,nilai4,nilai5,nilai6))/count(nisn) as raport FROM rb_nilai_keterampilan where kodejdwl='$get_jdwl' AND nisn='$r[nisn]'"));
+                                          $cekpredikat2 = mysql_num_rows(mysql_query("SELECT * FROM rb_predikat where kode_kelas='$get_id'"));
                                           if ($cekpredikat2 >= 1){
-                                            $grade3 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($rapn['raport'])." >=nilai_a) AND (".number_format($rapn['raport'])." <= nilai_b) AND kode_kelas='$_GET[id]'"));
+                                            $grade3 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($rapn['raport'])." >=nilai_a) AND (".number_format($rapn['raport'])." <= nilai_b) AND kode_kelas='$get_id'"));
                                           }else{
                                             $grade3 = mysql_fetch_array(mysql_query("SELECT * FROM `rb_predikat` where (".number_format($rapn['raport'])." >=nilai_a) AND (".number_format($rapn['raport'])." <= nilai_b) AND kode_kelas='0'"));
                                           }

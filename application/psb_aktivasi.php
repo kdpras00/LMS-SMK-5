@@ -1,11 +1,17 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : '';
+$get_hapus = isset($_GET['hapus']) ? $_GET['hapus'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Data Aktivasi Pendaftaran </h3>
                   <?php if($_SESSION['level']!='kepala'){ ?>
                     <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='POST'>
-                      <input type="text" name='nama' style='padding:3px; width:250px' placeholder='Nama Calon Siswa' value='<?php echo $_GET['angkatan']; ?>'>
+                      <input type="text" name='nama' style='padding:3px; width:250px' placeholder='Nama Calon Siswa' value='<?php echo $get_angkatan; ?>'>
                       <select name='status' style='padding:4px'>
                           <option value='' selected>- Pilih Status -</option>
                           <option value='sma'>SMA</option>
@@ -58,8 +64,8 @@
                             echo "</tr>";
                       $no++;
                       }
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_psb_aktivasi where id_aktivasi='$_GET[hapus]'");
+                      if ($get_hapus!=''){
+                          mysql_query("DELETE FROM rb_psb_aktivasi where id_aktivasi='$get_hapus'");
                           echo "<script>document.location='index.php?view=psbaktivasi';</script>";
                       }
 
@@ -82,7 +88,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
       $cek = mysql_fetch_array(mysql_query("SELECT * FROM rb_psb_aktivasi where id_aktivasi='$_POST[id]'"));
       if ($cek['status']==$_POST['b']){
@@ -101,7 +107,7 @@
                                                 status = '$_POST[b]' where id_aktivasi='$_POST[id]'");
       echo "<script>document.location='index.php?view=psbaktivasi';</script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_psb_aktivasi where id_aktivasi='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_psb_aktivasi where id_aktivasi='$get_id'");
     $s = mysql_fetch_array($edit);
     if ($s['status'] == 'sma'){
         $kode = "SMA";

@@ -1,9 +1,13 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Data Gedung </h3>
-                  <?php if($_SESSION['level']!='kepala'){ ?>
+                  <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                   <a class='pull-right btn btn-primary btn-sm' href='index.php?view=gedung&act=tambah'>Tambahkan Data</a>
                   <?php } ?>
                 </div><!-- /.box-header -->
@@ -20,7 +24,7 @@
                         <th>Lebar</th>
                         <th>Keterangan</th>
                         <th>Aktif</th>
-                        <?php if($_SESSION['level']!='kepala'){ ?>
+                        <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                         <th style='width:70px'>Action</th>
                         <?php } ?>
                       </tr>
@@ -31,18 +35,18 @@
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
-                              <td>$r[kode_gedung]</td>
-                              <td>$r[nama_gedung]</td>
-                              <td>$r[jumlah_lantai] Lantai</td>
-                              <td>$r[panjang] Meter</td>
-                              <td>$r[tinggi] Meter</td>
-                              <td>$r[lebar] Meter</td>
-                              <td>$r[keterangan]</td>
-                              <td>$r[aktif]</td>";
-                              if($_SESSION['level']!='kepala'){
+                              <td>".(isset($r['kode_gedung']) ? $r['kode_gedung'] : '')."</td>
+                              <td>".(isset($r['nama_gedung']) ? $r['nama_gedung'] : '')."</td>
+                              <td>".(isset($r['jumlah_lantai']) ? $r['jumlah_lantai'] : '')." Lantai</td>
+                              <td>".(isset($r['panjang']) ? $r['panjang'] : '')." Meter</td>
+                              <td>".(isset($r['tinggi']) ? $r['tinggi'] : '')." Meter</td>
+                              <td>".(isset($r['lebar']) ? $r['lebar'] : '')." Meter</td>
+                              <td>".(isset($r['keterangan']) ? $r['keterangan'] : '')."</td>
+                              <td>".(isset($r['aktif']) ? $r['aktif'] : '')."</td>";
+                              if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){
                         echo "<td><center>
-                                <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=gedung&act=edit&id=$r[kode_gedung]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=gedung&hapus=$r[kode_gedung]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=gedung&act=edit&id=".(isset($r['kode_gedung']) ? $r['kode_gedung'] : '')."'><span class='glyphicon glyphicon-edit'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=gedung&hapus=".(isset($r['kode_gedung']) ? $r['kode_gedung'] : '')."')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -72,7 +76,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_gedung SET kode_gedung = '$_POST[a]',
                                          nama_gedung = '$_POST[b]',
@@ -96,7 +100,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_gedung where kode_gedung='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_gedung where kode_gedung='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -108,16 +112,16 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kode_gedung]'>
-                    <tr><th width='120px' scope='row'>Kode Gedung</th> <td><input type='text' class='form-control' name='a' value='$s[id_gedung]'> </td></tr>
-                    <tr><th scope='row'>Nama Gedung</th>          <td><input type='text' class='form-control' name='b' value='$s[nama_gedung]'></td></tr>
-                    <tr><th scope='row'>Jumlah Lantai</th>        <td><input type='text' class='form-control' name='c' value='$s[jumlah_lantai]'></td></tr>
-                    <tr><th scope='row'>Panjang</th>              <td><input type='text' class='form-control' name='d' value='$s[panjang]'></td></tr>
-                    <tr><th scope='row'>Tinggi</th>               <td><input type='text' class='form-control' name='e' value='$s[tinggi]'></td></tr>
-                    <tr><th scope='row'>Lebar</th>                <td><input type='text' class='form-control' name='f' value='$s[lebar]'></td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='g' value='$s[keterangan]'></td></tr>
+                    <input type='hidden' name='id' value='".(isset($s['kode_gedung']) ? $s['kode_gedung'] : '')."'>
+                    <tr><th width='120px' scope='row'>Kode Gedung</th> <td><input type='text' class='form-control' name='a' value='". (isset($s['id_gedung']) ? $s['id_gedung'] : (isset($s['kode_gedung']) ? $s['kode_gedung'] : '')) ."'> </td></tr>
+                    <tr><th scope='row'>Nama Gedung</th>          <td><input type='text' class='form-control' name='b' value='".(isset($s['nama_gedung']) ? $s['nama_gedung'] : '')."'></td></tr>
+                    <tr><th scope='row'>Jumlah Lantai</th>        <td><input type='text' class='form-control' name='c' value='".(isset($s['jumlah_lantai']) ? $s['jumlah_lantai'] : '')."'></td></tr>
+                    <tr><th scope='row'>Panjang</th>              <td><input type='text' class='form-control' name='d' value='".(isset($s['panjang']) ? $s['panjang'] : '')."'></td></tr>
+                    <tr><th scope='row'>Tinggi</th>               <td><input type='text' class='form-control' name='e' value='".(isset($s['tinggi']) ? $s['tinggi'] : '')."'></td></tr>
+                    <tr><th scope='row'>Lebar</th>                <td><input type='text' class='form-control' name='f' value='".(isset($s['lebar']) ? $s['lebar'] : '')."'></td></tr>
+                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='g' value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
-                                                                  if ($s['aktif']=='Ya'){
+                                                                  if (isset($s['aktif']) && $s['aktif']=='Ya'){
                                                                       echo "<input type='radio' name='h' value='Ya' checked> Ya
                                                                              <input type='radio' name='h' value='Tidak'> Tidak";
                                                                   }else{
@@ -136,7 +140,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_gedung VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]','$_POST[h]')") or die(mysql_error());
         echo "<script>

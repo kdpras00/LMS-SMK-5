@@ -1,6 +1,11 @@
-<?php 
+<?php
+$get_jdwl = isset($_GET['jdwl']) ? $_GET['jdwl'] : '';
+$get_kd = isset($_GET['kd']) ? $_GET['kd'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+
     if (isset($_POST['simpan'])){
-        $juml = mysql_num_rows(mysql_query("SELECT * FROM rb_siswa where kode_kelas='$_GET[id]'"));
+        $juml = mysql_num_rows(mysql_query("SELECT * FROM rb_siswa where kode_kelas='$get_id'"));
         for ($ia=1; $ia<=$juml; $ia++){
           $a   = $_POST['a'.$ia];
           $b   = $_POST['b'.$ia];
@@ -9,17 +14,17 @@
           if ($a != '' OR $b != '' OR $c != ''){
             $cek = mysql_num_rows(mysql_query("SELECT * FROM rb_nilai_sikap where kodejdwl='$_POST[jdwl]' AND nisn='$nisn' AND status='$_POST[status]'"));
             if ($cek >= '1'){
-              mysql_query("UPDATE rb_nilai_sikap SET positif='$a', negatif='$b', deskripsi='$c' where kodejdwl='$_GET[jdwl]' AND nisn='$nisn' AND status='$_POST[status]'");
+              mysql_query("UPDATE rb_nilai_sikap SET positif='$a', negatif='$b', deskripsi='$c' where kodejdwl='$get_jdwl' AND nisn='$nisn' AND status='$_POST[status]'");
             }else{
-              mysql_query("INSERT INTO rb_nilai_sikap VALUES('','$_GET[jdwl]','$nisn','$a','$b','$c','$_POST[status]','$_SESSION[id]','".date('Y-m-d H:i:s')."')");
+              mysql_query("INSERT INTO rb_nilai_sikap VALUES('','$get_jdwl','$nisn','$a','$b','$c','$_POST[status]','$_SESSION[id]','".date('Y-m-d H:i:s')."')");
             }
           }
         }
-        echo "<script>document.location='index.php?view=raport&act=listsiswasikap&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]';</script>";
+        echo "<script>document.location='index.php?view=raport&act=listsiswasikap&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun';</script>";
     }
 
-    $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$_GET[id]'"));
-    $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$_GET[kd]'"));
+    $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$get_id'"));
+    $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$get_kd'"));
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
@@ -48,7 +53,7 @@
                   // Ini Halaman unutk Nilai Spiritual
                       echo "<div role='tabpanel' class='tab-pane fade active in' id='spiritual' aria-labelledby='spiritual-tab'>";
                       echo "<div class='col-md-12'>
-                            <form action='index.php?view=raport&act=listsiswasikap&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]' method='POST'>
+                            <form action='index.php?view=raport&act=listsiswasikap&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun' method='POST'>
                             <input type='hidden' value='spiritual' name='status'>
                             <table class='table table-bordered table-striped'>
                                 <tr>
@@ -64,10 +69,10 @@
                                 </tr>
                               <tbody>";
                               $no = 1;
-                              $tampil = mysql_query("SELECT * FROM rb_siswa where kode_kelas='$_GET[id]' ORDER BY id_siswa");
+                              $tampil = mysql_query("SELECT * FROM rb_siswa where kode_kelas='$get_id' ORDER BY id_siswa");
                               if ($tampil) {
                                   while($r=mysql_fetch_array($tampil)){
-                                    $des = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_sikap where kodejdwl='$_GET[jdwl]' AND nisn='$r[nisn]' AND status='spiritual'"));
+                                    $des = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_sikap where kodejdwl='$get_jdwl' AND nisn='$r[nisn]' AND status='spiritual'"));
                                       echo "<tr>
                                             <td>$no</td>
                                             <td>$r[nisn]</td>
@@ -96,7 +101,7 @@
                       // Ini Halaman unutk Nilai Sosial
                 echo "<div role='tabpanel' class='tab-pane fade' id='sosial' aria-labelledby='sosial-tab'>
                       <div class='col-md-12'>
-                            <form action='index.php?view=raport&act=listsiswasikap&jdwl=$_GET[jdwl]&kd=$_GET[kd]&id=$_GET[id]&tahun=$_GET[tahun]' method='POST'>
+                            <form action='index.php?view=raport&act=listsiswasikap&jdwl=$get_jdwl&kd=$get_kd&id=$get_id&tahun=$get_tahun' method='POST'>
                             <input type='hidden' value='sosial' name='status'>
                             <table class='table table-bordered table-striped'>
                                 <tr>
@@ -112,10 +117,10 @@
                                 </tr>
                               <tbody>";
                               $no = 1;
-                              $tampil = mysql_query("SELECT * FROM rb_siswa where kode_kelas='$_GET[id]' ORDER BY id_siswa");
+                              $tampil = mysql_query("SELECT * FROM rb_siswa where kode_kelas='$get_id' ORDER BY id_siswa");
                               if ($tampil) {
                                   while($r=mysql_fetch_array($tampil)){
-                                    $des = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_sikap where kodejdwl='$_GET[jdwl]' AND nisn='$r[nisn]' AND status='sosial'"));
+                                    $des = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_sikap where kodejdwl='$get_jdwl' AND nisn='$r[nisn]' AND status='sosial'"));
                                       echo "<tr>
                                             <td>$no</td>
                                             <td>$r[nisn]</td>

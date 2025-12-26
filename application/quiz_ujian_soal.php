@@ -1,11 +1,15 @@
 <?php 
-if ($_GET['act']==''){ 
-cek_session_admin();
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$view = isset($_GET['view']) ? $_GET['view'] : '';
+$year_now = date('Y');
+
+if ($act == ''){ 
+ cek_session_admin();
 ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['kelas']) AND isset($_GET['tahun'])){ echo "Jadwal Pelajaran"; }else{ echo "Jadwal Pelajaran Pada Tahun ".date('Y'); } ?></h3>
+                  <h3 class="box-title"><?php if (isset($_GET['kelas']) AND isset($_GET['tahun'])){ echo "Jadwal Pelajaran"; }else{ echo "Jadwal Pelajaran Pada Tahun ".$year_now; } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='soal'>
                     <select name='tahun' style='padding:4px'>
@@ -13,7 +17,7 @@ cek_session_admin();
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if (isset($_GET['tahun']) && $_GET['tahun']==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -26,7 +30,7 @@ cek_session_admin();
                             echo "<option value=''>- Pilih Kelas -</option>";
                             $kelas = mysql_query("SELECT * FROM rb_kelas");
                             while ($k = mysql_fetch_array($kelas)){
-                              if ($_GET['kelas']==$k['kode_kelas']){
+                              if (isset($_GET['kelas']) && $_GET['kelas']==$k['kode_kelas']){
                                 echo "<option value='$k[kode_kelas]' selected>$k[kode_kelas] - $k[nama_kelas]</option>";
                               }else{
                                 echo "<option value='$k[kode_kelas]'>$k[kode_kelas] - $k[nama_kelas]</option>";
@@ -56,7 +60,10 @@ cek_session_admin();
                     </thead>
                     <tbody>
                   <?php
+                    $tampil = null;
                     if (isset($_GET['kelas']) AND isset($_GET['tahun'])){
+                      // Ensure kurikulum is set
+                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                               JOIN rb_guru c ON a.nip=c.nip 
@@ -64,10 +71,10 @@ cek_session_admin();
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.kode_kelas='$_GET[kelas]' 
                                                     AND a.id_tahun_akademik='$_GET[tahun]' 
-                                                      AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                      AND b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }
-                    if (isset($tampil) && $tampil) {
+                    if ($tampil) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
                         $total = mysql_num_rows(mysql_query("SELECT * FROM rb_quiz_ujian where kodejdwl='$r[kodejdwl]'"));
@@ -93,23 +100,30 @@ cek_session_admin();
                   </table>
                 </div><!-- /.box-body -->
                 <?php 
-                    if ($_GET['kelas'] == '' AND $_GET['tahun'] == ''){
+                    if (!isset($_GET['kelas']) && !isset($_GET['tahun'])){
+                        echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
+                    }elseif(isset($_GET['kelas']) && $_GET['kelas'] == '' && isset($_GET['tahun']) && $_GET['tahun'] == ''){
                         echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
                     }
                 ?>
                 </div>
             </div>
 <?php 
-}elseif($_GET['act']=='listsoal'){
-cek_session_guru();
+}elseif($act=='listsoal'){
+    cek_session_guru();
     $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$_GET[id]'"));
     $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$_GET[kd]'"));
+    
+    $_GET_jdwl = isset($_GET['jdwl']) ? $_GET['jdwl'] : '';
+    $_GET_id = isset($_GET['id']) ? $_GET['id'] : '';
+    $_GET_kd = isset($_GET['kd']) ? $_GET['kd'] : '';
+    
     echo "<div class='col-md-12'>
               <div class='box box-info'>
                 <div class='box-header with-border'>
                   <h3 class='box-title'>Daftar Ujian dan Quiz Online</b></h3>";
-                  if($_SESSION['level']!='kepala'){ 
-                    echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=soal&act=tambah&jdwl=$_GET[jdwl]&id=$_GET[id]&kd=$_GET[kd]'>Tambahkan Data</a>";
+                  if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ 
+                    echo "<a class='pull-right btn btn-primary btn-sm' href='index.php?view=soal&act=tambah&jdwl=$_GET_jdwl&id=$_GET_id&kd=$_GET_kd'>Tambahkan Data</a>";
                   }
                 echo "</div>
               <div class='box-body'>
@@ -117,7 +131,7 @@ cek_session_guru();
               <div class='col-md-12'>
               <table class='table table-condensed table-hover'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kode_kelas]'>
+                    <input type='hidden' name='id' value='$d[kode_kelas]'>
                     <tr><th width='120px' scope='row'>Kode Kelas</th> <td>$d[kode_kelas]</td></tr>
                     <tr><th scope='row'>Nama Kelas</th>               <td>$d[nama_kelas]</td></tr>
                     <tr><th scope='row'>Mata Pelajaran</th>           <td>$m[namamatapelajaran]</td></tr>
@@ -133,7 +147,7 @@ cek_session_guru();
                         <th>Kategori</th>
                         <th>Keterangan</th>
                         <th>Batas Waktu</th>";
-                        if($_SESSION['level']!='kepala'){ 
+                        if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ 
                           echo "<th style='width:210px'>Action</th>";
                         }
                       echo "</tr>
@@ -141,18 +155,18 @@ cek_session_guru();
                     <tbody>";
                     
                     $no = 1;
-                    $tampil = mysql_query("SELECT * FROM rb_quiz_ujian a JOIN rb_kategori_quiz_ujian b ON a.id_kategori_quiz_ujian=b.id_kategori_quiz_ujian where a.kodejdwl='$_GET[jdwl]' ORDER BY a.id_quiz_ujian");
+                    $tampil = mysql_query("SELECT * FROM rb_quiz_ujian a JOIN rb_kategori_quiz_ujian b ON a.id_kategori_quiz_ujian=b.id_kategori_quiz_ujian where a.kodejdwl='$_GET_jdwl' ORDER BY a.id_quiz_ujian");
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr>
                             <td>$no</td>
                             <td style='color:red'>$r[kategori_quiz_ujian]</td>
                             <td>$r[keterangan]</td>
                             <td>$r[batas_waktu] WIB</td>";
-                            if($_SESSION['level']=='kepala'){
+                            if(isset($_SESSION['level']) && $_SESSION['level']=='kepala'){
                             }else{
-                                echo "<td><a class='btn btn-primary btn-xs' title='Lihat Soal' href='index.php?view=soal&act=semuasoal&jdwl=$_GET[jdwl]&idsoal=$r[id_quiz_ujian]&id=$_GET[id]&kd=$_GET[kd]'><span class='glyphicon glyphicon-search'></span> Lihat Soal</a>
-                                          <a class='btn btn-success btn-xs' title='Lihat Jawaban' href='index.php?view=soal&act=semuajawaban&jdwl=$_GET[jdwl]&idsoal=$r[id_quiz_ujian]&id=$_GET[id]&kd=$_GET[kd]'><span class='glyphicon glyphicon-th-list'></span> Jawaban Siswa</a>
-                                          <a class='btn btn-danger btn-xs' title='Delete Bahan dan Tugas' href='#' onclick=\"konfirmasiHapus('index.php?view=soal&act=listsoal&jdwl=$_GET[jdwl]&id=$_GET[id]&kd=$_GET[kd]&hapus=$r[id_quiz_ujian]')\"><span class='glyphicon glyphicon-remove'></span></a></td>";
+                                echo "<td><a class='btn btn-primary btn-xs' title='Lihat Soal' href='index.php?view=soal&act=semuasoal&jdwl=$_GET_jdwl&idsoal=$r[id_quiz_ujian]&id=$_GET_id&kd=$_GET_kd'><span class='glyphicon glyphicon-search'></span> Lihat Soal</a>
+                                          <a class='btn btn-success btn-xs' title='Lihat Jawaban' href='index.php?view=soal&act=semuajawaban&jdwl=$_GET_jdwl&idsoal=$r[id_quiz_ujian]&id=$_GET_id&kd=$_GET_kd'><span class='glyphicon glyphicon-th-list'></span> Jawaban Siswa</a>
+                                          <a class='btn btn-danger btn-xs' title='Delete Bahan dan Tugas' href='#' onclick=\"konfirmasiHapus('index.php?view=soal&act=listsoal&jdwl=$_GET_jdwl&id=$_GET_id&kd=$_GET_kd&hapus=$r[id_quiz_ujian]')\"><span class='glyphicon glyphicon-remove'></span></a></td>";
                             }
                           echo "</tr>";
                       $no++;
@@ -169,7 +183,7 @@ cek_session_guru();
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function() {
-                  window.location = 'index.php?view=soal&act=listsoal&jdwl=".$_GET['jdwl']."&id=".$_GET['id']."&kd=".$_GET['kd']."';
+                  window.location = 'index.php?view=soal&act=listsoal&jdwl=".$_GET_jdwl."&id=".$_GET_id."&kd=".$_GET_kd."';
                 });
               }, 100);
             </script>";
@@ -179,16 +193,17 @@ cek_session_guru();
                   </table>
                 </div>
               </div>
-              </form>
+              
             </div>";
 
-}elseif($_GET['act']=='tambah'){
-cek_session_guru();
+}elseif($act=='tambah'){
+  cek_session_guru();
   if (isset($_POST['tambah'])){
     if(function_exists('date_default_timezone_set')) date_default_timezone_set('Asia/Jakarta');
     $waktu = date("Y-m-d H:i:s");
     $date = date_create($waktu);
-    $tjam = date_add($date, date_interval_create_from_date_string("$_POST[c] minutes"));
+    $minutes = isset($_POST['c']) ? intval($_POST['c']) : 0;
+    $tjam = date_add($date, date_interval_create_from_date_string("$minutes minutes"));
     $bataswaktu = date_format($tjam, 'Y-m-d H:i:s');
     mysql_query("INSERT INTO rb_quiz_ujian VALUES (NULL,'$_POST[a]','$_GET[jdwl]','$_POST[b]','$bataswaktu')");
       echo "<script>
@@ -238,8 +253,8 @@ cek_session_guru();
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='semuasoal'){
-cek_session_guru();
+}elseif($act=='semuasoal'){
+  cek_session_guru();
       $so = mysql_fetch_array(mysql_query("SELECT * FROM rb_quiz_ujian a 
                         JOIN rb_kategori_quiz_ujian b ON a.id_kategori_quiz_ujian=b.id_kategori_quiz_ujian 
                           JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl 
@@ -375,8 +390,8 @@ cek_session_guru();
                 </div>
               </div>
             </div>";
-}elseif($_GET['act']=='semuajawaban'){
-cek_session_guru();
+}elseif($act=='semuajawaban'){
+  cek_session_guru();
     $d = mysql_fetch_array(mysql_query("SELECT a.*, b.*, c.*, d.*, e.*, f.nama_guru as nama_guru, f.nip FROM rb_quiz_ujian a 
               JOIN rb_jadwal_pelajaran b ON a.kodejdwl=b.kodejdwl 
                 JOIN rb_kelas c ON b.kode_kelas=c.kode_kelas
@@ -393,7 +408,7 @@ cek_session_guru();
               <div class='col-md-12'>
               <table class='table table-condensed table-hover'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kodekelas]'>
+                    <input type='hidden' name='id' value='$d[kode_kelas]'>
                     <tr><th width='120px' scope='row'>Kode Kelas</th>  <td>$d[kode_kelas]</td></tr>
                     <tr><th scope='row'>Nama Kelas</th>                <td>$d[nama_kelas]</td></tr>
                     <tr><th scope='row'>Mata Pelajaran</th>            <td>$d[namamatapelajaran] - (Pengajar : $d[nama_guru])</td></tr>
@@ -432,7 +447,7 @@ cek_session_guru();
                     }else{
                         $statusnilai = "<i span style='color:green'>Sudah Dijawab</i>";
                     }
-                    echo "<tr bgcolor=$warna>
+                    echo "<tr>
                             <td>$no</td>
                             <td style='color:red'>$r[nisn]</td>
                             <td>$r[nama]</td>
@@ -448,8 +463,8 @@ cek_session_guru();
                 </div>
               </div>
             </div>";
-}elseif($_GET['act']=='semuajawabansiswa'){
-cek_session_guru();
+}elseif($act=='semuajawabansiswa'){
+  cek_session_guru();
       $so = mysql_fetch_array(mysql_query("SELECT * FROM rb_quiz_ujian a 
                         JOIN rb_kategori_quiz_ujian b ON a.id_kategori_quiz_ujian=b.id_kategori_quiz_ujian 
                           JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl 
@@ -493,7 +508,11 @@ cek_session_guru();
       // Rumus Menghitung Total Nilai
       $objek = mysql_query("SELECT * FROM `rb_pertanyaan_objektif` where id_quiz_ujian='$_GET[idsoal]' ORDER BY id_pertanyaan_objektif DESC");
       $total = mysql_num_rows($objek);
-      $nilai = 100 / $total;
+      if ($total > 0) {
+        $nilai = 100 / $total;
+      } else {
+        $nilai = 0;
+      }
       $to = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM `rb_jawaban_objektif` a 
                         JOIN rb_pertanyaan_objektif b ON a.id_pertanyaan_objektif=b.id_pertanyaan_objektif 
                           where a.jawaban=b.kunci_jawaban AND a.nisn='$_GET[noinduk]' 
@@ -501,7 +520,11 @@ cek_session_guru();
       $hasil = $nilai * $to['total'];
 
       $nli = mysql_fetch_array(mysql_query("SELECT * FROM rb_nilai_pertanyaan_essai where nisn='$_GET[noinduk]' AND id_quiz_ujian='$_GET[idsoal]'"));
-      if (trim($nli['nilai_essai']=='')){ $nilaiessai = '0'; }else{ $nilaiessai = $nli['nilai_essai']; }
+      if (isset($nli['nilai_essai']) && trim($nli['nilai_essai'] !='')){ 
+        $nilaiessai = $nli['nilai_essai']; 
+      }else{ 
+        $nilaiessai = '0'; 
+      }
       $akhir = ($nilaiessai + $hasil) / 2;
 
             echo "<div class='col-xs-12'>  
@@ -537,11 +560,12 @@ cek_session_guru();
                     $no = 1;
                     while ($k = mysql_fetch_array($essai)){
                       $je = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_essai where id_pertanyaan_essai='$k[id_pertanyaan_essai]' AND nisn='$_GET[noinduk]'"));
+                        $jawaban_essai = isset($je['jawaban_essai']) ? $je['jawaban_essai'] : '';
                         echo "<tr>
                             <td>$no</td>
                             <td>$k[pertanyaan_essai] <br>
                                 <div style='height:100px; overflow:hidden'>
-                                  <pre style='height:100px'><b>Jabawan</b> : <br>$je[jawaban_essai]</pre>
+                                  <pre style='height:100px'><b>Jabawan</b> : <br>$jawaban_essai</pre>
                                 </div>
                             </td>
                             </tr>";
@@ -569,10 +593,12 @@ cek_session_guru();
                     $noo = 1;
                     while ($ko = mysql_fetch_array($objektif)){
                       $jo = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_objektif where id_pertanyaan_objektif='$ko[id_pertanyaan_objektif]' AND nisn='$_GET[noinduk]'"));
-                      if ($ko['kunci_jawaban']==$jo['jawaban']){
+                      $user_jawaban = isset($jo['jawaban']) ? $jo['jawaban'] : '';
+                      
+                      if ($ko['kunci_jawaban'] == $user_jawaban){
                           $jawab = "<span class='glyphicon glyphicon-ok pull-right'></span>";
                           $color = 'success';
-                          $jawaban = 'checked';
+                          $jawaban_attr = 'checked';
                           $status = 'Benar';
                       }else{
                           $jawab = "<span class='glyphicon glyphicon-remove pull-right'></span>";
@@ -587,8 +613,8 @@ cek_session_guru();
                               if (trim($ko['jawab_c'])!=''){ echo "<input type='radio' name='$noo'> c. $ko[jawab_c] <br>"; }
                               if (trim($ko['jawab_d'])!=''){ echo "<input type='radio' name='$noo'> d. $ko[jawab_d] <br>"; }
                               if (trim($ko['jawab_e'])!=''){ echo "<input type='radio' name='$noo'> e. $ko[jawab_e]"; }
-                            if ($jo['jawaban'] !=''){
-                              echo "<div class='btn btn-$color btn-xs btn-block'>Jawaban Anda '$jo[jawaban]' $status $jawab</div>";
+                            if ($user_jawaban !=''){
+                              echo "<div class='btn btn-$color btn-xs btn-block'>Jawaban Anda '$user_jawaban' $status $jawab</div>";
                             }
                             echo "</td>
                           </tr>";   
@@ -599,13 +625,14 @@ cek_session_guru();
                 </div>
               </div>
             </div>";
-}elseif($_GET['act']=='detailguru'){
+}elseif($act=='detailguru'){
 cek_session_guru(); 
+$_GET_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
 ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['tahun'])){ echo "Quiz dan Ujian Online"; }else{ echo "Quiz dan Ujian Online Pada ".date('Y'); } ?></h3>
+                  <h3 class="box-title"><?php if (isset($_GET['tahun'])){ echo "Quiz dan Ujian Online"; }else{ echo "Quiz dan Ujian Online ".date('Y'); } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='soal'>
                     <input type="hidden" name='act' value='detailguru'>
@@ -614,7 +641,7 @@ cek_session_guru();
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($_GET_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -645,6 +672,9 @@ cek_session_guru();
                     </thead>
                     <tbody>
                   <?php
+                    // Ensure kurikulum is set
+                    $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
+                  
                     if (isset($_GET['tahun'])){
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
@@ -653,7 +683,7 @@ cek_session_guru();
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.nip='$_SESSION[id]' 
                                                     AND a.id_tahun_akademik='$_GET[tahun]' 
-                                                      AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' ORDER BY a.hari DESC");
+                                                      AND b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
                     
                     }else{
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
@@ -662,7 +692,7 @@ cek_session_guru();
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                 JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.nip='$_SESSION[id]' 
-                                                    AND b.kode_kurikulum='$kurikulum[kode_kurikulum]'
+                                                    AND b.kode_kurikulum='$kode_kurikulum'
                                                       AND a.id_tahun_akademik LIKE '".date('Y')."%' ORDER BY a.hari DESC");
                     }
                     $no = 1;
@@ -690,7 +720,7 @@ cek_session_guru();
             </div>
                                 
 <?php
-}elseif($_GET['act']=='detailsiswa'){
+}elseif($act=='detailsiswa'){
 cek_session_siswa();
 ?>
              <div class="col-xs-12">  
@@ -705,7 +735,7 @@ cek_session_siswa();
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if (isset($_GET['tahun']) && $_GET['tahun']==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -736,6 +766,9 @@ cek_session_siswa();
                     </thead>
                     <tbody>
                   <?php
+                    // Ensure kurikulum is set
+                    $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
+                    
                     if (isset($_GET['tahun'])){
                       $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
                                             JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
@@ -744,7 +777,7 @@ cek_session_siswa();
                                                   JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.kode_kelas='$_SESSION[kode_kelas]' 
                                                     AND a.id_tahun_akademik='$_GET[tahun]'
-                                                      AND b.kode_kurikulum='$kurikulum[kode_kurikulum]' 
+                                                      AND b.kode_kurikulum='$kode_kurikulum' 
                                                         ORDER BY a.hari DESC");
                     
                     }else{
@@ -754,7 +787,7 @@ cek_session_siswa();
                                                 JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
                                                 JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
                                                   where a.kode_kelas='$_SESSION[kode_kelas]' 
-                                                    AND b.kode_kurikulum='$kurikulum[kode_kurikulum]'
+                                                    AND b.kode_kurikulum='$kode_kurikulum'
                                                      AND a.id_tahun_akademik LIKE '".date('Y')."%' ORDER BY a.hari DESC");
                     }
                     $no = 1;
@@ -783,8 +816,8 @@ cek_session_siswa();
             </div>
                                 
 <?php         
-}elseif($_GET['act']=='listsoalsiswa'){
-cek_session_siswa();
+}elseif($act=='listsoalsiswa'){
+    cek_session_siswa();
     $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_kelas where kode_kelas='$_GET[id]'"));
     $m = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$_GET[kd]'"));
     echo "<div class='col-md-12'>
@@ -797,7 +830,7 @@ cek_session_siswa();
               <div class='col-md-12'>
               <table class='table table-condensed table-hover'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kodekelas]'>
+                    <input type='hidden' name='id' value='$d[kode_kelas]'>
                     <tr><th width='120px' scope='row'>Kode Kelas</th> <td>$d[kode_kelas]</td></tr>
                     <tr><th scope='row'>Nama Kelas</th>               <td>$d[nama_kelas]</td></tr>
                     <tr><th scope='row'>Mata Pelajaran</th>           <td>$m[namamatapelajaran]</td></tr>
@@ -813,7 +846,7 @@ cek_session_siswa();
                         <th>Kategori</th>
                         <th>Keterangan</th>
                         <th>Batas Waktu</th>
-                        <th style='width:80px'>Action</th>
+                        <th style='width:100px'>Action</th>
                       </tr>
                     </thead>
                     <tbody>";
@@ -825,17 +858,9 @@ cek_session_siswa();
                             <td>$no</td>
                             <td style='color:red'>$r[kategori_quiz_ujian]</td>
                             <td>$r[keterangan]</td>
-                            <td>$r[batas_waktu] WIB</td>";
-                            $sekarangwaktu = date("YmdHis");
-                            $bataswaktu1 = str_replace('-','',$r['batas_waktu']);
-                            $bataswaktu2 = str_replace(':','',$bataswaktu1);
-                            $bataswaktu3 = str_replace(' ','',$bataswaktu2);
-                            if ($sekarangwaktu > $bataswaktu3){
-                              echo "<td><a style='width:100px' class='btn btn-danger btn-xs' title='Lihat Soal $sekarangwaktu - $bataswaktu3' href=''><span class='glyphicon glyphicon-search'></span> Waktu Habis</a></td>";
-                            }else{
-                              echo "<td><a style='width:100px' class='btn btn-primary btn-xs' title='Lihat Soal' href='index.php?view=soal&act=jawabsemuasoal&jdwl=$_GET[jdwl]&idsoal=$r[id_quiz_ujian]&id=$_GET[id]&kd=$_GET[kd]'><span class='glyphicon glyphicon-search'></span> Jawab Soal</a></td>";
-                            }
-                          echo "</tr>";
+                            <td>$r[batas_waktu] WIB</td>
+                            <td><a class='btn btn-success btn-xs' title='Lihat Soal' href='index.php?view=soal&act=jawabsoal&jdwl=$_GET[jdwl]&idsoal=$r[id_quiz_ujian]&id=$_GET[id]&kd=$_GET[kd]'><span class='glyphicon glyphicon-edit'></span> Kerjakan Soal</a></td>
+                          </tr>";
                       $no++;
                       }
 
@@ -843,171 +868,112 @@ cek_session_siswa();
                   </table>
                 </div>
               </div>
-              </form>
             </div>";
+}elseif($act=='jawabsoal'){
+  cek_session_siswa();
+  $so = mysql_fetch_array(mysql_query("SELECT * FROM rb_quiz_ujian a 
+                    JOIN rb_kategori_quiz_ujian b ON a.id_kategori_quiz_ujian=b.id_kategori_quiz_ujian 
+                      JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl 
+                        JOIN rb_kelas d ON c.kode_kelas=d.kode_kelas where a.id_quiz_ujian='$_GET[idsoal]'"));
 
-}elseif($_GET['act']=='jawabsemuasoal'){
-cek_session_siswa();
-    $jml = mysql_fetch_array(mysql_query("SELECT count(*) as jmlp FROM `rb_pertanyaan_objektif` where id_quiz_ujian='$_GET[idsoal]'"));
-    if (isset($_POST['simpanobjektif'])){
-       $n = $jml['jmlp'];
-       for ($i=0; $i<=$n; $i++){
-         if (isset($_POST['a'.$i])){
-           $jawab = $_POST['a'.$i];
-           $pertanyaan = $_POST['b'.$i];
-            $cek = mysql_fetch_array(mysql_query("SELECT count(*) as tot FROM rb_jawaban_objektif where nisn='$iden[nisn]' AND id_pertanyaan_objektif='$pertanyaan'"));
-            if ($cek['tot'] >= 1){
-              mysql_query("UPDATE rb_jawaban_objektif SET jawaban='$jawab' where id_pertanyaan_objektif='$pertanyaan' AND nisn='$iden[nisn]'");
-            }else{
-              $waktuobjektif = date("Y-m-d H:i:s");
-              mysql_query("INSERT INTO rb_jawaban_objektif (nisn, id_pertanyaan_objektif, jawaban, waktu_objektif) VALUES('$iden[nisn]','$pertanyaan','$jawab','$waktuobjektif')");
-          }
-         }
-       }
-       echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Jawaban berhasil disimpan',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=soal&act=jawabsemuasoal&jdwl=$_GET[jdwl]&idsoal=$_GET[idsoal]&id=$_GET[id]&kd=$_GET[kd]';
-              });
-            }, 100);
-          </script>";
-    }
-
-      $so = mysql_fetch_array(mysql_query("SELECT * FROM rb_quiz_ujian a 
-                        JOIN rb_kategori_quiz_ujian b ON a.id_kategori_quiz_ujian=b.id_kategori_quiz_ujian 
-                          JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl 
-                            JOIN rb_kelas d ON c.kode_kelas=d.kode_kelas where a.id_quiz_ujian='$_GET[idsoal]'"));
-
-            echo "<div class='col-xs-12'>  
-              <div class='box'>
-                <div class='box-header'>
-                  <h3 class='box-title'>Jawab Soal Essai '<span class='text-info'>$so[kategori_quiz_ujian]</span>' 
-                    <br><small>$so[nama_kelas] - $so[keterangan]</small></h3>
-                </div>
-                <div class='box-body'>
-                  <table class='table table-condensed table-bordered table-striped'>
-                        <tr bgcolor=#cecece>
-                          <th style='width:40px'>No</th>
-                          <th>Pertanyaan Essai</th>
-                          <th>Point</th>
-                        </tr>";
-                    $essai = mysql_query("SELECT * FROM `rb_pertanyaan_essai` where id_quiz_ujian='$_GET[idsoal]' ORDER BY id_pertanyaan_essai DESC");
-                    $no = 1;
-                    while ($k = mysql_fetch_array($essai)){
-                       $je = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_essai where id_pertanyaan_essai='$k[id_pertanyaan_essai]' AND nisn='$iden[nisn]'"));
-                        echo "<tr>
-                            <td>$no</td>
-                            <td>$k[pertanyaan_essai] <br>
-                                <b>Jabawan</b> : <pre>$je[jawaban_essai]</pre></td>
-                            <td style='width:70px'><a  class='btn btn-success btn-xs' href='index.php?view=soal&act=jawabsoalessai&jdwl=$_GET[jdwl]&idsoal=$_GET[idsoal]&id=$_GET[id]&kd=$_GET[kd]&idp=$k[id_pertanyaan_essai]'><span class='glyphicon glyphicon-pencil'></span> Jawab</a></td>
-                            </tr>";
-                      $no++;
-                    } 
-              echo "</table>
-                </div>
-              </div>
-
-              <div class='box'>
-                <div class='box-header'>
-                  <h3 class='box-title'>Soal Objektif '<span class='text-info'>$so[kategori_quiz_ujian]</span>' 
-                  <br><small>$so[nama_kelas] - $so[keterangan]</small></h3>
-                </div>
-                <div class='box-body'>
-                <form action='' method='POST'>
-                  <table class='table table-condensed table-bordered'>
-                    <tr>
-                      <th style='width:40px'>No</th>
-                      <th>Pertanyaan Objektif</th>
-                    </tr>";
-                    $objektif = mysql_query("SELECT * FROM `rb_pertanyaan_objektif` where id_quiz_ujian='$_GET[idsoal]' ORDER BY id_pertanyaan_objektif DESC");
-                    $noo = 1;
-                    while ($ko = mysql_fetch_array($objektif)){
-                      $ce = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_objektif where id_pertanyaan_objektif='$ko[id_pertanyaan_objektif]' AND nisn='$iden[nisn]'"));
-                        echo "<tr>
-                            <td>$noo</td>
-                            <td>$ko[pertanyaan_objektif] <br>
-                                <input type='hidden' value='$ko[id_pertanyaan_objektif]' name='b".$noo."'>";
-                               if ($ce['jawaban']=='a'){
-                                if (trim($ko['jawab_a'])!=''){ echo "<input type='radio' name='a".$noo."' value='a' checked> a. $ko[jawab_a] <br>"; }
-                               }else{
-                                if (trim($ko['jawab_a'])!=''){ echo "<input type='radio' name='a".$noo."' value='a'> a. $ko[jawab_a] <br>"; }
-                               }
-
-                               if ($ce['jawaban']=='b'){
-                                if (trim($ko['jawab_b'])!=''){ echo "<input type='radio' name='a".$noo."' value='b' checked> b. $ko[jawab_b] <br>"; }
-                               }else{
-                                if (trim($ko['jawab_b'])!=''){ echo "<input type='radio' name='a".$noo."' value='b'> b. $ko[jawab_b] <br>"; }
-                               }
-
-                               if ($ce['jawaban']=='c'){
-                                if (trim($ko['jawab_c'])!=''){ echo "<input type='radio' name='a".$noo."' value='c' checked> c. $ko[jawab_c] <br>"; }
-                               }else{
-                                if (trim($ko['jawab_c'])!=''){ echo "<input type='radio' name='a".$noo."' value='c'> c. $ko[jawab_c] <br>"; }
-                               }
-
-                               if ($ce['jawaban']=='d'){
-                                if (trim($ko['jawab_d'])!=''){ echo "<input type='radio' name='a".$noo."' value='d' checked> d. $ko[jawab_d] <br>"; }
-                               }else{
-                                if (trim($ko['jawab_d'])!=''){ echo "<input type='radio' name='a".$noo."' value='d'> d. $ko[jawab_d] <br>"; }
-                               }
-
-                               if ($ce['jawaban']=='e'){
-                                if (trim($ko['jawab_e'])!=''){ echo "<input type='radio' name='a".$noo."' value='e' checked> e. $ko[jawab_e]"; }
-                               }else{
-                                if (trim($ko['jawab_e'])!=''){ echo "<input type='radio' name='a".$noo."' value='e'> e. $ko[jawab_e]"; }
-                               }
-                            echo "</td>
-                            </tr>";
-                      $noo++;
-                    } 
-              echo "</table>
-              <div class='box-footer'>
-                    <button type='submit' name='simpanobjektif' class='btn btn-info btn-sm pull-right'>Simpan Jawaban</button>
-              </div>
-              </form>
-                </div>
-              </div>
-            </div>";
-}elseif($_GET['act']=='jawabsoalessai'){
-cek_session_siswa();
-    if (isset($_POST['simpan'])){
-      $cek = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM rb_jawaban_essai where nisn='$iden[nisn]' AND id_pertanyaan_essai='$_GET[idp]'"));
-      if ($cek['total']>=1){
-          mysql_query("UPDATE rb_jawaban_essai SET jawaban_essai = '$_POST[a]' where nisn='$iden[nisn]' AND id_pertanyaan_essai='$_GET[idp]'");
-      }else{
-          $waktujawab = date("Y-m-d H:i:s");
-          mysql_query("INSERT INTO rb_jawaban_essai VALUES('','$iden[nisn]','$_GET[idp]','$_POST[a]','$waktujawab')");
-      } 
-      echo "<script>document.location='index.php?view=soal&act=jawabsemuasoal&jdwl=$_GET[jdwl]&idsoal=$_GET[idsoal]&id=$_GET[id]&kd=$_GET[kd]';</script>";
-    }
-
-    $n = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_essai where nisn='$iden[nisn]' AND id_pertanyaan_essai='$_GET[idp]'"));
-    echo "<form method='POST' class='form-horizontal' action='' enctype='multipart/form-data'>
-            <div class='col-md-12'>
-              <div class='box box-info'>
-                <div class='box-header with-border'>
-                  <h3 class='box-title'>Jawab Soal Essai</h3>
-                </div>
-              <div class='box-body'>
-              
-                  <table class='table table-condensed table-bordered'>
-                  <tbody>
-                    <tr><th width=120px scope='row'>Jawaban</th>           <td><textarea rows='4' class='form-control' name='a'>$n[jawaban_essai]</textarea></td></tr>
-                  </tbody>
-                  </table>
-              </div>
-
-              <div class='box-footer'>
-                    <button type='submit' name='simpan' class='btn btn-info'>Submit</button>
-                    <a href='index.php?view=guru'><button class='btn btn-default pull-right'>Cancel</button></a>
-              </div>
+  echo "<div class='col-xs-12'>  
+          <div class='box'>
+            <div class='box-header'>
+              <h3 class='box-title'>Jawab Soal Essai '<span class='text-info'>$so[kategori_quiz_ujian]</span>' 
+                <br><small>$so[nama_kelas] - $so[keterangan]</small></h3>
             </div>
-          </form>";
-}
+            <div class='box-body'>
+              <table class='table table-condensed table-bordered table-striped'>
+                    <tr bgcolor=#cecece>
+                      <th style='width:40px'>No</th>
+                      <th>Pertanyaan Essai</th>
+                    </tr>";
+                $essai = mysql_query("SELECT * FROM `rb_pertanyaan_essai` where id_quiz_ujian='$_GET[idsoal]' ORDER BY id_pertanyaan_essai DESC");
+                $no = 1;
+                while ($k = mysql_fetch_array($essai)){
+                  $jawaban_essai = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_essai where id_pertanyaan_essai='$k[id_pertanyaan_essai]' AND nisn='$_SESSION[id]'"));
+                    echo "<tr>
+                        <td>$no</td>
+                        <td>$k[pertanyaan_essai] <br>
+                            <form action='' method='POST'>
+                                <input type='hidden' value='$k[id_pertanyaan_essai]' name='id'>
+                                <textarea style='height:70px' class='form-control' name='a'>$jawaban_essai[jawaban_essai]</textarea> <br>
+                                <button type='submit' name='simpanessai' class='btn btn-xs btn-primary'>Simpan Jawaban</button>
+                            </form>
+                        </td>
+                        </tr>";
+                  $no++;
+                } 
+                if (isset($_POST['simpanessai'])){
+                    $cek = mysql_num_rows(mysql_query("SELECT * FROM rb_jawaban_essai where id_pertanyaan_essai='$_POST[id]' AND nisn='$_SESSION[id]'"));
+                    if ($cek >= 1){
+                        mysql_query("UPDATE rb_jawaban_essai SET jawaban_essai='$_POST[a]' where id_pertanyaan_essai='$_POST[id]' AND nisn='$_SESSION[id]'");
+                    }else{
+                        mysql_query("INSERT INTO rb_jawaban_essai VALUES('','$_POST[id]','$_SESSION[id]','$_POST[a]','0')");
+                    }
+                    echo "<script>document.location='index.php?view=soal&act=jawabsoal&jdwl=$_GET[jdwl]&idsoal=$_GET[idsoal]&id=$_GET[id]&kd=$_GET[kd]';</script>";
+                }
+          echo "</table>
+            </div>
+          </div>
+
+          <div class='box'>
+            <div class='box-header'>
+              <h3 class='box-title'>Soal Objektif '<span class='text-info'>$so[kategori_quiz_ujian]</span>' 
+              <br><small>$so[nama_kelas] - $so[keterangan]</small></h3>
+            </div>
+            <div class='box-body'>
+              <table class='table table-condensed table-bordered'>
+                <tr>
+                  <th style='width:40px'>No</th>
+                  <th>Pertanyaan Objektif</th>
+                </tr>";
+                $objektif = mysql_query("SELECT * FROM `rb_pertanyaan_objektif` where id_quiz_ujian='$_GET[idsoal]' ORDER BY id_pertanyaan_objektif DESC");
+                $noo = 1;
+                while ($ko = mysql_fetch_array($objektif)){
+                    $ce = mysql_fetch_array(mysql_query("SELECT * FROM rb_jawaban_objektif where id_pertanyaan_objektif='$ko[id_pertanyaan_objektif]' AND nisn='$_SESSION[id]'"));
+                    echo "<tr>
+                        <td>$noo</td>
+                        <td>$ko[pertanyaan_objektif] <br>
+                          <input type='hidden' value='$ko[id_pertanyaan_objektif]' name='id'>";
+                          if ($ce['jawaban']=='a'){
+                            if (trim($ko['jawab_a'])!=''){ echo "<input type='radio' name='$noo' value='a' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=a','1')\" checked> a. $ko[jawab_a] <br>"; }
+                          }else{
+                            if (trim($ko['jawab_a'])!=''){ echo "<input type='radio' name='$noo' value='a' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=a','1')\"> a. $ko[jawab_a] <br>"; }
+                          }
+
+                          if ($ce['jawaban']=='b'){
+                            if (trim($ko['jawab_b'])!=''){ echo "<input type='radio' name='$noo' value='b' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=b','1')\" checked> b. $ko[jawab_b] <br>"; }
+                          }else{
+                            if (trim($ko['jawab_b'])!=''){ echo "<input type='radio' name='$noo' value='b' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=b','1')\"> b. $ko[jawab_b] <br>"; }
+                          }
+
+                          if ($ce['jawaban']=='c'){
+                            if (trim($ko['jawab_c'])!=''){ echo "<input type='radio' name='$noo' value='c' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=c','1')\" checked> c. $ko[jawab_c] <br>"; }
+                          }else{
+                            if (trim($ko['jawab_c'])!=''){ echo "<input type='radio' name='$noo' value='c' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=c','1')\"> c. $ko[jawab_c] <br>"; }
+                          }
+
+                          if ($ce['jawaban']=='d'){
+                            if (trim($ko['jawab_d'])!=''){ echo "<input type='radio' name='$noo' value='d' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=d','1')\" checked> d. $ko[jawab_d] <br>"; }
+                          }else{
+                            if (trim($ko['jawab_d'])!=''){ echo "<input type='radio' name='$noo' value='d' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=d','1')\"> d. $ko[jawab_d] <br>"; }
+                          }
+
+                          if ($ce['jawaban']=='e'){
+                            if (trim($ko['jawab_e'])!=''){ echo "<input type='radio' name='$noo' value='e' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=e','1')\" checked> e. $ko[jawab_e]"; }
+                          }else{
+                            if (trim($ko['jawab_e'])!=''){ echo "<input type='radio' name='$noo' value='e' onclick=\"cari_halaman('application/master_quiz_ujian_soal_jawab.php?id=$ko[id_pertanyaan_objektif]&ad=e','1')\"> e. $ko[jawab_e]"; }
+                          }
+                          
+                        echo "<div id='1'></div>
+                        </td>
+                        </tr>";
+                  $noo++;
+                } 
+          echo "</table>
+            </div>
+          </div>
+        </div>";
+} 
 ?>

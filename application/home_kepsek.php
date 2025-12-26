@@ -6,9 +6,16 @@
     <div class="info-box">
       <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
       <div class="info-box-content">
-      <?php $siswa = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM rb_siswa")); ?>
+      <?php 
+        $siswa_query = mysql_query("SELECT count(*) as total FROM rb_siswa");
+        $siswa_total = 0;
+        if ($siswa_query) {
+            $siswa = mysql_fetch_array($siswa_query);
+            $siswa_total = isset($siswa['total']) ? $siswa['total'] : 0;
+        }
+      ?>
         <span class="info-box-text">Siswa</span>
-        <span class="info-box-number"><?php echo $siswa['total']; ?></span>
+        <span class="info-box-number"><?php echo $siswa_total; ?></span>
       </div>
     </div>
   </div>
@@ -17,9 +24,16 @@
     <div class="info-box">
       <span class="info-box-icon bg-green"><i class="fa fa-user"></i></span>
       <div class="info-box-content">
-      <?php $guru = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM rb_guru")); ?>
+      <?php 
+        $guru_query = mysql_query("SELECT count(*) as total FROM rb_guru");
+        $guru_total = 0;
+        if ($guru_query) {
+            $guru = mysql_fetch_array($guru_query);
+            $guru_total = isset($guru['total']) ? $guru['total'] : 0;
+        }
+      ?>
         <span class="info-box-text">Guru</span>
-        <span class="info-box-number"><?php echo $guru['total']; ?></span>
+        <span class="info-box-number"><?php echo $guru_total; ?></span>
       </div>
     </div>
   </div>
@@ -28,9 +42,16 @@
     <div class="info-box">
       <span class="info-box-icon bg-yellow"><i class="fa fa-files-o"></i></span>
       <div class="info-box-content">
-      <?php $upload = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM rb_elearning")); ?>
+      <?php 
+        $upload_query = mysql_query("SELECT count(*) as total FROM rb_elearning");
+        $upload_total = 0;
+        if ($upload_query) {
+            $upload = mysql_fetch_array($upload_query);
+            $upload_total = isset($upload['total']) ? $upload['total'] : 0;
+        }
+      ?>
         <span class="info-box-text">Bahan Ajar</span>
-        <span class="info-box-number"><?php echo $upload['total']; ?></span>
+        <span class="info-box-number"><?php echo $upload_total; ?></span>
       </div>
     </div>
   </div>
@@ -39,9 +60,16 @@
     <div class="info-box">
       <span class="info-box-icon bg-red"><i class="fa fa-list"></i></span>
       <div class="info-box-content">
-      <?php $jurnal = mysql_fetch_array(mysql_query("SELECT count(*) as total FROM rb_journal_list")); ?>
+      <?php 
+        $jurnal_query = mysql_query("SELECT count(*) as total FROM rb_journal_list");
+        $jurnal_total = 0;
+        if ($jurnal_query) {
+            $jurnal = mysql_fetch_array($jurnal_query);
+            $jurnal_total = isset($jurnal['total']) ? $jurnal['total'] : 0; 
+        }
+      ?>
         <span class="info-box-text">Total Jurnal</span>
-        <span class="info-box-number"><?php echo $jurnal['total']; ?></span>
+        <span class="info-box-number"><?php echo $jurnal_total; ?></span>
       </div>
     </div>
   </div>
@@ -78,13 +106,15 @@
                                      JOIN rb_kelas d ON b.kode_kelas=d.kode_kelas 
                                      JOIN rb_mata_pelajaran e ON b.kode_pelajaran=e.kode_pelajaran 
                                      ORDER BY a.tanggal DESC, a.jam_ke DESC LIMIT 5");
-              while($r=mysql_fetch_array($tampil)){
-                echo "<tr>
-                        <td>".tgl_indo($r['tanggal'])."</td>
-                        <td>$r[nama_kelas] <br> <small class='text-muted'>$r[namamatapelajaran]</small></td>
-                        <td>$r[nama_guru]</td>
-                        <td>$r[materi]</td>
-                      </tr>";
+              if ($tampil) {
+                  while($r=mysql_fetch_array($tampil)){
+                    echo "<tr>
+                            <td>".tgl_indo($r['tanggal'])."</td>
+                            <td>$r[nama_kelas] <br> <small class='text-muted'>$r[namamatapelajaran]</small></td>
+                            <td>$r[nama_guru]</td>
+                            <td>$r[materi]</td>
+                          </tr>";
+                  }
               }
             ?>
             </tbody>
@@ -127,13 +157,15 @@
                                      JOIN rb_kelas d ON b.kode_kelas=d.kode_kelas 
                                      JOIN rb_mata_pelajaran e ON b.kode_pelajaran=e.kode_pelajaran 
                                      ORDER BY a.tanggal_tugas DESC LIMIT 5");
-              while($r=mysql_fetch_array($tampil_upload)){
-                echo "<tr>
-                        <td>".tgl_indo($r['tanggal_tugas'])."</td>
-                        <td>$r[nama_file] <br> <a href='download.php?file=$r[file_upload]' class='btn btn-xs btn-primary'><i class='fa fa-download'></i> Download</a></td>
-                        <td>$r[nama_kelas] <br> <small class='text-muted'>$r[namamatapelajaran]</small></td>
-                        <td>$r[nama_guru]</td>
-                      </tr>";
+              if ($tampil_upload) {
+                  while($r=mysql_fetch_array($tampil_upload)){
+                    echo "<tr>
+                            <td>".tgl_indo($r['tanggal_tugas'])."</td>
+                            <td>$r[nama_file] <br> <a href='download.php?file=$r[file_upload]' class='btn btn-xs btn-primary'><i class='fa fa-download'></i> Download</a></td>
+                            <td>$r[nama_kelas] <br> <small class='text-muted'>$r[namamatapelajaran]</small></td>
+                            <td>$r[nama_guru]</td>
+                          </tr>";
+                  }
               }
             ?>
             </tbody>

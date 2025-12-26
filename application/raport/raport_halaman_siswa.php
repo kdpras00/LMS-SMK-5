@@ -1,4 +1,6 @@
-<?php 
+<?php
+$get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
+
   echo "<div class='col-xs-12'>  
               <div class='box'>
                 <div class='box-header'>
@@ -10,7 +12,7 @@
                         <option value=''>- Pilih Tahun Akademik -</option>";
                             $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                             while ($k = mysql_fetch_array($tahun)){
-                              if ($_GET['tahun']==$k['id_tahun_akademik']){
+                              if ($get_tahun==$k['id_tahun_akademik']){
                                 echo "<option value='$k[id_tahun_akademik]' selected>$k[nama_tahun]</option>";
                               }else{
                                 echo "<option value='$k[id_tahun_akademik]'>$k[nama_tahun]</option>";
@@ -38,7 +40,7 @@
             <th style='border:1px solid #ffffff; background-color:lightblue'><center>Nilai</center></th>
             <th style='border:1px solid #ffffff; background-color:lightblue'><center>Predikat</center></th>
           </tr>";
-          if ($_GET['tahun'] == ''){
+          if ($get_tahun == ''){
              echo "<tr><td colspan=7><center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik Terlebih dahulu...</center></td></tr>";
           }
       $kelompok = mysql_query("SELECT * FROM rb_kelompok_mata_pelajaran");  
@@ -50,7 +52,7 @@
         $mapel = mysql_query("SELECT * FROM  rb_jadwal_pelajaran a 
                                   JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran 
                                     where a.kode_kelas='$_SESSION[kode_kelas]' 
-                                      AND a.id_tahun_akademik='$_GET[tahun]' 
+                                      AND a.id_tahun_akademik='$get_tahun' 
                                         AND b.id_kelompok_mata_pelajaran='$k[id_kelompok_mata_pelajaran]'
                                           AND b.kode_kurikulum='$kurikulum[kode_kurikulum]'");
         $no = 1;

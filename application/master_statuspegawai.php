@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -30,7 +34,7 @@
                               if($_SESSION['level']!='kepala'){
                         echo "<td><center>
                                 <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=statuspegawai&act=edit&id=$r[id_status_kepegawaian]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=statuspegawai&hapus=$r[id_status_kepegawaian]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=statuspegawai&hapus=$r[id_status_kepegawaian]')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -60,7 +64,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_status_kepegawaian SET status_kepegawaian = '$_POST[a]',
                                                       keterangan = '$_POST[b]' where id_status_kepegawaian='$_POST[id]'") or die(mysql_error());
@@ -78,7 +82,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_status_kepegawaian where id_status_kepegawaian='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_status_kepegawaian where id_status_kepegawaian='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -104,7 +108,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_status_kepegawaian VALUES(NULL,'$_POST[a]','$_POST[b]')") or die(mysql_error());
         echo "<script>

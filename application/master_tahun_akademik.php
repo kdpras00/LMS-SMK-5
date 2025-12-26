@@ -1,4 +1,4 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php if (empty($_GET['act'])){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -31,12 +31,12 @@
                               <td>$r[id_tahun_akademik]</td>
                               <td>$r[nama_tahun]</td>
                               <td>$r[keterangan]</td>
-							  <td>$r[titimangsa]</td>
+                              <td>$r[titimangsa]</td>
                               <td>$r[aktif]</td>";
                               if($_SESSION['level']!='kepala'){
                         echo "<td><center>
                                 <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=tahunakademik&act=edit&id=$r[id_tahun_akademik]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=tahunakademik&hapus=$r[id_tahun_akademik]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=tahunakademik&hapus=$r[id_tahun_akademik]')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -66,12 +66,12 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif(isset($_GET['act']) && $_GET['act']=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_tahun_akademik SET id_tahun_akademik = '$_POST[a]',
                                          nama_tahun = '$_POST[b]',
                                          keterangan = '$_POST[c]',
-										 titimangsa = '$_POST[e]',
+                                         titimangsa = '$_POST[e]',
                                          aktif = '$_POST[d]' where id_tahun_akademik='$_POST[id]'") or die(mysql_error());
       echo "<script>
             setTimeout(function() {
@@ -103,7 +103,7 @@
                     <tr><th width='120px' scope='row'>Kode Tahun</th> <td><input type='text' class='form-control' name='a' value='$s[id_tahun_akademik]'> </td></tr>
                     <tr><th scope='row'>Nama Tahun</th>           <td><input type='text' class='form-control' name='b' value='$s[nama_tahun]'></td></tr>
                     <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='c' value='$s[keterangan]'></td></tr>
-					<tr><th scope='row'>Titimangsa</th>           <td><input type='text' class='form-control' name='e' value='$s[titimangsa]'></td></tr>
+                    <tr><th scope='row'>Titimangsa</th>           <td><input type='text' class='form-control' name='e' value='$s[titimangsa]'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if ($s['aktif']=='Ya'){
                                                                       echo "<input type='radio' name='d' value='Ya' checked> Ya
@@ -124,7 +124,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_tahun_akademik VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[e]','$_POST[d]')") or die(mysql_error());
         echo "<script>
@@ -155,7 +155,7 @@
                     <tr><th width='120px' scope='row'>Kode Tahun</th> <td><input type='text' class='form-control' name='a'> </td></tr>
                     <tr><th scope='row'>Nama Tahun</th>           <td><input type='text' class='form-control' name='b'></td></tr>
                     <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='c'></td></tr>
-					<tr><th scope='row'>Titimangsa</th>           <td><input type='text' class='form-control' name='e'></td></tr>
+                    <tr><th scope='row'>Titimangsa</th>           <td><input type='text' class='form-control' name='e'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='d' value='Ya'> Ya
                                                                       <input type='radio' name='d' value='Tidak'> Tidak
                     </td></tr>

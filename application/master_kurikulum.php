@@ -1,9 +1,13 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Data Kurikulum </h3>
-                  <?php if($_SESSION['level']!='kepala'){ ?>
+                  <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                   <a class='pull-right btn btn-primary btn-sm' href='index.php?view=kurikulum&act=tambah'>Tambahkan Data</a>
                   <?php } ?>
                 </div><!-- /.box-header -->
@@ -14,7 +18,7 @@
                         <th style='width:40px'>No</th>
                         <th>Nama Kurikulum</th>
                         <th>Status Aktif</th>
-                        <?php if($_SESSION['level']!='kepala'){ ?>
+                        <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                         <th style='width:70px'>Action</th>
                         <?php } ?>
                       </tr>
@@ -25,12 +29,12 @@
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
                     echo "<tr><td>$no</td>
-                              <td>$r[nama_kurikulum]</td>
-                              <td>$r[status_kurikulum]</td>";
-                              if($_SESSION['level']!='kepala'){
+                              <td>".(isset($r['nama_kurikulum']) ? $r['nama_kurikulum'] : '')."</td>
+                              <td>".(isset($r['status_kurikulum']) ? $r['status_kurikulum'] : '')."</td>";
+                              if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){
                         echo "<td><center>
-                                <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=kurikulum&act=edit&id=$r[kode_kurikulum]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='#' onclick=\"konfirmasiHapus('index.php?view=kurikulum&hapus=$r[kode_kurikulum]')\"><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-success btn-xs' title='Edit Data' href='index.php?view=kurikulum&act=edit&id=".(isset($r['kode_kurikulum']) ? $r['kode_kurikulum'] : '')."'><span class='glyphicon glyphicon-edit'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=kurikulum&hapus=".(isset($r['kode_kurikulum']) ? $r['kode_kurikulum'] : '')."')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                               }
                             echo "</tr>";
@@ -60,7 +64,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_kurikulum SET nama_kurikulum = '$_POST[a]',
                                          status_kurikulum = '$_POST[b]' where kode_kurikulum='$_POST[id]'") or die(mysql_error());
@@ -78,7 +82,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_kurikulum where kode_kurikulum='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_kurikulum where kode_kurikulum='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -90,10 +94,10 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[kode_kurikulum]'>
-                    <tr><th width='120px' scope='row'>Nama Kurikulum</th> <td><input type='text' class='form-control' name='a' value='$s[nama_kurikulum]'> </td></tr>
+                    <input type='hidden' name='id' value='".(isset($s['kode_kurikulum']) ? $s['kode_kurikulum'] : '')."'>
+                    <tr><th width='120px' scope='row'>Nama Kurikulum</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['nama_kurikulum']) ? $s['nama_kurikulum'] : '')."'> </td></tr>
                     <tr><th scope='row'>Status Aktif</th>     <td>";
-                                                                  if ($s['status_kurikulum']=='Ya'){
+                                                                  if (isset($s['status_kurikulum']) && $s['status_kurikulum']=='Ya'){
                                                                       echo "<input type='radio' name='b' value='Ya' checked> Ya
                                                                              <input type='radio' name='b' value='Tidak'> Tidak";
                                                                   }else{
@@ -112,7 +116,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_kurikulum (nama_kurikulum, status_kurikulum) VALUES('$_POST[a]','$_POST[b]')") or die(mysql_error());
         echo "<script>
@@ -149,7 +153,7 @@
               </div>
               <div class='box-footer'>
                     <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                    <a href='index.php?view=kurikulum'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
+                    <a href='index.php?view=kurikulum'><button class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>

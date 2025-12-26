@@ -1,8 +1,7 @@
-<?php if ($_GET['act']==''){
+<?php if (empty($_GET['act'])){
     if (isset($_POST['update'])){
         mysql_query("UPDATE rb_identitas_sekolah SET nama_sekolah   = '$_POST[a]',
                                          npsn = '$_POST[b]',
-                                         nss = '$_POST[c]',
                                          alamat_sekolah = '$_POST[d]',
                                          kode_pos = '$_POST[e]',
                                          no_telpon = '$_POST[f]',
@@ -11,7 +10,6 @@
                                          kabupaten_kota = '$_POST[i]',
                                          provinsi = '$_POST[j]',
                                          website = '$_POST[k]',
-										 fase = '$_POST[m]',
                                          email = '$_POST[l]' where id_identitas_sekolah='$_POST[id]'") or die(mysql_error());
       echo "<script>
             setTimeout(function() {
@@ -42,7 +40,6 @@
                     <input type='hidden' name='id' value='$s[id_identitas_sekolah]'>
                     <tr><th width='120px' scope='row'>Nama Sekolah</th>   <td><input type='text' class='form-control' name='a' value='$s[nama_sekolah]'></td></tr>
                     <tr><th scope='row'>NPSN</th>                         <td><input type='text' class='form-control' name='b' value='$s[npsn]'></td></tr>
-                    <tr><th scope='row'>NSS</th>                          <td><input type='text' class='form-control' name='c' value='$s[nss]'></td></tr>
                     <tr><th scope='row'>Alamat Sekolah</th>               <td><input type='text' class='form-control' name='d' value='$s[alamat_sekolah]'></td></tr>
                     <tr><th scope='row'>Kode Pos</th>                     <td><input type='text' class='form-control' name='e' value='$s[kode_pos]'></td></tr>
                     <tr><th scope='row'>No Telpon</th>                    <td><input type='text' class='form-control' name='f' value='$s[no_telpon]'></td></tr>
@@ -51,7 +48,6 @@
                     <tr><th scope='row'>Kabupaten / Kota</th>             <td><input type='text' class='form-control' name='i' value='$s[kabupaten_kota]'></td></tr>
                     <tr><th scope='row'>Provinsi</th>                     <td><input type='text' class='form-control' name='j' value='$s[provinsi]'></td></tr>
                     <tr><th scope='row'>Website</th>                      <td><input type='text' class='form-control' name='k' value='$s[website]'></td></tr>
-					 <tr><th scope='row'>Fase</th>                        <td><input type='text' class='form-control' name='m' value='$s[fase]'></td></tr>
                     <tr><th scope='row'>Email</th>                        <td><input type='text' class='form-control' name='l' value='$s[email]'></td></tr>
                   </tbody>
                   </table>

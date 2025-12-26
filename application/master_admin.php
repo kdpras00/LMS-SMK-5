@@ -1,4 +1,8 @@
-<?php if ($_GET['act']==''){ ?> 
+<?php 
+$act = isset($_GET['act']) ? $_GET['act'] : '';
+$get_id = isset($_GET['id']) ? $_GET['id'] : '';
+
+if ($act==''){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -62,7 +66,7 @@
               </div><!-- /.box -->
             </div>
 <?php 
-}elseif($_GET['act']=='edit'){
+}elseif($act=='edit'){
     if (isset($_POST['update'])){
       $data = md5($_POST['b']);
       $passs=hash("sha512",$data);
@@ -94,7 +98,7 @@
             }, 100);
           </script>";
     }
-    $edit = mysql_query("SELECT * FROM rb_users a where a.id_user='$_GET[id]'");
+    $edit = mysql_query("SELECT * FROM rb_users a where a.id_user='$get_id'");
     $s = mysql_fetch_array($edit);
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -124,7 +128,7 @@
                   </div>
               </form>
             </div>";
-}elseif($_GET['act']=='tambah'){
+}elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
       $data = md5($_POST['b']);
       $passs=hash("sha512",$data);
@@ -154,13 +158,12 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <input type='hidden' name='id' value='$s[id_user]'>
                     <tr><th width='120px' scope='row'>Username</th> <td><input type='text' class='form-control' name='a'> </td></tr>
                     <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' name='b'></td></tr>
                     <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' name='c'></td></tr>
-                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' name='d' value='$s[email]'></td></tr>
-                    <tr><th scope='row'>No Telpon</th>              <td><input type='text' class='form-control' name='e' value='$s[no_telpon]'></td></tr>
-                    <tr><th scope='row'>Jabatan</th>                <td><input type='text' class='form-control' name='f' value='$s[jabatan]'></td></tr>
+                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' name='d'></td></tr>
+                    <tr><th scope='row'>No Telpon</th>              <td><input type='text' class='form-control' name='e'></td></tr>
+                    <tr><th scope='row'>Jabatan</th>                <td><input type='text' class='form-control' name='f'></td></tr>
                   </tbody>
                   </table>
                 </div>
