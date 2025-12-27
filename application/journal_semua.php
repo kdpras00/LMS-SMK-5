@@ -60,22 +60,22 @@ if ($act==''){ ?>
                     </thead>
                     <tbody>
                   <?php
-                    $tampil = null;
-                    if ($get_kelas != '' AND $get_tahun != ''){
-                      // Ensure kurikulum is set
-                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
-
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_kurikulum, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                  JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$get_kelas' AND a.id_tahun_akademik='$get_tahun' AND
-                                                      b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
-                    
+                    // Build filter condition
+                    $filter_condition = "1=1";
+                    if ($get_kelas != '') {
+                        $filter_condition .= " AND a.kode_kelas='$get_kelas'";
                     }
-                    if (isset($tampil) && $tampil) {
-                        $no = 1;
+                    if ($get_tahun != '') {
+                        $filter_condition .= " AND a.id_tahun_akademik='$get_tahun'";
+                    }
+
+                    $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
+                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                            JOIN rb_guru c ON a.nip=c.nip 
+                                              JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
+                                                JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
+                                                WHERE $filter_condition ORDER BY a.hari DESC");
+                
                         while($r=mysql_fetch_array($tampil)){
                         echo "<tr><td>$no</td>
                                   <td>$r[namamatapelajaran]</td>
@@ -90,17 +90,12 @@ if ($act==''){ ?>
                                           </center></td>";
                                 echo "</tr>";
                           $no++;
-                          }
-                    }
+                        }
                   ?>
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->
-                <?php 
-                    if ($get_kelas == '' AND $get_tahun == ''){
-                        echo "<center style='padding:60px; color:red'>Silahkan Memilih Kelas dan Tahun akademik Terlebih dahulu...</center>";
-                    }
-                ?>
+                
                 </div>
             </div>
 
