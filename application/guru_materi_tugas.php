@@ -112,7 +112,20 @@ if ($act == '') {
         $uploadfile = $dir_gambar . $filenamee;
         
         if ($filename != '') {
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
+            // Validasi hanya PDF
+            $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            if ($file_ext != 'pdf') {
+                echo "<script>
+                        setTimeout(function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Hanya file PDF yang diperbolehkan!',
+                                showConfirmButton: true
+                            });
+                        }, 100);
+                      </script>";
+            } elseif (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
                 mysql_query("INSERT INTO rb_elearning VALUES (
                     NULL,
                     '$_POST[kategori]',
@@ -200,8 +213,8 @@ if ($act == '') {
                                 <tr>
                                     <th>File</th>
                                     <td>
-                                        <input type='file' class='form-control' name='file'>
-                                        <small class='text-muted'>Format: PDF, DOC, DOCX, PPT, PPTX (Max 10MB)</small>
+                                        <input type='file' class='form-control' name='file' accept='.pdf'>
+                                        <small class='text-muted'>Format: PDF saja (Max 10MB)</small>
                                     </td>
                                 </tr>
                                 <tr>
@@ -238,13 +251,27 @@ if ($act == '') {
         $uploadfile = $dir_gambar . $filenamee;
         
         if ($filename != '') {
-            // Hapus file lama
-            $old = mysql_fetch_array(mysql_query("SELECT file_upload FROM rb_elearning WHERE id_elearning='$get_id'"));
-            if ($old['file_upload'] != '' && file_exists("files/" . $old['file_upload'])) {
-                unlink("files/" . $old['file_upload']);
-            }
-            
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
+            // Validasi hanya PDF
+            $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            if ($file_ext != 'pdf') {
+                echo "<script>
+                        setTimeout(function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Hanya file PDF yang diperbolehkan!',
+                                showConfirmButton: true
+                            });
+                        }, 100);
+                      </script>";
+            } else {
+                // Hapus file lama
+                $old = mysql_fetch_array(mysql_query("SELECT file_upload FROM rb_elearning WHERE id_elearning='$get_id'"));
+                if ($old['file_upload'] != '' && file_exists("files/" . $old['file_upload'])) {
+                    unlink("files/" . $old['file_upload']);
+                }
+                
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
                 mysql_query("UPDATE rb_elearning SET 
                     id_kategori_elearning = '$_POST[kategori]',
                     kodejdwl = '$_POST[jadwal]',

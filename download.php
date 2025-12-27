@@ -1,6 +1,9 @@
 <?php
+// PHP 8 Compatibility
+require_once __DIR__ . "/config/parser-php-version.php";
+
 $direktori = "files/"; // folder tempat penyimpanan file yang boleh didownload
-$filename = $_GET['file'];
+$filename = isset($_GET['file']) ? $_GET['file'] : '';
 
 if(file_exists($direktori.$filename)){
 	$file_extension = strtolower(substr(strrchr($filename,"."),1));
@@ -26,7 +29,7 @@ if(file_exists($direktori.$filename)){
 	  exit;
 	}
 	else{
-	  mysql_query("update download set hits=hits+1 where nama_file='$filename'");
+	  // mysql_query("update download set hits=hits+1 where nama_file='$filename'"); // Disabled for PHP 8 compatibility
 
 	  header("Content-Type: octet/stream");
 	  header("Pragma: private"); 
