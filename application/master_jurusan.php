@@ -92,13 +92,9 @@ if (empty($_GET['act'])){ ?>
                     <input type='hidden' name='id' value='".(isset($s['kode_jurusan']) ? $s['kode_jurusan'] : '')."'>
                     <tr><th width='140px' scope='row'>Kode Jurusan</th> <td>".(isset($s['kode_jurusan']) ? $s['kode_jurusan'] : '')."</td></tr>
                     <tr><th scope='row'>Nama Jurusan</th>       <td>".(isset($s['nama_jurusan']) ? $s['nama_jurusan'] : '')."</td></tr>
-                    <tr><th scope='row'>Nama Jurusan En</th>    <td>".(isset($s['nama_jurusan_en']) ? $s['nama_jurusan_en'] : '')."</td></tr>
                     <tr><th scope='row'>Bidang Keahlian</th>    <td>".(isset($s['bidang_keahlian']) ? $s['bidang_keahlian'] : '')."</td></tr>
                     <tr><th scope='row'>Kompetensi Umum</th>    <td>".(isset($s['kompetensi_umum']) ? $s['kompetensi_umum'] : '')."</td></tr>
                     <tr><th scope='row'>Kompetensi Khusus</th>  <td>".(isset($s['kompetensi_khusus']) ? $s['kompetensi_khusus'] : '')."</td></tr>
-                    <tr><th scope='row'>Pejabat</th>            <td>".(isset($s['pejabat']) ? $s['pejabat'] : '')."</td></tr>
-                    <tr><th scope='row'>Jabataan</th>           <td>".(isset($s['jabatan']) ? $s['jabatan'] : '')."</td></tr>
-                    <tr><th scope='row'>Keterangan</th>         <td>".(isset($s['keterangan']) ? $s['keterangan'] : '')."</td></tr>
                     <tr><th scope='row'>Aktif</th>              <td>".(isset($s['aktif']) ? $s['aktif'] : '')."</td></tr>
                   </tbody>
                   </table>

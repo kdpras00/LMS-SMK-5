@@ -2,7 +2,7 @@
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if (isset($_GET['kelas']) AND isset($_GET['tahun'])){ echo "Jadwal Pelajaran"; }else{ echo "Jadwal Pelajaran Pada Tahun ".date('Y'); } ?></h3>
+                  <h3 class="box-title">Jadwal Pelajaran - Semua Data</h3>
                   <?php if(isset($_SESSION['level']) && $_SESSION['level']!='kepala'){ ?>
                   <a class='pull-right btn btn-primary btn-sm' href='index.php?view=jadwalpelajaran&act=tambah'>Tambahkan Jadwal Pelajaran</a>
                   <?php } ?>
@@ -60,19 +60,27 @@
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['kelas']) AND isset($_GET['tahun']) AND $_GET['kelas'] != '' AND $_GET['tahun'] != ''){
-                      $kurikulum_kode = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_kurikulum, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                  JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$_GET[kelas]' AND 
-                                                    a.id_tahun_akademik='$_GET[tahun]' AND 
-                                                      b.kode_kurikulum='$kurikulum_kode' ORDER BY a.hari DESC");
+                    // Build filter conditions
+                    $filter_conditions = "1=1"; // Always true
                     
-                      if ($tampil) {
-                        $no = 1;
+                    if (isset($_GET['kelas']) && $_GET['kelas'] != ''){
+                        $filter_conditions .= " AND a.kode_kelas='$_GET[kelas]'";
+                    }
+                    
+                    if (isset($_GET['tahun']) && $_GET['tahun'] != ''){
+                        $filter_conditions .= " AND a.id_tahun_akademik='$_GET[tahun]'";
+                    }
+                    
+                    $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
+                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                            JOIN rb_guru c ON a.nip=c.nip 
+                                              JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
+                                                JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
+                                                where $filter_conditions 
+                                                  ORDER BY a.id_tahun_akademik DESC, a.hari DESC");
+                    
+                    $no = 1;
+                    if ($tampil) {
                         while($r=mysql_fetch_array($tampil)){
                         echo "<tr><td>$no</td>
                                   <td>".(isset($r['namamatapelajaran']) ? $r['namamatapelajaran'] : '')."</td>
@@ -93,8 +101,7 @@
                                   }
                                 echo "</tr>";
                           $no++;
-                          }
-                      }
+                        }
                     }
 
                       if (isset($_GET['hapus'])){
@@ -117,11 +124,7 @@
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->
-                <?php 
-                    if (!isset($_GET['kelas']) || !isset($_GET['tahun']) || ($_GET['kelas'] == '' AND $_GET['tahun'] == '')){
-                        echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
-                    }
-                ?>
+
                 </div>
             </div>
 

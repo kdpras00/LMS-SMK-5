@@ -80,32 +80,26 @@ if (empty($_GET['act'])){
 <?php 
 }elseif(isset($_GET['act']) && $_GET['act']=='tambahguru'){
   if (isset($_POST['tambah'])){
-      $rtrw = explode('/', isset($_POST['al']) ? $_POST['al'] : '');
-      $rt = isset($rtrw[0]) ? $rtrw[0] : '';
-      $rw = isset($rtrw[1]) ? $rtrw[1] : '';
+      // Handle file upload
       $dir_gambar = 'foto_pegawai/';
       $filename = basename($_FILES['ax']['name']);
-      $filenamee = date("YmdHis").'-'.basename($_FILES['ax']['name']);
-      $uploadfile = $dir_gambar . $filenamee;
+      $filenamee = '';
+      
       if ($filename != ''){      
-        if (move_uploaded_file($_FILES['ax']['tmp_name'], $uploadfile)) {
-          mysql_query("INSERT INTO rb_guru VALUES('$_POST[aa]','$_POST[ab]','$_POST[ac]','$_POST[af]','',
-                           '','','','','$_POST[au]','$_POST[as]','', 
-                           '','','','','','','','',
-                           '','$_POST[ah]','$_POST[aj]','','','','', 
-                           '','','','','','','',
-                           '','','','','','','',
-                           '','','','','','','$filenamee')") or die(mysql_error());
-        }
-      }else{
-          mysql_query("INSERT INTO rb_guru VALUES('$_POST[aa]','$_POST[ab]','$_POST[ac]','$_POST[af]','',
-                           '','','','','$_POST[au]','$_POST[as]','', 
-                           '','','','','','','','',
-                           '','$_POST[ah]','$_POST[aj]','','','','', 
-                           '','','','','','','',
-                           '','','','','','','',
-                           '','','','','','','')") or die(mysql_error());
+        $filenamee = date("YmdHis").'-'.basename($_FILES['ax']['name']);
+        $uploadfile = $dir_gambar . $filenamee;
+        move_uploaded_file($_FILES['ax']['tmp_name'], $uploadfile);
       }
+      
+      // Insert data guru dengan field yang diperlukan saja
+      if ($filenamee != ''){
+        mysql_query("INSERT INTO rb_guru (nip, password, nama_guru, id_jenis_kelamin, id_status_kepegawaian, id_jenis_ptk, hp, email, foto) 
+                     VALUES('$_POST[aa]', '$_POST[ab]', '$_POST[ac]', '$_POST[af]', '$_POST[au]', '$_POST[as]', '$_POST[ah]', '$_POST[aj]', '$filenamee')") or die(mysql_error());
+      }else{
+        mysql_query("INSERT INTO rb_guru (nip, password, nama_guru, id_jenis_kelamin, id_status_kepegawaian, id_jenis_ptk, hp, email) 
+                     VALUES('$_POST[aa]', '$_POST[ab]', '$_POST[ac]', '$_POST[af]', '$_POST[au]', '$_POST[as]', '$_POST[ah]', '$_POST[aj]')") or die(mysql_error());
+      }
+      
       echo "<script>
             setTimeout(function() {
               Swal.fire({
@@ -219,7 +213,7 @@ if (empty($_GET['act'])){
                 showConfirmButton: false,
                 timer: 1500
               }).then(function() {
-                window.location = 'index.php?view=guru&act=detailguru&id=" . $_POST['id'] . "';
+                window.location = 'index.php?view=guru';
               });
             }, 100);
           </script>";

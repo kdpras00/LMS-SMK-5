@@ -16,7 +16,7 @@ if (empty($act)){
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title"><?php if ($get_kelas != '' AND $get_tahun != ''){ echo "Jadwal Pelajaran"; }else{ echo "Jadwal Pelajaran Pada Tahun ".date('Y'); } ?></h3>
+                  <h3 class="box-title">Data Materi dan Tugas - Semua Jadwal</h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='bahantugas'>
                     <select name='tahun' style='padding:4px'>
@@ -67,20 +67,25 @@ if (empty($act)){
                     </thead>
                     <tbody>
                   <?php
-                    if ($get_kelas != '' AND $get_tahun != ''){
-                      // Safety check for $kurikulum
-                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
-                      
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, b.kode_kurikulum, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                  JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$get_kelas' 
-                                                    AND a.id_tahun_akademik='$get_tahun' 
-                                                      AND b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
+                    // Build filter conditions
+                    $filter_conditions = "1=1"; // Always true
                     
+                    if ($get_kelas != ''){
+                        $filter_conditions .= " AND a.kode_kelas='$get_kelas'";
                     }
+                    
+                    if ($get_tahun != ''){
+                        $filter_conditions .= " AND a.id_tahun_akademik='$get_tahun'";
+                    }
+                    
+                    $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
+                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                            JOIN rb_guru c ON a.nip=c.nip 
+                                              JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
+                                                JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
+                                                where $filter_conditions 
+                                                  ORDER BY a.id_tahun_akademik DESC, a.hari DESC");
+                    
                     if (isset($tampil) && $tampil) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
@@ -105,11 +110,7 @@ if (empty($act)){
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->
-                <?php 
-                    if (empty($get_kelas) AND empty($get_tahun)){
-                        echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
-                    }
-                ?>
+
                 </div>
             </div>
 <?php 
@@ -793,5 +794,44 @@ if (empty($act)){
 } elseif ($act=='hapusjawaban'){
     mysql_query("DELETE FROM rb_elearning_jawab WHERE id_elearning_jawab='$get_idj'");
     echo "<script>document.location='index.php?view=bahantugas&act=jawaban&id=".$get_id."&kd=".$get_kd."&jdwl=".$get_jdwl."&ide=".$get_ide."';</script>";
+} elseif ($act=='detail'){
+    cek_session_siswa();
+    $detail = mysql_fetch_array(mysql_query("SELECT a.*, b.nama_kategori_elearning, c.kode_kelas, c.kode_pelajaran, d.namamatapelajaran, e.nama_kelas
+                                             FROM rb_elearning a
+                                             JOIN rb_kategori_elearning b ON a.id_kategori_elearning=b.id_kategori_elearning
+                                             JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl
+                                             JOIN rb_mata_pelajaran d ON c.kode_pelajaran=d.kode_pelajaran
+                                             JOIN rb_kelas e ON c.kode_kelas=e.kode_kelas
+                                             WHERE a.id_elearning='$get_ide'"));
+    echo "<div class='col-md-12'>
+            <div class='box box-info'>
+                <div class='box-header with-border'>
+                    <h3 class='box-title'>Detail Materi / Tugas</h3>
+                </div>
+                <div class='box-body'>
+                    <table class='table table-condensed table-bordered'>
+                        <tbody>
+                            <tr><th width='180px'>Judul</th><td>$detail[nama_file]</td></tr>
+                            <tr><th>Tipe</th><td>$detail[nama_kategori_elearning]</td></tr>
+                            <tr><th>Mata Pelajaran</th><td>$detail[namamatapelajaran]</td></tr>
+                            <tr><th>Kelas</th><td>$detail[nama_kelas]</td></tr>
+                            <tr><th>Tanggal Upload</th><td>$detail[tanggal_tugas] WIB</td></tr>
+                            <tr><th>Batas Waktu</th><td>$detail[tanggal_selesai] WIB</td></tr>
+                            <tr><th>Keterangan</th><td>$detail[keterangan]</td></tr>
+                            <tr><th>File</th><td>";
+                            if ($detail['file_upload'] != ''){
+                                echo "<a href='download.php?file=$detail[file_upload]' class='btn btn-success btn-sm'><i class='fa fa-download'></i> Download File</a>";
+                            } else {
+                                echo "<span class='text-muted'>Tidak ada file</span>";
+                            }
+                    echo "</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class='box-footer'>
+                    <a href='index.php?view=bahantugas&act=listbahantugassiswa'><button class='btn btn-default'>Kembali</button></a>
+                </div>
+            </div>
+          </div>";
 }
 ?>

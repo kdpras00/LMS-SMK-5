@@ -110,6 +110,12 @@ if (empty($_GET['act'])){
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
                                                   where a.angkatan='$_GET[angkatan]' ORDER BY a.id_siswa");
+                  }else{
+                    // Show all students if no filter
+                    $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
+                                              LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
+                                                LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
+                                                  ORDER BY a.id_siswa");
                   }
                   
                   // Logic to display empty table if no filter provided? 
@@ -165,11 +171,7 @@ if (empty($_GET['act'])){
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->
-                <?php 
-                    if ((!isset($_GET['kelas']) OR $_GET['kelas'] == '') AND (!isset($_GET['angkatan']) OR $_GET['angkatan'] == '')){
-                        echo "<center style='padding:60px; color:red'>Silahkan Input Angkatan dan Memilih Kelas Terlebih dahulu...</center>";
-                    }
-                ?>
+
               </div><!-- /.box -->
               <?php if($_SESSION['level']!='kepala'){
                     if (isset($_GET['kelas'])){ ?>
@@ -196,21 +198,11 @@ if (empty($_GET['act'])){
 }elseif($_GET['act']=='tambahsiswa'){
   cek_session_admin();
   if (isset($_POST['tambah'])){
-      $rtrw = explode('/',$_POST['ai']);
-      $rt = $rtrw[0];
-      $rw = $rtrw[1];
-      $dir_gambar = 'foto_siswa/';
-      $filename = basename($_FILES['ao']['name']);
-      $filenamee = date("YmdHis").'-'.basename($_FILES['ao']['name']);
-      $uploadfile = $dir_gambar . $filenamee;
-      if ($filename != ''){      
-        if (move_uploaded_file($_FILES['ao']['tmp_name'], $uploadfile)) {
-           mysql_query("INSERT INTO rb_siswa VALUES(NULL,'$_POST[aa]','$_POST[ac]','$_POST[ad]','$_POST[bd]','$_POST[ab]','','','','','','','','','','','','','','','','','','','','','$filenamee','','','','','','','','','','','','','','','','','','','','$_POST[af]','','','','$_POST[ae]','$_POST[ag]','0')") or die(mysql_error());
-        }
-      }else{
-            mysql_query("INSERT INTO rb_siswa VALUES(NULL,'$_POST[aa]','$_POST[ac]','$_POST[ad]','$_POST[bd]','$_POST[ab]','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','$_POST[af]','','','','$_POST[ae]','$_POST[ag]','0')") or die(mysql_error());
-      }
-          echo "<script>
+      // Insert data siswa - tempat_lahir adalah field required (NOT NULL)
+      mysql_query("INSERT INTO rb_siswa (nipd, password, nama, id_jenis_kelamin, nisn, tempat_lahir, angkatan, kode_kelas, kode_jurusan) 
+                   VALUES('$_POST[aa]', '$_POST[ac]', '$_POST[ad]', '$_POST[bd]', '$_POST[ab]', '', '$_POST[af]', '$_POST[ae]', '$_POST[ag]')") or die(mysql_error());
+      
+      echo "<script>
               setTimeout(function() {
                 Swal.fire({
                   icon: 'success',
@@ -219,7 +211,7 @@ if (empty($_GET['act'])){
                   showConfirmButton: false,
                   timer: 1500
                 }).then(function() {
-                  window.location = 'index.php?view=siswa&act=detailsiswa&id=" . $_POST['ab'] . "';
+                  window.location = 'index.php?view=siswa';
                 });
               }, 100);
             </script>";
@@ -281,11 +273,11 @@ if (empty($_GET['act'])){
       $rt = $rtrw[0];
       $rw = $rtrw[1];
       $dir_gambar = 'foto_siswa/';
-      $filename = basename($_FILES['ao']['name']);
-      $filenamee = date("YmdHis").'-'.basename($_FILES['ao']['name']);
+      $filename = basename($_FILES['ax']['name']);
+      $filenamee = date("YmdHis").'-'.basename($_FILES['ax']['name']);
       $uploadfile = $dir_gambar . $filenamee;
       if ($filename != ''){      
-        if (move_uploaded_file($_FILES['ao']['tmp_name'], $uploadfile)){
+        if (move_uploaded_file($_FILES['ax']['tmp_name'], $uploadfile)){
            mysql_query("UPDATE rb_siswa SET 
                                 nipd        = '$_POST[aa]',
                                 nisn   = '$_POST[ab]',
@@ -317,7 +309,7 @@ if (empty($_GET['act'])){
                 showConfirmButton: false,
                 timer: 1500
               }).then(function() {
-                window.location = 'index.php?view=siswa&act=editsiswa&id=" . $_POST['id'] . "';
+                window.location = 'index.php?view=siswa';
               });
             }, 100);
           </script>";

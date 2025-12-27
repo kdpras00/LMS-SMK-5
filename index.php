@@ -400,6 +400,26 @@
             echo "<div class='row'>";
                     include "application/penilaianteman_siswa.php";
             echo "</div>";
+          }elseif ($_GET['view']=='guru_materi_tugas'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_materi_tugas.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='guru_jadwal_absen'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_jadwal_absen.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='guru_koreksi_tugas'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_koreksi_tugas.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='guru_rekap_nilai'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_rekap_nilai.php";
+            echo "</div>";
           }
 
 

@@ -8,7 +8,7 @@ if ($act==''){ ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title">Kompetensi Dasar</h3>
+                  <h3 class="box-title">Kompetensi Dasar - Semua Jadwal</h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='kompetensidasar'>
                     <select name='kelas' style='padding:4px'>
@@ -48,17 +48,21 @@ if ($act==''){ ?>
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['kelas'])){
-                      $kode_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_kurikulum, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                  JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$_GET[kelas]' AND
-                                                      b.kode_kurikulum='$kode_kurikulum' ORDER BY a.hari DESC");
+                    // Build filter conditions
+                    $filter_conditions = "1=1"; // Always true
                     
+                    if (isset($_GET['kelas']) && $_GET['kelas'] != ''){
+                        $filter_conditions .= " AND a.kode_kelas='$_GET[kelas]'";
                     }
+                    
+                    $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
+                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                            JOIN rb_guru c ON a.nip=c.nip 
+                                              JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
+                                                JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
+                                                where $filter_conditions 
+                                                  ORDER BY a.kode_kelas, a.hari DESC");
+                    
                     $no = 1;
                     if (isset($tampil)) {
                         while($r=mysql_fetch_array($tampil)){
@@ -200,23 +204,9 @@ if ($act==''){ ?>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                   <input type='hidden' name='jdwl' value='$get_jdwl'>
-                    <tr><th width='140px' scope='row'>Kelas</th>   <td><select class='form-control' name='b'>"; 
-                                                $kelas = mysql_query("SELECT * FROM rb_kelas");
-                                                while($a = mysql_fetch_array($kelas)){
-                                                  if ($e['kode_kelas']==$a['kode_kelas']){
-                                                    echo "<option value='$a[kode_kelas]' selected>$a[nama_kelas]</option>";
-                                                  }
-                                                }
-                                                echo "</select>
+                    <tr><th width='140px' scope='row'>Kelas</th>   <td><input type='text' class='form-control' name='b' value='".(isset($e['kode_kelas']) ? $e['kode_kelas'] : '')."' readonly>
                     </td></tr>
-                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c'>"; 
-                                                $mapel = mysql_query("SELECT * FROM rb_mata_pelajaran");
-                                                while($a = mysql_fetch_array($mapel)){
-                                                  if ($e['kode_pelajaran']==$a['kode_pelajaran']){
-                                                    echo "<option value='$a[kode_pelajaran]' selected>$a[namamatapelajaran]</option>";
-                                                  }
-                                                }
-                                                echo "</select>
+                    <tr><th scope='row'>Mata Pelajaran</th>   <td><input type='text' class='form-control' name='c' value='".(isset($e['kode_pelajaran']) ? $e['kode_pelajaran'] : '')."' readonly>
                     </td></tr>
                    
                     <tr><th scope='row'>Ranah</th>   <td><select class='form-control' name='e'> 
@@ -275,23 +265,9 @@ if ($act==''){ ?>
                   <tbody>
                   <input type='hidden' name='jdwl' value='$get_jdwl'>
                   <input type='hidden' name='id' value='$get_id'>
-                    <tr><th width='140px' scope='row'>Kelas</th>   <td><select class='form-control' name='b'>"; 
-                                                $kelas = mysql_query("SELECT * FROM rb_kelas");
-                                                while($a = mysql_fetch_array($kelas)){
-                                                  if ($e['kode_kelas']==$a['kode_kelas']){
-                                                    echo "<option value='$a[kode_kelas]' selected>$a[nama_kelas]</option>";
-                                                  }
-                                                }
-                                                echo "</select>
+                    <tr><th width='140px' scope='row'>Kelas</th>   <td><input type='text' class='form-control' name='b' value='".(isset($e['kode_kelas']) ? $e['kode_kelas'] : '')."' readonly>
                     </td></tr>
-                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c'>"; 
-                                                $mapel = mysql_query("SELECT * FROM rb_mata_pelajaran");
-                                                while($a = mysql_fetch_array($mapel)){
-                                                  if ($e['kode_pelajaran']==$a['kode_pelajaran']){
-                                                    echo "<option value='$a[kode_pelajaran]' selected>$a[namamatapelajaran]</option>";
-                                                  }
-                                                }
-                                                echo "</select>
+                    <tr><th scope='row'>Mata Pelajaran</th>   <td><input type='text' class='form-control' name='c' value='".(isset($e['kode_pelajaran']) ? $e['kode_pelajaran'] : '')."' readonly>
                     </td></tr>
                    
                     <tr><th scope='row'>Ranah</th>   <td><select style='text-transform:capitalize' class='form-control' name='e'> 

@@ -40,14 +40,14 @@ $get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
         if ($get_tahun != ''){
             $tahun_filter = "AND c.id_tahun_akademik='$get_tahun'";
         }else{
-            $tahun_filter = "AND c.id_tahun_akademik LIKE '".date('Y')."%'";
+            $tahun_filter = ""; // Show all years if not selected
         }
 
         $session_id = $_SESSION['id'];
         $tampil = mysql_query("SELECT a.*, d.namamatapelajaran, c.hari, c.jam_mulai, e.nama_kehadiran, a.tanggal
                                 FROM rb_absensi_siswa a 
-                                JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl
-                                JOIN rb_mata_pelajaran d ON c.kode_pelajaran=d.kode_pelajaran
+                                LEFT JOIN rb_jadwal_pelajaran c ON a.kodejdwl=c.kodejdwl
+                                LEFT JOIN rb_mata_pelajaran d ON c.kode_pelajaran=d.kode_pelajaran
                                 JOIN rb_kehadiran e ON a.kode_kehadiran=e.kode_kehadiran
                                 WHERE a.nisn='$session_id' 
                                 $tahun_filter
@@ -65,10 +65,12 @@ $get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
             elseif ($r['kode_kehadiran'] == 'S') $color = "blue";
             elseif ($r['kode_kehadiran'] == 'I') $color = "orange";
             elseif ($r['kode_kehadiran'] == 'A') $color = "red";
+            
+            $mapel = $r['namamatapelajaran'] ? $r['namamatapelajaran'] : '-';
 
             echo "<tr><td>$no</td>
                       <td>".tgl_indo($r['tanggal'])."</td>
-                      <td>$r[namamatapelajaran]</td>
+                      <td>$mapel</td>
                       <td><span style='color:$color'>$r[nama_kehadiran]</span></td>
                       <td>-</td>
                   </tr>";

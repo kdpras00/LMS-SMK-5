@@ -8,7 +8,7 @@ if ($_GET['act']==''){
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title">Rekap Nilai Siswa <?php if (isset($_GET['tahun'])){ echo "Tahun $_GET[tahun]"; } ?></h3>
+                  <h3 class="box-title">Rekap Nilai Siswa - Semua Data</h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
                     <input type="hidden" name='view' value='rekapnilai'>
                     <select name='tahun' style='padding:4px'>
@@ -61,7 +61,9 @@ if ($_GET['act']==''){
                 </div><!-- /.box-header -->
                 <div class="box-body" style="overflow-x:auto;">
                 <?php
+                // Show data based on filters
                 if (isset($_GET['kelas']) AND isset($_GET['tahun']) AND isset($_GET['mapel'])){
+                    // Full filter - show detailed nilai
                     $d = mysql_fetch_array(mysql_query("SELECT * FROM rb_mata_pelajaran where kode_pelajaran='$_GET[mapel]'"));
                     $kkm = $d['kkm'];
 
@@ -100,13 +102,6 @@ if ($_GET['act']==''){
                              $nilai1 = $n['nilai1'];
                              $nilai2 = $n['nilai2'];
                              
-                             // Calculate Average (assuming only these two matter for this view, or user wants avg of these 2)
-                             // Or should it be avg of ALL grades? User said "rata rata nilai". 
-                             // Usually "rata rata" implies the final average. 
-                             // But let's calculate based on what we show if that's the context. 
-                             // However, if there are more grades in DB, (n1+n2)/2 might be misleading if n3 exists.
-                             // But checking the previous request "isinya ada kolom nama siswa, kolom nilai tugas 1, tugas 2, rata rata nilai dan status"
-                             // I will use (nilai1 + nilai2)/2 for now as it aligns with the displayed columns.
                              if($nilai1 > 0 || $nilai2 > 0) {
                                 $rata = ($nilai1 + $nilai2) / 2;
                              }
@@ -127,10 +122,56 @@ if ($_GET['act']==''){
                     echo "</tbody>
                         </table>";
 
-                } elseif (isset($_GET['kelas']) AND isset($_GET['tahun'])){
-                    echo "<center style='padding:60px; color:orange'>Silahkan Pilih Mata Pelajaran Terlebih Dahulu...</center>";
                 } else {
-                    echo "<center style='padding:60px; color:red'>Silahkan Memilih Tahun akademik dan Kelas Terlebih dahulu...</center>";
+                    // Show all jadwal as default
+                    echo "<table id='example1' class='table table-bordered table-striped'>
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tahun Akademik</th>
+                                    <th>Kelas</th>
+                                    <th>Mata Pelajaran</th>
+                                    <th>Guru</th>
+                                    <th>Jumlah Siswa</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    
+                    // Build filter
+                    $filter = "1=1";
+                    if (isset($_GET['tahun']) && $_GET['tahun'] != '') {
+                        $filter .= " AND a.id_tahun_akademik='$_GET[tahun]'";
+                    }
+                    if (isset($_GET['kelas']) && $_GET['kelas'] != '') {
+                        $filter .= " AND a.kode_kelas='$_GET[kelas]'";
+                    }
+                    
+                    $jadwal = mysql_query("SELECT a.*, b.namamatapelajaran, c.nama_kelas, d.nama_guru, e.nama_tahun
+                                          FROM rb_jadwal_pelajaran a
+                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                          JOIN rb_kelas c ON a.kode_kelas=c.kode_kelas
+                                          JOIN rb_guru d ON a.nip=d.nip
+                                          JOIN rb_tahun_akademik e ON a.id_tahun_akademik=e.id_tahun_akademik
+                                          WHERE $filter
+                                          ORDER BY a.id_tahun_akademik DESC, c.nama_kelas ASC");
+                    $no = 1;
+                    while($j = mysql_fetch_array($jadwal)){
+                        $jml_siswa = mysql_num_rows(mysql_query("SELECT * FROM rb_siswa WHERE kode_kelas='$j[kode_kelas]'"));
+                        echo "<tr>
+                                <td>$no</td>
+                                <td>$j[nama_tahun]</td>
+                                <td>$j[nama_kelas]</td>
+                                <td>$j[namamatapelajaran]</td>
+                                <td>$j[nama_guru]</td>
+                                <td align='center'>$jml_siswa</td>
+                              </tr>";
+                        $no++;
+                    }
+                    echo "</tbody></table>";
+                    
+                    if (isset($_GET['kelas']) AND isset($_GET['tahun'])){
+                        echo "<div class='alert alert-warning' style='margin-top:10px'>Silahkan pilih Mata Pelajaran untuk melihat detail nilai siswa.</div>";
+                    }
                 }
                 ?>
                 </div><!-- /.box-body -->

@@ -37,7 +37,7 @@ if ($act==''){ ?>
                               <td>$r[level]</td>
                               <td><center>
                                 <a class='btn btn-success btn-xs' title='Edit Data' href='?view=admin&act=edit&id=$r[id_user]'><span class='glyphicon glyphicon-edit'></span></a>
-                                <a class='btn btn-danger btn-xs' title='Delete Data' href='?view=admin&hapus=$r[id_user]'><span class='glyphicon glyphicon-remove'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='javascript:void(0)' onclick=\"konfirmasiHapus('index.php?view=admin&hapus=$r[id_user]')\"><span class='glyphicon glyphicon-remove'></span></a>
                               </center></td>";
                             echo "</tr>";
                       $no++;

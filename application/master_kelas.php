@@ -13,7 +13,6 @@
                       <tr>
                         <th style='width:40px'>No</th>
                         <th>Kode Kelas</th>
-                        <th>Fase</th>
                          <th>Nama Kelas</th>
                         <th>Wali Kelas</th>
                         <th>Jurusan</th>
@@ -37,7 +36,6 @@
                     $hitung = mysql_num_rows(mysql_query("SELECT * FROM rb_siswa where kode_kelas='$r[kode_kelas]'"));
                     echo "<tr><td>$no</td>
                               <td>".(isset($r['kode_kelas']) ? $r['kode_kelas'] : '')."</td>
-                              <td>".(isset($r['fase']) ? $r['fase'] : '')."</td>
                               <td>".(isset($r['nama_kelas']) ? $r['nama_kelas'] : '')."</td>
                               
                               <td>".(isset($r['nama_guru']) ? $r['nama_guru'] : '')."</td>
@@ -154,7 +152,6 @@
                                                                             
                                                                          echo "</select></td></tr>
                     <tr><th scope='row'>Nama Kelas</th>           <td><input type='text' class='form-control' name='e' value='".(isset($s['nama_kelas']) ? $s['nama_kelas'] : '')."'></td></tr>
-                    <tr><th scope='row'>Fase</th>                 <td><input type='text' class='form-control' name='fase' value='".(isset($s['fase']) ? $s['fase'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if (isset($s['aktif']) && $s['aktif']=='Ya'){
                                                                       echo "<input type='radio' name='f' value='Ya' checked> Ya
@@ -227,7 +224,6 @@
                                                                                 echo "<option value='$a[kode_ruangan]'>$a[nama_gedung] - $a[nama_ruangan]</option>";
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Fase</th>           <td><input type='text' class='form-control' name='e'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='f' value='Ya' checked> Ya
                                                                              <input type='radio' name='f' value='Tidak'> Tidak </td></tr>
                   </tbody>
