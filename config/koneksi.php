@@ -25,6 +25,7 @@ function cek_session_admin(){
 	$level = $_SESSION['level'];
 	if ($level != 'superuser' AND $level != 'kepala'){
 		echo "<script>document.location='index.php';</script>";
+        exit;
 	}
 }
 

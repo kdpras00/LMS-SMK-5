@@ -1,4 +1,25 @@
-<?php if (empty($_GET['act'])){ ?> 
+<?php 
+if (isset($_GET['hapus'])){
+    mysql_query("DELETE FROM rb_jurusan where kode_jurusan='$_GET[hapus]'");
+    $_SESSION['notif'] = "Data berhasil dihapus";
+    echo "<script>document.location='index.php?view=jurusan';</script>";
+    exit;
+}
+
+if (isset($_SESSION['notif']) && empty($_GET['act'])){
+    echo "<script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '$_SESSION[notif]',
+                showConfirmButton: false,
+                timer: 1500
+            });
+          </script>";
+    unset($_SESSION['notif']);
+}
+
+if (empty($_GET['act'])){ ?> 
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
@@ -46,22 +67,7 @@
                       $no++;
                       }
 
-                      if (isset($_GET['hapus'])){
-                          mysql_query("DELETE FROM rb_jurusan where kode_jurusan='$_GET[hapus]'");
-                          echo "<script>
-              setTimeout(function() {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Berhasil',
-                  text: 'Data berhasil dihapus',
-                  showConfirmButton: false,
-                  timer: 1500
-                }).then(function() {
-                  window.location = 'index.php?view=jurusan';
-                });
-              }, 100);
-            </script>";
-                      }
+
 
                   ?>
                     </tbody>
@@ -111,19 +117,9 @@
                                          kompetensi_umum = '$_POST[e]',
                                          kompetensi_khusus = '$_POST[f]',
                                          aktif = '$_POST[j]' where kode_jurusan='$_POST[id]'") or die(mysql_error());
-      echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil diupdate',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=jurusan';
-              });
-            }, 100);
-          </script>";
+      $_SESSION['notif'] = "Data berhasil diupdate";
+      echo "<script>document.location='index.php?view=jurusan';</script>";
+      exit;
     }
     $edit = mysql_query("SELECT * FROM rb_jurusan where kode_jurusan='$_GET[id]'");
     $s = mysql_fetch_array($edit);
@@ -163,22 +159,12 @@
                   </div>
               </form>
             </div>";
-}?>elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
+}elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
         mysql_query("INSERT INTO rb_jurusan VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]','$_POST[h]','$_POST[i]','$_POST[j]')") or die(mysql_error());
-        echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil ditambahkan',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=jurusan';
-              });
-            }, 100);
-          </script>";
+        $_SESSION['notif'] = "Data berhasil ditambahkan";
+        echo "<script>document.location='index.php?view=jurusan';</script>";
+        exit;
     }
 
     echo "<div class='col-md-12'>
@@ -191,6 +177,7 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
+                    <input type='hidden' name='id' value=''>
                     <tr><th width='140px' scope='row'>Kode Jurusan</th> <td><input type='text' class='form-control' name='a'> </td></tr>
                     <tr><th scope='row'>Nama Jurusan</th>       <td><input type='text' class='form-control' name='b'></td></tr>
                     <tr><th scope='row'>Nama Jurusan En</th>    <td><input type='text' class='form-control' name='c'></td></tr>
