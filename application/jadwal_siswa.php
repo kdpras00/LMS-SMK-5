@@ -41,23 +41,29 @@
                     </thead>
                     <tbody>
                   <?php
-                    if (isset($_GET['tahun'])){
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                  JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$_SESSION[kode_kelas]' AND a.id_tahun_akademik='$_GET[tahun]' ORDER BY a.hari DESC");
+                    // Get active academic year
+                    $tahun_aktif = mysql_fetch_array(mysql_query("SELECT * FROM rb_tahun_akademik WHERE aktif='Ya'"));
+                    $tahun_filter = isset($_GET['tahun']) && $_GET['tahun'] != '' ? $_GET['tahun'] : $tahun_aktif['id_tahun_akademik'];
                     
-                    }else{
-                      $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan FROM rb_jadwal_pelajaran a 
-                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                              JOIN rb_guru c ON a.nip=c.nip 
-                                                JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
-                                                JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
-                                                  where a.kode_kelas='$_SESSION[kode_kelas]' AND a.id_tahun_akademik LIKE '".date('Y')."%' ORDER BY a.hari DESC");
-                    }
-                    if (isset($tampil) && $tampil) {
+                    $tampil = mysql_query("SELECT a.*, e.nama_kelas, b.namamatapelajaran, b.kode_pelajaran, c.nama_guru, d.nama_ruangan 
+                                          FROM rb_jadwal_pelajaran a 
+                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                          JOIN rb_guru c ON a.nip=c.nip 
+                                          JOIN rb_ruangan d ON a.kode_ruangan=d.kode_ruangan
+                                          JOIN rb_kelas e ON a.kode_kelas=e.kode_kelas 
+                                          WHERE a.kode_kelas='$_SESSION[kode_kelas]' 
+                                          AND a.id_tahun_akademik='$tahun_filter' 
+                                          ORDER BY CASE a.hari
+                                            WHEN 'Senin' THEN 1
+                                            WHEN 'Selasa' THEN 2
+                                            WHEN 'Rabu' THEN 3
+                                            WHEN 'Kamis' THEN 4
+                                            WHEN 'Jumat' THEN 5
+                                            WHEN 'Sabtu' THEN 6
+                                            ELSE 7
+                                          END, a.jam_mulai");
+                    
+                    if (mysql_num_rows($tampil) > 0) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
                         echo "<tr><td>$no</td>
@@ -74,6 +80,8 @@
                               </tr>";
                           $no++;
                           }
+                    } else {
+                        echo "<tr><td colspan='11' style='text-align:center; color:red'>Belum ada jadwal pelajaran untuk kelas Anda</td></tr>";
                     }
                   ?>
                     </tbody>

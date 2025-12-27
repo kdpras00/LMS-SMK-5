@@ -51,22 +51,30 @@ cek_session_admin();
                   <?php
                     $tampil = null;
                     if ($get_tahun != ''){
-                      $tampil = mysql_query("SELECT * FROM rb_elearning");
+                      $tampil = mysql_query("SELECT e.*, a.kodejdwl, a.hari, a.jam_mulai, a.jam_selesai, b.namamatapelajaran, c.nama_guru, d.nama_kelas
+                                            FROM rb_elearning1 e
+                                            JOIN rb_jadwal_pelajaran a ON e.kodejdwl=a.kodejdwl
+                                            JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
+                                            JOIN rb_guru c ON a.nip=c.nip 
+                                            JOIN rb_kelas d ON a.kode_kelas=d.kode_kelas 
+                                            WHERE a.id_tahun_akademik='$get_tahun'
+                                            ORDER BY e.id_elearning DESC");
                     }
-                    if ($tampil) {
+                    if ($tampil && mysql_num_rows($tampil) > 0) {
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
-                        // Using isset for safety although table schema suggests these columns exist
-                        $id_elearning = isset($r['id_elearning']) ? $r['id_elearning'] : '';
-                        $nama_file = isset($r['nama_file']) ? $r['nama_file'] : '';
-                        $file_upload = isset($r['file_upload']) ? $r['file_upload'] : '';
+                        $jadwal_info = "$r[namamatapelajaran] - $r[hari] ($r[jam_mulai]-$r[jam_selesai])";
                         
                         echo "<tr><td>$no</td>
-                                  <td>$id_elearning</td>
-                                  <td>$nama_file</td>
-                                  <td>$file_upload</td></tr>";
+                                  <td>$jadwal_info</td>
+                                  <td>$r[nama_guru]</td>
+                                  <td>$r[nama_file]</td>
+                                  <td><a class='btn btn-info btn-xs' href='download.php?file=$r[file_upload]'><i class='fa fa-download'></i> Download</a></td>
+                              </tr>";
                           $no++;
                         }
+                    } else {
+                        echo "<tr><td colspan='5' style='text-align:center; color:red'>Belum ada RPP yang diupload. Silahkan pilih tahun akademik terlebih dahulu.</td></tr>";
                     }
                   ?>
                     </tbody>

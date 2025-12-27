@@ -236,21 +236,55 @@ if (empty($act)){
 }elseif($act=='tambah'){
     cek_session_guru();
     if (isset($_POST['tambah'])){
+          // Validasi input
+          if (!isset($_POST['a']) || $_POST['a'] == '0' || $_POST['a'] == ''){
+              echo "<script>window.alert('Silakan pilih kategori terlebih dahulu.');
+                          window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
+              exit;
+          }
+          
+          if (!isset($_POST['b']) || trim($_POST['b']) == ''){
+              echo "<script>window.alert('Nama file tidak boleh kosong.');
+                          window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
+              exit;
+          }
+          
           $dir_gambar = 'files/';
           $filename = basename($_FILES['c']['name']);
           $filenamee = date("YmdHis").'-'.basename($_FILES['c']['name']);
           $uploadfile = $dir_gambar . $filenamee;
+          
+          $kategori = mysql_real_escape_string($_POST['a']);
+          $nama_file = mysql_real_escape_string($_POST['b']);
+          $waktu_mulai = mysql_real_escape_string($_POST['d']);
+          $waktu_selesai = mysql_real_escape_string($_POST['e']);
+          $keterangan = mysql_real_escape_string($_POST['f']);
+          
           if ($filename != ''){      
             if (move_uploaded_file($_FILES['c']['tmp_name'], $uploadfile)) {
-              mysql_query("INSERT INTO rb_elearning VALUES (NULL,'$_POST[a]','$get_jdwl','$_POST[b]','$filenamee','$_POST[d]','$_POST[e]','$_POST[f]')");
+              $query = "INSERT INTO rb_elearning VALUES (NULL,'$kategori','$get_jdwl','$nama_file','$filenamee','$waktu_mulai','$waktu_selesai','$keterangan')";
+              $result = mysql_query($query);
+              
+              if ($result){
                 echo "<script>document.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
+              } else {
+                echo "<script>window.alert('Gagal menyimpan data: " . mysql_error() . "');
+                            window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
+              }
             }else{
-              echo "<script>window.alert('Gagal Tambahkan Data Bahan dan Tugas.');
-                          window.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
+              echo "<script>window.alert('Gagal upload file. Pastikan folder files/ memiliki permission yang benar.');
+                          window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
             }
           }else{
-            mysql_query("INSERT INTO rb_elearning VALUES (NULL,'$_POST[a]','$get_jdwl','$_POST[b]','','$_POST[d]','$_POST[e]','$_POST[f]')");
-            echo "<script>document.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
+            $query = "INSERT INTO rb_elearning VALUES (NULL,'$kategori','$get_jdwl','$nama_file','','$waktu_mulai','$waktu_selesai','$keterangan')";
+            $result = mysql_query($query);
+            
+            if ($result){
+              echo "<script>document.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
+            } else {
+              echo "<script>window.alert('Gagal menyimpan data: " . mysql_error() . "');
+                          window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
+            }
           }
       }
 
@@ -541,14 +575,21 @@ if (empty($act)){
                         // Check Status Pengumpulan & Nilai
                         $jawab = mysql_fetch_array(mysql_query("SELECT * FROM rb_elearning_jawab WHERE id_elearning='$r[id_elearning]' AND nisn='$session_id'"));
                         
-                        $status_pengumpulan = "Belum Mengumpulkan";
-                        $nilai = "-";
-                        $style_status = "color:red";
+                        // Cek apakah ini Materi (Bahan) atau Tugas
+                        if ($r['id_kategori_elearning'] == '1'){ // Materi/Bahan
+                            $status_pengumpulan = "-";
+                            $nilai = "-";
+                            $style_status = "color:black";
+                        } else { // Tugas
+                            $status_pengumpulan = "Belum Mengumpulkan";
+                            $nilai = "-";
+                            $style_status = "color:red";
 
-                        if (isset($jawab['id_elearning_jawab']) && $jawab['id_elearning_jawab'] != ''){
-                            $status_pengumpulan = "Sudah Mengumpulkan <br> <small>($jawab[waktu] WIB)</small>";
-                            $style_status = "color:green";
-                            $nilai = $jawab['nilai'];
+                            if (isset($jawab['id_elearning_jawab']) && $jawab['id_elearning_jawab'] != ''){
+                                $status_pengumpulan = "Sudah Mengumpulkan <br> <small>($jawab[waktu] WIB)</small>";
+                                $style_status = "color:green";
+                                $nilai = $jawab['nilai'];
+                            }
                         }
 
                         // Determine Action

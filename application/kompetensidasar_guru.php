@@ -3,13 +3,14 @@ $act = isset($_GET['act']) ? $_GET['act'] : '';
 $get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
 $get_id = isset($_GET['id']) ? $_GET['id'] : '';
 
-if ($act==''){ ?>
+if ($act=='listguru'){ ?>
             <div class="col-xs-12">  
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title"><?php if ($get_tahun != ''){ echo "Data Kompetensi Dasar"; }else{ echo "Data Kompetensi Dasar pada ".date('Y'); } ?></h3>
                   <form style='margin-right:5px; margin-top:0px' class='pull-right' action='' method='GET'>
-                    <input type="hidden" name='view' value='kompetensiguru'>
+                    <input type="hidden" name='view' value='kompetensidasar'>
+                    <input type="hidden" name='act' value='listguru'>
                     <select name='tahun' style='padding:4px'>
                         <?php 
                             echo "<option value=''>- Pilih Tahun Akademik -</option>";
@@ -77,7 +78,7 @@ if ($act==''){ ?>
                                   <td>$r[nama_ruangan]</td>
                                   <td>$r[id_tahun_akademik]</td>
                                   <td style='width:80px !important'><center>
-                                            <a class='btn btn-success btn-xs' title='Lihat Kompetensi Dasar' href='index.php?view=kompetensiguru&act=lihat&id=$r[kodejdwl]'><span class='glyphicon glyphicon-search'></span> Lihat Indikator</a>
+                                            <a class='btn btn-success btn-xs' title='Lihat Kompetensi Dasar' href='index.php?view=kompetensidasar&act=lihat&id=$r[kodejdwl]'><span class='glyphicon glyphicon-search'></span> Lihat Indikator</a>
                                           </center></td>
                               </tr>";
                           $no++;

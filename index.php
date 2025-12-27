@@ -339,10 +339,17 @@
                     include "application/master_kelompokmapel.php";
             echo "</div>";
           }elseif ($_GET['view']=='kompetensidasar'){
-            cek_session_admin();
-            echo "<div class='row'>";
-                    include "application/master_kompetensidasar.php";
-            echo "</div>";
+            // Allow both admin and guru to access
+            if ($_SESSION['level']=='guru'){
+                echo "<div class='row'>";
+                        include "application/kompetensidasar_guru.php";
+                echo "</div>";
+            }else{
+                cek_session_admin();
+                echo "<div class='row'>";
+                        include "application/master_kompetensidasar.php";
+                echo "</div>";
+            }
           }elseif ($_GET['view']=='penilaiandiri'){
             cek_session_admin();
             echo "<div class='row'>";
@@ -383,8 +390,28 @@
             echo "<div class='row'>";
                     include "application/bahan_tugas2.php";
             echo "</div>";  
-            
-          }elseif ($_GET['view']=='soal'){
+          }elseif ($_GET['view']=='adminrpp'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/admin_rpp.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='adminjurnal'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/admin_jurnal_kbm.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='adminrekapabsen'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/admin_rekap_absensi.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='adminrekapkegiatan'){
+            cek_session_admin();
+            echo "<div class='row'>";
+                    include "application/admin_rekap_kegiatan.php";
+            echo "</div>";
+          }
+          elseif ($_GET['view']=='soal'){
             echo "<div class='row'>";
                     include "application/quiz_ujian_soal.php";
             echo "</div>";
@@ -419,6 +446,16 @@
             cek_session_guru();
             echo "<div class='row'>";
                     include "application/guru_rekap_nilai.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='jadwalguru'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_jadwal_pelajaran.php";
+            echo "</div>";
+          }elseif ($_GET['view']=='koreksitugas'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_koreksi_tugas.php";
             echo "</div>";
           }
 
@@ -474,7 +511,7 @@
           }elseif ($_GET['view']=='rekapnilai'){
             cek_session_guru();
             echo "<div class='row'>";
-                    include "application/rekap_nilai.php";
+                    include "application/guru_rekap_nilai.php";
             echo "</div>";
           }
 
