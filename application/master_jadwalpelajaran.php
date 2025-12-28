@@ -157,7 +157,7 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th style='width:120px' scope='row'>Tahun Akademik</th>   <td><select class='form-control' name='a'> 
+                    <tr><th style='width:120px' scope='row'>Tahun Akademik <span style='color:red'>*</span></th>   <td><select class='form-control' name='a' required> 
                                                 <option value='0' selected>- Pilih Tahun Akademik -</option>"; 
                                                 $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                                                 while($a = mysql_fetch_array($tahun)){
@@ -165,7 +165,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Kelas</th>   <td><select class='form-control' name='b'> 
+                    <tr><th scope='row'>Kelas <span style='color:red'>*</span></th>   <td><select class='form-control' name='b' required> 
                                                 <option value='0' selected>- Pilih Kelas -</option>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -173,7 +173,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c'> 
+                    <tr><th scope='row'>Mata Pelajaran <span style='color:red'>*</span></th>   <td><select class='form-control' name='c' required> 
                                                 <option value='0' selected>- Pilih Mata Pelajaran -</option>"; 
                                                 $mapel = mysql_query("SELECT * FROM rb_mata_pelajaran");
                                                 while($a = mysql_fetch_array($mapel)){
@@ -181,7 +181,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Ruangan</th>   <td><select class='form-control' name='d'> 
+                    <tr><th scope='row'>Ruangan <span style='color:red'>*</span></th>   <td><select class='form-control' name='d' required> 
                                                 <option value='0' selected>- Pilih Ruangan -</option>"; 
                                                 $ruangan = mysql_query("SELECT * FROM rb_ruangan a JOIN rb_gedung b ON a.kode_gedung=b.kode_gedung");
                                                 while($a = mysql_fetch_array($ruangan)){
@@ -189,7 +189,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Guru</th>   <td><select class='form-control' name='e'> 
+                    <tr><th scope='row'>Guru <span style='color:red'>*</span></th>   <td><select class='form-control' name='e' required> 
                                                 <option value='0' selected>- Pilih Guru -</option>"; 
                                                 $guru = mysql_query("SELECT * FROM rb_guru");
                                                 while($a = mysql_fetch_array($guru)){
@@ -198,9 +198,9 @@
                                                 echo "</select>
                     </td></tr>
 
-                    <tr><th scope='row'>Jam Mulai</th>  <td><input type='text' class='form-control' name='h' placeholder='hh:ii:ss' value='".date('H:i:s')."'></td></tr>
-                    <tr><th scope='row'>Jam Selesai</th><td><input type='text' class='form-control' name='i' placeholder='hh:ii:ss' value='".date('H:i:s')."'></td></tr>
-                    <tr><th scope='row'>Hari</th>  <td><select class='form-control' name='j'>
+                    <tr><th scope='row'>Jam Mulai <span style='color:red'>*</span></th>  <td><input type='text' class='form-control' name='h' placeholder='hh:ii:ss' value='".date('H:i:s')."' required></td></tr>
+                    <tr><th scope='row'>Jam Selesai <span style='color:red'>*</span></th><td><input type='text' class='form-control' name='i' placeholder='hh:ii:ss' value='".date('H:i:s')."' required></td></tr>
+                    <tr><th scope='row'>Hari <span style='color:red'>*</span></th>  <td><select class='form-control' name='j' required>
                                                 <option value='0' selected>- Pilih Hari -</option>
                                                 <option value='Senin'>Senin</option>
                                                 <option value='Selasa'>Selasa</option>
@@ -218,11 +218,48 @@
                 </div>
               </div>
               <div class='box-footer'>
-                    <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                    <a href='index.php?view=kelas'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
+                    <button type='submit' name='tambah' class='btn btn-info' onclick='return validateJadwal()'>Tambahkan</button>
+                    <a href='index.php?view=jadwalpelajaran'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>
+              <script>
+              function validateJadwal() {
+                var tahun = document.getElementsByName('a')[0].value;
+                var kelas = document.getElementsByName('b')[0].value;
+                var mapel = document.getElementsByName('c')[0].value;
+                var ruangan = document.getElementsByName('d')[0].value;
+                var guru = document.getElementsByName('e')[0].value;
+                var hari = document.getElementsByName('j')[0].value;
+                
+                if (tahun == '0' || tahun == '') {
+                  alert('Silakan pilih Tahun Akademik terlebih dahulu!');
+                  return false;
+                }
+                if (kelas == '0' || kelas == '') {
+                  alert('Silakan pilih Kelas terlebih dahulu!');
+                  return false;
+                }
+                if (mapel == '0' || mapel == '') {
+                  alert('Silakan pilih Mata Pelajaran terlebih dahulu!');
+                  return false;
+                }
+                if (ruangan == '0' || ruangan == '') {
+                  alert('Silakan pilih Ruangan terlebih dahulu!');
+                  return false;
+                }
+                if (guru == '0' || guru == '') {
+                  alert('Silakan pilih Guru terlebih dahulu!');
+                  return false;
+                }
+                if (hari == '0' || hari == '') {
+                  alert('Silakan pilih Hari terlebih dahulu!');
+                  return false;
+                }
+                
+                return true;
+              }
+              </script>
             </div>";
 }elseif(isset($_GET['act']) && $_GET['act']=='edit'){
     if (isset($_POST['update'])){

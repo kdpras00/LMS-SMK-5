@@ -127,8 +127,8 @@
                                   }
                              echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Kode Pelajaran</th>       <td><input type='text' class='form-control' name='a' value='".(isset($s['kode_pelajaran']) ? $s['kode_pelajaran'] : '')."'> </td></tr>
-                    <tr><th scope='row'>Nama Mapel</th>           <td><input type='text' class='form-control' name='f' value='".(isset($s['namamatapelajaran']) ? $s['namamatapelajaran'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kode Pelajaran <span style='color:red'>*</span></th>       <td><input type='text' class='form-control' name='a' required value='".(isset($s['kode_pelajaran']) ? $s['kode_pelajaran'] : '')."'> </td></tr>
+                    <tr><th scope='row'>Nama Mapel</th>           <td><input type='text' class='form-control' name='f' required value='".(isset($s['namamatapelajaran']) ? $s['namamatapelajaran'] : '')."'></td></tr>
 
                     <tr><th scope='row'>Jurusan</th> <td><select class='form-control' name='c'> 
                              <option value='0' selected>- Pilih Jurusan -</option>"; 
@@ -215,8 +215,8 @@
                                   }
                              echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Kode Pelajaran</th>       <td><input type='text' class='form-control' name='a'> </td></tr>
-                    <tr><th scope='row'>Nama Mapel</th>           <td><input type='text' class='form-control' name='f'></td></tr>
+                    <tr><th scope='row'>Kode Pelajaran <span style='color:red'>*</span></th>       <td><input type='text' class='form-control' name='a' required> </td></tr>
+                    <tr><th scope='row'>Nama Mapel</th>           <td><input type='text' class='form-control' name='f' required></td></tr>
 
                     <tr><th scope='row'>Jurusan</th> <td><select class='form-control' name='c'> 
                              <option value='0' selected>- Pilih Jurusan -</option>"; 
@@ -271,7 +271,7 @@
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <tr><th width='140px' scope='row'>Kurikulum</th> <td>".(isset($s['nama_kurikulum']) ? $s['nama_kurikulum'] : '')."</td></tr>
-                    <tr><th scope='row'>Kode Pelajaran</th>       <td>".(isset($s['kode_pelajaran']) ? $s['kode_pelajaran'] : '')." </td></tr>
+                    <tr><th scope='row'>Kode Pelajaran <span style='color:red'>*</span></th>       <td>".(isset($s['kode_pelajaran']) ? $s['kode_pelajaran'] : '')." </td></tr>
                     <tr><th scope='row'>Nama Mapel</th>           <td>".(isset($s['namamatapelajaran']) ? $s['namamatapelajaran'] : '')."</td></tr>
 
                     <tr><th scope='row'>Jurusan</th>              <td>".(isset($s['nama_jurusan']) ? $s['nama_jurusan'] : '')."</td></tr>

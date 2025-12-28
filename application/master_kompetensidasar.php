@@ -216,7 +216,7 @@ if ($act==''){ ?>
                                                               <option value='sikap'>Sikap</option>
                                                             </select>
                     </td></tr>
-                    <tr><th scope='row'>Kompetensi Dasar</th>  <td><input type='text' class='form-control' name='f'></td></tr>
+                    <tr><th scope='row'>Kompetensi Dasar <span style='color:red'>*</span></th>  <td><input type='text' class='form-control' name='f'></td></tr>
                     
                     </td></tr>
                   </tbody>
@@ -277,7 +277,7 @@ if ($act==''){ ?>
                                                               <option value='sikap'>Sikap</option>
                                                             </select>
                     </td></tr>
-                    <tr><th scope='row'>Kompetensi Dasar</th>  <td><input type='text' class='form-control' value='$e[kompetensi_dasar]' name='f'></td></tr>
+                    <tr><th scope='row'>Kompetensi Dasar <span style='color:red'>*</span></th>  <td><input type='text' class='form-control' value='$e[kompetensi_dasar]' name='f'></td></tr>
                     
                     </td></tr>
                   </tbody>
