@@ -29,11 +29,9 @@ cek_session_siswa();
           <tr>
             <th style='width:20px'>No</th>
             <th>Mata Pelajaran</th>
-            <th>KKM</th>
             <th>Jumlah Tugas</th>
             <th>Tugas Terkumpul</th>
             <th>Rata-rata Nilai</th>
-            <th>Status Akhir</th>
           </tr>
         </thead>
         <tbody>
@@ -48,7 +46,7 @@ cek_session_siswa();
         $session_kode_kelas = $_SESSION['kode_kelas'];
         $session_id = $_SESSION['id'];
         
-        $tampil = mysql_query("SELECT a.kodejdwl, b.namamatapelajaran, b.kkm 
+        $tampil = mysql_query("SELECT a.kodejdwl, b.namamatapelajaran
                                 FROM rb_jadwal_pelajaran a 
                                 JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
                                 WHERE a.kode_kelas='$session_kode_kelas' 
@@ -81,15 +79,11 @@ cek_session_siswa();
                     $rata = 0;
                 }
     
-                $status = ($rata >= $r['kkm']) ? "<span style='color:green'>Tuntas</span>" : "<span style='color:red'>Tidak Tuntas</span>";
-    
                 echo "<tr><td>$no</td>
                           <td>$r[namamatapelajaran]</td>
-                          <td>$r[kkm]</td>
                           <td>$total_tugas</td>
                           <td>$terkumpul</td>
                           <td>".number_format($rata, 1)."</td>
-                          <td>$status</td>
                       </tr>";
                 $no++;
             }

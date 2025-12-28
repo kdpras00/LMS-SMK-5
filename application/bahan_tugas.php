@@ -588,7 +588,13 @@ if (empty($act)){
                             if (isset($jawab['id_elearning_jawab']) && $jawab['id_elearning_jawab'] != ''){
                                 $status_pengumpulan = "Sudah Mengumpulkan <br> <small>($jawab[waktu] WIB)</small>";
                                 $style_status = "color:green";
-                                $nilai = $jawab['nilai'];
+                                
+                                // Check if graded - nilai could be 0, so check if it's set and not empty string
+                                if (isset($jawab['nilai']) && $jawab['nilai'] !== '' && $jawab['nilai'] !== null){
+                                    $nilai = $jawab['nilai'];
+                                } else {
+                                    $nilai = "<span style='color:orange'>Belum Dinilai</span>";
+                                }
                             }
                         }
 
