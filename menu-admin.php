@@ -16,7 +16,7 @@
             <li><a href="index.php"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             
             <li class="treeview">
-              <a href="#"><i class="fa fa-th"></i> <span>Data Master</span><i class="fa fa-angle-left pull-right"></i></a>
+              <a href="javascript:void(0)"><i class="fa fa-th"></i> <span>Data Master</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="index.php?view=identitas"><i class="fa fa-circle-o"></i> Data Identitas Sekolah</a></li>
                 <li><a href="index.php?view=kurikulum"><i class="fa fa-circle-o"></i> Data Kurikulum</a></li>
@@ -31,7 +31,7 @@
               </ul>
             </li>
             <li class="treeview">
-              <a href="#"><i class="fa fa-user"></i> <span>Data Pengguna</span><i class="fa fa-angle-left pull-right"></i></a>
+              <a href="javascript:void(0)"><i class="fa fa-user"></i> <span>Data Pengguna</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="index.php?view=siswa"><i class="fa fa-circle-o"></i> Data Siswa</a></li>
                 <li><a href="index.php?view=guru"><i class="fa fa-circle-o"></i> Data Guru</a></li>
@@ -41,7 +41,7 @@
             </li>
 
             <li class="treeview">
-              <a href="#"><i class="fa fa-tag"></i> <span>Data Akademik</span><i class="fa fa-angle-left pull-right"></i></a>
+              <a href="javascript:void(0)"><i class="fa fa-tag"></i> <span>Data Akademik</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <!-- <li><a href="index.php?view=kelompokmapel"><i class="fa fa-circle-o"></i> Data Kelompok Mapel</a></li> -->
                 <li><a href="index.php?view=matapelajaran"><i class="fa fa-circle-o"></i> Data Mata Pelajaran</a></li>
@@ -68,7 +68,7 @@
             </li>-->
             <li><a href="index.php?view=rpp"><i class="fa fa-file"></i><span>RPP</span></a></li>
             <li class="treeview">
-              <a href="#"><i class="fa fa-th-large"></i> <span>Data Absensi</span><i class="fa fa-angle-left pull-right"></i></a>
+              <a href="javascript:void(0)"><i class="fa fa-th-large"></i> <span>Data Absensi</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="index.php?view=absenguru"><i class="fa fa-circle-o"></i> Absensi Guru</a></li>
                 <li><a href="index.php?view=absensiswa"><i class="fa fa-circle-o"></i> Absensi Siswa</a></li>
@@ -95,10 +95,9 @@
             <li><a href="index.php?view=soal"><i class="fa fa-users"></i><span>Quiz/Ujian Online</span></a></li> 
             -->
             <li class="treeview">
-              <a href="#"><i class="fa fa-calendar"></i> <span>Laporan</span><i class="fa fa-angle-left pull-right"></i></a>
+              <a href="javascript:void(0)"><i class="fa fa-calendar"></i> <span>Laporan</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="index.php?view=rekapkegiatan"><i class="fa fa-circle-o"></i> Rekap Data Kegiatan</a></li>
-                <li><a href="index.php?view=rekapnilai"><i class="fa fa-circle-o"></i> Rekap Nilai Siswa</a></li>
                  <!-- 
                  <li><a href="index.php?view=raportuts&act=detailguru"><i class="fa fa-circle-o"></i> Input Nilai UTS</a></li>
                 <li><a href="index.php?view=raport&act=detailguru"><i class="fa fa-circle-o"></i> Input Nilai Raport</a></li>

@@ -309,9 +309,9 @@ if (empty($act)){
                     <tr><th scope='row'>Nama File</th>        <td><input type='text' class='form-control' name='b'></td></tr>
                     <tr><th scope='row'>File</th>             <td><div style='position:relative;''>
                                                                           <a class='btn btn-primary' href='javascript:;'>
-                                                                            <i class='fa fa-search'></i> Cari File Bahan atau Tugas..."; ?>
-                                                                            <input type='file' class='files' name='c' onchange='$("#upload-file-info").html($(this).val());'>
-                                                                          <?php echo "</a> <span style='width:155px' class='label label-info' id='upload-file-info'></span>
+                                                                            <i class='fa fa-search'></i> Cari File Bahan atau Tugas...
+                                                                            <input type='file' class='files' name='c' onchange='$(\"#upload-file-info\").html($(this).val());'>
+                                                                          </a> <span style='width:155px' class='label label-info' id='upload-file-info'></span>
                                                                         </div>
                     </td></tr>
                     <tr><th scope='row'>Waktu Mulai</th>      <td><input type='text' class='form-control' value='".date("Y-m-d H:i:s")."' name='d'></td></tr>

@@ -15,7 +15,7 @@
             <li class="header" style='color:#fff; text-transform:uppercase; border-bottom:2px solid #00c0ef'>MENU <?php echo $level; ?></li>
             <li><a href="index.php?view=home"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             <li class="treeview">
-              <a href="#"><i class="fa fa-calendar"></i> <span>Akademik</span><i class="fa fa-angle-left pull-right"></i></a>
+              <a href="javascript:void(0)"><i class="fa fa-calendar"></i> <span>Akademik</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="index.php?view=jadwalsiswa"><i class="fa fa-circle-o"></i> Jadwal Pelajaran</a></li>
                 <li><a href="index.php?view=bahantugas&act=listbahantugassiswa"><i class="fa fa-circle-o"></i> Materi & Tugas</a></li>

@@ -3,7 +3,6 @@ session_start();
 error_reporting(0);
 include "config/koneksi.php"; 
 include "config/fungsi_indotgl.php"; 
-$frt = mysql_fetch_array(mysql_query("SELECT * FROM rb_header_print ORDER BY id_header_print DESC LIMIT 1")); 
 ?>
 <head>
 <title>Data Siswa Kelas <?php echo $_GET['kelas']; ?></title>
@@ -39,6 +38,12 @@ $frt = mysql_fetch_array(mysql_query("SELECT * FROM rb_header_print ORDER BY id_
                                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                                 LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
                                                   where a.angkatan='$_GET[angkatan]' ORDER BY a.id_siswa");
+                  }else{
+                    // Show all students when no filter is provided
+                    $tampil = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
+                                              LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
+                                                LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan 
+                                                  ORDER BY a.id_siswa");
                   }
                     $no = 1;
                     while($r=mysql_fetch_array($tampil)){
