@@ -83,12 +83,12 @@ if ($act==''){ ?>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='$s[id_user]'>
-                    <tr><th width='120px' scope='row'>Username</th> <td><input type='text' class='form-control' name='a' required value='$s[username]'> </td></tr>
-                    <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' name='b' required placeholder='Kosongkan saja Jika Password tidak diganti,...'></td></tr>
-                    <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' name='c' required value='$s[nama_lengkap]'></td></tr>
-                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' name='d' required value='$s[email]'></td></tr>
-                    <tr><th scope='row'>No Telpon</th>              <td><input type='text' class='form-control' name='e' required value='$s[no_telpon]'></td></tr>
-                    <tr><th scope='row'>Jabatan</th>                <td><input type='text' class='form-control' name='f' required value='$s[jabatan]'></td></tr>
+                    <tr><th width='120px' scope='row'>Username</th> <td><input type='text' class='form-control' name='a' value='$s[username]'> </td></tr>
+                    <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' name='b' placeholder='Kosongkan saja Jika Password tidak diganti,...'></td></tr>
+                    <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' name='c' value='$s[nama_lengkap]'></td></tr>
+                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' name='d' value='$s[email]'></td></tr>
+                    <tr><th scope='row'>No Telpon</th>              <td><input type='text' class='form-control' name='e' value='$s[no_telpon]'></td></tr>
+                    <tr><th scope='row'>Jabatan</th>                <td><input type='text' class='form-control' name='f' value='$s[jabatan]'></td></tr>
                   </tbody>
                   </table>
                 </div>

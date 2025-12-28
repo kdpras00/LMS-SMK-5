@@ -78,46 +78,27 @@
 <?php 
 }elseif(isset($_GET['act']) && $_GET['act']=='edit'){
     if (isset($_POST['update'])){
-        $kode = isset($_POST['a']) ? trim($_POST['a']) : '';
-        $nip = isset($_POST['b']) ? trim($_POST['b']) : '';
-        $jurusan = isset($_POST['c']) ? trim($_POST['c']) : '';
-        $ruangan = isset($_POST['d']) ? trim($_POST['d']) : '';
-        $nama = isset($_POST['e']) ? trim($_POST['e']) : '';
-        $aktif = isset($_POST['f']) ? $_POST['f'] : '';
-        $id = isset($_POST['id']) ? $_POST['id'] : '';
-        
-        if (empty($kode) || empty($nama) || empty($aktif)){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Kode Kelas, Nama Kelas, dan Status Aktif harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-            mysql_query("UPDATE rb_kelas SET kode_kelas = '$kode',
-                                             nip = '$nip',
-                                             kode_jurusan = '$jurusan',
-                                             kode_ruangan = '$ruangan',
-                                             nama_kelas = '$nama', 
-                                             aktif = '$aktif' where kode_kelas='$id'") or die(mysql_error());
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: 'Data berhasil diupdate',
-                    showConfirmButton: false,
-                    timer: 1500
-                  }).then(function() {
-                    window.location = 'index.php?view=kelas';
-                  });
-                }, 100);
-              </script>";
-        }
+        mysql_query("UPDATE rb_kelas SET kode_kelas = '$_POST[a]',
+                                         nip = '$_POST[b]',
+
+                                         kode_jurusan = '$_POST[c]',
+                                         kode_ruangan = '$_POST[d]',
+                                         nama_kelas = '$_POST[e]', 
+                                          
+                                         aktif = '$_POST[f]' where kode_kelas='$_POST[id]'") or die(mysql_error());
+      echo "<script>
+            setTimeout(function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data berhasil diupdate',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(function() {
+                window.location = 'index.php?view=kelas';
+              });
+            }, 100);
+          </script>";
     }
     $edit = mysql_query("SELECT * FROM rb_kelas a LEFT JOIN rb_guru b ON a.nip=b.nip 
                             LEFT JOIN rb_jurusan c ON a.kode_jurusan=c.kode_jurusan 
@@ -135,8 +116,8 @@
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='".(isset($s['kode_kelas']) ? $s['kode_kelas'] : '')."'>
-                    <tr><th width='120px' scope='row'>Kode Kelas</th> <td><input type='text' class='form-control' name='a' required value='".(isset($s['kode_kelas']) ? $s['kode_kelas'] : '')."'> </td></tr>
-                    <tr><th scope='row'>Wali Kelas</th>               <td><select class='form-control' name='b' required> 
+                    <tr><th width='120px' scope='row'>Kode Kelas</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['kode_kelas']) ? $s['kode_kelas'] : '')."'> </td></tr>
+                    <tr><th scope='row'>Wali Kelas</th>               <td><select class='form-control' name='b'> 
                                                                           <option value='0' selected>- Pilih Wali Kelas -</option>"; 
                                                                             $wali = mysql_query("SELECT * FROM rb_guru");
                                                                             while($a = mysql_fetch_array($wali)){
@@ -147,7 +128,7 @@
                                                                               }
                                                                             }
                                                                          echo "</select></td></tr>
-                     <tr><th scope='row'>Jurusan</th>               <td><select class='form-control' name='c' required> 
+                     <tr><th scope='row'>Jurusan</th>               <td><select class='form-control' name='c'> 
                                                                           <option value='0' selected>- Pilih Jurusan -</option>"; 
                                                                             $jur = mysql_query("SELECT * FROM rb_jurusan");
                                                                             while($a = mysql_fetch_array($jur)){
@@ -158,7 +139,7 @@
                                                                               }
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Ruangan</th>               <td><select class='form-control' name='d' required> 
+                    <tr><th scope='row'>Ruangan</th>               <td><select class='form-control' name='d'> 
                                                                           <option value='0' selected>- Pilih Ruangan -</option>"; 
                                                                             $rua = mysql_query("SELECT * FROM rb_ruangan a JOIN rb_gedung b ON a.kode_gedung=b.kode_gedung ");
                                                                             while($a = mysql_fetch_array($rua)){
@@ -170,14 +151,14 @@
                                                                             }
                                                                             
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Nama Kelas</th>           <td><input type='text' class='form-control' name='e' required value='".(isset($s['nama_kelas']) ? $s['nama_kelas'] : '')."'></td></tr>
+                    <tr><th scope='row'>Nama Kelas</th>           <td><input type='text' class='form-control' name='e' value='".(isset($s['nama_kelas']) ? $s['nama_kelas'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if (isset($s['aktif']) && $s['aktif']=='Ya'){
-                                                                      echo "<input type='radio' name='f' required value='Ya' checked> Ya
-                                                                             <input type='radio' name='f' required value='Tidak'> Tidak";
+                                                                      echo "<input type='radio' name='f' value='Ya' checked> Ya
+                                                                             <input type='radio' name='f' value='Tidak'> Tidak";
                                                                   }else{
-                                                                      echo "<input type='radio' name='f' required value='Ya'> Ya
-                                                                             <input type='radio' name='f' required value='Tidak' checked> Tidak";
+                                                                      echo "<input type='radio' name='f' value='Ya'> Ya
+                                                                             <input type='radio' name='f' value='Tidak' checked> Tidak";
                                                                   }
                   echo "</td></tr>
                   </tbody>
@@ -193,41 +174,20 @@
             </div>";
 }elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
-        $kode = isset($_POST['a']) ? trim($_POST['a']) : '';
-        $nip = isset($_POST['b']) ? trim($_POST['b']) : '';
-        $jurusan = isset($_POST['c']) ? trim($_POST['c']) : '';
-        $ruangan = isset($_POST['d']) ? trim($_POST['d']) : '';
-        $nama = isset($_POST['e']) ? trim($_POST['e']) : '';
-        $nama_kelas = isset($_POST['g']) ? trim($_POST['g']) : '';
-        $aktif = isset($_POST['f']) ? $_POST['f'] : '';
-        
-        if (empty($kode) || empty($aktif)){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Kode Kelas dan Status Aktif harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-            mysql_query("INSERT INTO rb_kelas VALUES('$kode','$nip','$jurusan','$ruangan','$nama','$nama_kelas','$aktif')") or die(mysql_error());
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: 'Data berhasil ditambahkan',
-                    showConfirmButton: false,
-                    timer: 1500
-                  }).then(function() {
-                    window.location = 'index.php?view=kelas';
-                  });
-                }, 100);
-              </script>";
-        }
+        mysql_query("INSERT INTO rb_kelas VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[g]','$_POST[f]')") or die(mysql_error());
+        echo "<script>
+            setTimeout(function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data berhasil ditambahkan',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(function() {
+                window.location = 'index.php?view=kelas';
+              });
+            }, 100);
+          </script>";
     }
 
     echo "<div class='col-md-12'>
@@ -240,9 +200,9 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Kode Kelas</th> <td><input type='text' class='form-control' name='a' required> </td></tr>
+                    <tr><th width='120px' scope='row'>Kode Kelas</th> <td><input type='text' class='form-control' name='a'> </td></tr>
                 
-                    <tr><th scope='row'>Wali Kelas</th>               <td><select class='form-control' name='b' required> 
+                    <tr><th scope='row'>Wali Kelas</th>               <td><select class='form-control' name='b'> 
                                                                           <option value='0' selected>- Pilih Wali Kelas -</option>"; 
                                                                             $wali = mysql_query("SELECT * FROM rb_guru");
                                                                             while($a = mysql_fetch_array($wali)){
@@ -250,22 +210,22 @@
                                                                             }
                                                                          echo "</select></td></tr>
                     <tr><th width='120px' scope='row'>Nama Kelas</th> <td><input type='text' class='form-control' name='g'> </td></tr>                                                    
-                    <tr><th scope='row'>Jurusan</th>               <td><select class='form-control' name='c' required> 
+                    <tr><th scope='row'>Jurusan</th>               <td><select class='form-control' name='c'> 
                                                                           <option value='0' selected>- Pilih Jurusan -</option>"; 
                                                                             $jur = mysql_query("SELECT * FROM rb_jurusan");
                                                                             while($a = mysql_fetch_array($jur)){
                                                                                 echo "<option value='$a[kode_jurusan]'>$a[nama_jurusan]</option>";
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Ruangan</th>               <td><select class='form-control' name='d' required> 
+                    <tr><th scope='row'>Ruangan</th>               <td><select class='form-control' name='d'> 
                                                                           <option value='0' selected>- Pilih Ruangan -</option>"; 
                                                                             $rua = mysql_query("SELECT * FROM rb_ruangan a JOIN rb_gedung b ON a.kode_gedung=b.kode_gedung ");
                                                                             while($a = mysql_fetch_array($rua)){
                                                                                 echo "<option value='$a[kode_ruangan]'>$a[nama_gedung] - $a[nama_ruangan]</option>";
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='f' required value='Ya' checked> Ya
-                                                                             <input type='radio' name='f' required value='Tidak'> Tidak </td></tr>
+                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='f' value='Ya' checked> Ya
+                                                                             <input type='radio' name='f' value='Tidak'> Tidak </td></tr>
                   </tbody>
                   </table>
                 </div>

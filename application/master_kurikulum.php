@@ -66,21 +66,39 @@ if ($act==''){ ?>
 <?php 
 }elseif($act=='edit'){
     if (isset($_POST['update'])){
-        mysql_query("UPDATE rb_kurikulum SET nama_kurikulum = '$_POST[a]',
-                                         status_kurikulum = '$_POST[b]' where kode_kurikulum='$_POST[id]'") or die(mysql_error());
-      echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil diupdate',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=kurikulum';
-              });
-            }, 100);
-          </script>";
+        // Validasi input
+        $nama_kurikulum = isset($_POST['a']) ? trim($_POST['a']) : '';
+        $status_kurikulum = isset($_POST['b']) ? $_POST['b'] : '';
+        $id = isset($_POST['id']) ? $_POST['id'] : '';
+        
+        if (empty($nama_kurikulum) || empty($status_kurikulum)){
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Semua field harus diisi!',
+                    showConfirmButton: true
+                  });
+                }, 100);
+              </script>";
+        } else {
+            mysql_query("UPDATE rb_kurikulum SET nama_kurikulum = '$nama_kurikulum',
+                                             status_kurikulum = '$status_kurikulum' where kode_kurikulum='$id'") or die(mysql_error());
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil diupdate',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }).then(function() {
+                    window.location = 'index.php?view=kurikulum';
+                  });
+                }, 100);
+              </script>";
+        }
     }
     $edit = mysql_query("SELECT * FROM rb_kurikulum where kode_kurikulum='$get_id'");
     $s = mysql_fetch_array($edit);
@@ -95,14 +113,14 @@ if ($act==''){ ?>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='".(isset($s['kode_kurikulum']) ? $s['kode_kurikulum'] : '')."'>
-                    <tr><th width='120px' scope='row'>Nama Kurikulum</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['nama_kurikulum']) ? $s['nama_kurikulum'] : '')."'> </td></tr>
+                    <tr><th width='120px' scope='row'>Nama Kurikulum</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['nama_kurikulum']) ? $s['nama_kurikulum'] : '')."' required> </td></tr>
                     <tr><th scope='row'>Status Aktif</th>     <td>";
                                                                   if (isset($s['status_kurikulum']) && $s['status_kurikulum']=='Ya'){
-                                                                      echo "<input type='radio' name='b' value='Ya' checked> Ya
-                                                                             <input type='radio' name='b' value='Tidak'> Tidak";
+                                                                      echo "<input type='radio' name='b' value='Ya' checked required> Ya
+                                                                             <input type='radio' name='b' value='Tidak' required> Tidak";
                                                                   }else{
-                                                                      echo "<input type='radio' name='b' value='Ya'> Ya
-                                                                             <input type='radio' name='b' value='Tidak' checked> Tidak";
+                                                                      echo "<input type='radio' name='b' value='Ya' required> Ya
+                                                                             <input type='radio' name='b' value='Tidak' checked required> Tidak";
                                                                   }
                   echo "</td></tr>
                   </tbody>
@@ -118,20 +136,37 @@ if ($act==''){ ?>
             </div>";
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
-        mysql_query("INSERT INTO rb_kurikulum (nama_kurikulum, status_kurikulum) VALUES('$_POST[a]','$_POST[b]')") or die(mysql_error());
-        echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil ditambahkan',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=kurikulum';
-              });
-            }, 100);
-          </script>";
+        // Validasi input
+        $nama_kurikulum = isset($_POST['a']) ? trim($_POST['a']) : '';
+        $status_kurikulum = isset($_POST['b']) ? $_POST['b'] : '';
+        
+        if (empty($nama_kurikulum) || empty($status_kurikulum)){
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Semua field harus diisi!',
+                    showConfirmButton: true
+                  });
+                }, 100);
+              </script>";
+        } else {
+            mysql_query("INSERT INTO rb_kurikulum (nama_kurikulum, status_kurikulum) VALUES('$nama_kurikulum','$status_kurikulum')") or die(mysql_error());
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }).then(function() {
+                    window.location = 'index.php?view=kurikulum';
+                  });
+                }, 100);
+              </script>";
+        }
     }
 
     echo "<div class='col-md-12'>
@@ -144,9 +179,9 @@ if ($act==''){ ?>
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Nama Kurikulum</th> <td><input type='text' class='form-control' name='a'> </td></tr>
-                    <tr><th scope='row'>Status Aktif</th>     <td><input type='radio' name='b' value='Ya'> Ya
-                                                                  <input type='radio' name='b' value='Tidak'> Tidak</td></tr>
+                    <tr><th width='120px' scope='row'>Nama Kurikulum</th> <td><input type='text' class='form-control' name='a' required> </td></tr>
+                    <tr><th scope='row'>Status Aktif</th>     <td><input type='radio' name='b' value='Ya' required> Ya
+                                                                  <input type='radio' name='b' value='Tidak' required> Tidak</td></tr>
                   </tbody>
                   </table>
                 </div>

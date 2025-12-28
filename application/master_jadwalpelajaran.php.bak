@@ -131,31 +131,6 @@
 <?php 
 }elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'tambah' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan', 'alamat', 'foto'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("INSERT INTO rb_jadwal_pelajaran VALUES(NULL,'$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','','','$_POST[h]','$_POST[i]','$_POST[j]','$_POST[k]')");
         echo "<script>
             setTimeout(function() {
@@ -182,7 +157,7 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th style='width:120px' scope='row'>Tahun Akademik</th>   <td><select class='form-control' name='a' required> 
+                    <tr><th style='width:120px' scope='row'>Tahun Akademik</th>   <td><select class='form-control' name='a'> 
                                                 <option value='0' selected>- Pilih Tahun Akademik -</option>"; 
                                                 $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                                                 while($a = mysql_fetch_array($tahun)){
@@ -190,7 +165,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Kelas</th>   <td><select class='form-control' name='b' required> 
+                    <tr><th scope='row'>Kelas</th>   <td><select class='form-control' name='b'> 
                                                 <option value='0' selected>- Pilih Kelas -</option>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -198,7 +173,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c' required> 
+                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c'> 
                                                 <option value='0' selected>- Pilih Mata Pelajaran -</option>"; 
                                                 $mapel = mysql_query("SELECT * FROM rb_mata_pelajaran");
                                                 while($a = mysql_fetch_array($mapel)){
@@ -206,7 +181,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Ruangan</th>   <td><select class='form-control' name='d' required> 
+                    <tr><th scope='row'>Ruangan</th>   <td><select class='form-control' name='d'> 
                                                 <option value='0' selected>- Pilih Ruangan -</option>"; 
                                                 $ruangan = mysql_query("SELECT * FROM rb_ruangan a JOIN rb_gedung b ON a.kode_gedung=b.kode_gedung");
                                                 while($a = mysql_fetch_array($ruangan)){
@@ -214,7 +189,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Guru</th>   <td><select class='form-control' name='e' required> 
+                    <tr><th scope='row'>Guru</th>   <td><select class='form-control' name='e'> 
                                                 <option value='0' selected>- Pilih Guru -</option>"; 
                                                 $guru = mysql_query("SELECT * FROM rb_guru");
                                                 while($a = mysql_fetch_array($guru)){
@@ -223,9 +198,9 @@
                                                 echo "</select>
                     </td></tr>
 
-                    <tr><th scope='row'>Jam Mulai</th>  <td><input type='text' class='form-control' name='h' required placeholder='hh:ii:ss' value='".date('H:i:s')."'></td></tr>
-                    <tr><th scope='row'>Jam Selesai</th><td><input type='text' class='form-control' name='i' required placeholder='hh:ii:ss' value='".date('H:i:s')."'></td></tr>
-                    <tr><th scope='row'>Hari</th>  <td><select class='form-control' name='j' required>
+                    <tr><th scope='row'>Jam Mulai</th>  <td><input type='text' class='form-control' name='h' placeholder='hh:ii:ss' value='".date('H:i:s')."'></td></tr>
+                    <tr><th scope='row'>Jam Selesai</th><td><input type='text' class='form-control' name='i' placeholder='hh:ii:ss' value='".date('H:i:s')."'></td></tr>
+                    <tr><th scope='row'>Hari</th>  <td><select class='form-control' name='j'>
                                                 <option value='0' selected>- Pilih Hari -</option>
                                                 <option value='Senin'>Senin</option>
                                                 <option value='Selasa'>Selasa</option>
@@ -235,8 +210,8 @@
                                                 <option value='Sabtu'>Sabtu</option>
                                                 <option value='Minggu'>Minggu</option>
                     </td></tr>
-                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='k' required value='Ya' checked> Ya
-                                                                             <input type='radio' name='k' required value='Tidak'> Tidak
+                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='k' value='Ya' checked> Ya
+                                                                             <input type='radio' name='k' value='Tidak'> Tidak
                     </td></tr>
                   </tbody>
                   </table>
@@ -251,31 +226,6 @@
             </div>";
 }elseif(isset($_GET['act']) && $_GET['act']=='edit'){
     if (isset($_POST['update'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'update' && $key != 'id' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan', 'alamat', 'foto'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("UPDATE rb_jadwal_pelajaran SET id_tahun_akademik = '$_POST[a]',
                                                     kode_kelas = '$_POST[b]',
                                                     kode_pelajaran = '$_POST[c]',
@@ -312,7 +262,7 @@
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                   <input type='hidden' name='id' value='$_GET[id]'>
-                    <tr><th style='width:120px' scope='row'>Tahun Akademik</th>   <td><select class='form-control' name='a' required> 
+                    <tr><th style='width:120px' scope='row'>Tahun Akademik</th>   <td><select class='form-control' name='a'> 
                                                 <option value='0' selected>- Pilih Tahun Akademik -</option>"; 
                                                 $tahun = mysql_query("SELECT * FROM rb_tahun_akademik");
                                                 while($a = mysql_fetch_array($tahun)){
@@ -324,7 +274,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Kelas</th>   <td><select class='form-control' name='b' required> 
+                    <tr><th scope='row'>Kelas</th>   <td><select class='form-control' name='b'> 
                                                 <option value='0' selected>- Pilih Kelas -</option>"; 
                                                 $kelas = mysql_query("SELECT * FROM rb_kelas");
                                                 while($a = mysql_fetch_array($kelas)){
@@ -336,7 +286,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c' required> 
+                    <tr><th scope='row'>Mata Pelajaran</th>   <td><select class='form-control' name='c'> 
                                                 <option value='0' selected>- Pilih Mata Pelajaran -</option>"; 
                                                 $mapel = mysql_query("SELECT * FROM rb_mata_pelajaran");
                                                 while($a = mysql_fetch_array($mapel)){
@@ -348,7 +298,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Ruangan</th>   <td><select class='form-control' name='d' required> 
+                    <tr><th scope='row'>Ruangan</th>   <td><select class='form-control' name='d'> 
                                                 <option value='0' selected>- Pilih Ruangan -</option>"; 
                                                 $ruangan = mysql_query("SELECT * FROM rb_ruangan a JOIN rb_gedung b ON a.kode_gedung=b.kode_gedung");
                                                 while($a = mysql_fetch_array($ruangan)){
@@ -360,7 +310,7 @@
                                                 }
                                                 echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Guru</th>   <td><select class='form-control' name='e' required> 
+                    <tr><th scope='row'>Guru</th>   <td><select class='form-control' name='e'> 
                                                 <option value='0' selected>- Pilih Guru -</option>"; 
                                                 $guru = mysql_query("SELECT * FROM rb_guru");
                                                 while($a = mysql_fetch_array($guru)){
@@ -373,9 +323,9 @@
                                                 echo "</select>
                     </td></tr>
 
-                    <tr><th scope='row'>Jam Mulai</th>  <td><input type='text' class='form-control' name='h' required placeholder='hh:ii:ss' value='".(isset($e['jam_mulai']) ? $e['jam_mulai'] : '')."'></td></tr>
-                    <tr><th scope='row'>Jam Selesai</th><td><input type='text' class='form-control' name='i' required placeholder='hh:ii:ss' value='".(isset($e['jam_selesai']) ? $e['jam_selesai'] : '')."'></td></tr>
-                    <tr><th scope='row'>Hari</th>  <td><select class='form-control' name='j' required>
+                    <tr><th scope='row'>Jam Mulai</th>  <td><input type='text' class='form-control' name='h' placeholder='hh:ii:ss' value='".(isset($e['jam_mulai']) ? $e['jam_mulai'] : '')."'></td></tr>
+                    <tr><th scope='row'>Jam Selesai</th><td><input type='text' class='form-control' name='i' placeholder='hh:ii:ss' value='".(isset($e['jam_selesai']) ? $e['jam_selesai'] : '')."'></td></tr>
+                    <tr><th scope='row'>Hari</th>  <td><select class='form-control' name='j'>
                                                 <option value='".(isset($e['hari']) ? $e['hari'] : '')."' selected>".(isset($e['hari']) ? $e['hari'] : '')."</option>
                                                 <option value='Senin'>Senin</option>
                                                 <option value='Selasa'>Selasa</option>
@@ -387,11 +337,11 @@
                     </td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if (isset($e['aktif']) && $e['aktif']=='Ya'){
-                                                                      echo "<input type='radio' name='k' required value='Ya' checked> Ya
-                                                                             <input type='radio' name='k' required value='Tidak'> Tidak";
+                                                                      echo "<input type='radio' name='k' value='Ya' checked> Ya
+                                                                             <input type='radio' name='k' value='Tidak'> Tidak";
                                                                   }else{
-                                                                      echo "<input type='radio' name='k' required value='Ya'> Ya
-                                                                             <input type='radio' name='k' required value='Tidak' checked> Tidak";
+                                                                      echo "<input type='radio' name='k' value='Ya'> Ya
+                                                                             <input type='radio' name='k' value='Tidak' checked> Tidak";
                                                                   }
                   echo "</td></tr>
                   </tbody>

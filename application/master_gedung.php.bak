@@ -78,50 +78,27 @@ if ($act==''){ ?>
 <?php 
 }elseif($act=='edit'){
     if (isset($_POST['update'])){
-        $kode = isset($_POST['a']) ? trim($_POST['a']) : '';
-        $nama = isset($_POST['b']) ? trim($_POST['b']) : '';
-        $lantai = isset($_POST['c']) ? trim($_POST['c']) : '';
-        $panjang = isset($_POST['d']) ? trim($_POST['d']) : '';
-        $tinggi = isset($_POST['e']) ? trim($_POST['e']) : '';
-        $lebar = isset($_POST['f']) ? trim($_POST['f']) : '';
-        $keterangan = isset($_POST['g']) ? trim($_POST['g']) : '';
-        $aktif = isset($_POST['h']) ? $_POST['h'] : '';
-        $id = isset($_POST['id']) ? $_POST['id'] : '';
-        
-        if (empty($kode) || empty($nama) || empty($aktif)){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Kode Gedung, Nama Gedung, dan Status Aktif harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-            mysql_query("UPDATE rb_gedung SET kode_gedung = '$kode',
-                                             nama_gedung = '$nama',
-                                             jumlah_lantai = '$lantai',
-                                             panjang = '$panjang',
-                                             tinggi = '$tinggi',
-                                             lebar = '$lebar',
-                                             keterangan = '$keterangan',
-                                             aktif = '$aktif' where kode_gedung='$id'") or die(mysql_error());
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: 'Data berhasil diupdate',
-                    showConfirmButton: false,
-                    timer: 1500
-                  }).then(function() {
-                    window.location = 'index.php?view=gedung';
-                  });
-                }, 100);
-              </script>";
-        }
+        mysql_query("UPDATE rb_gedung SET kode_gedung = '$_POST[a]',
+                                         nama_gedung = '$_POST[b]',
+                                         jumlah_lantai = '$_POST[c]',
+                                         panjang = '$_POST[d]',
+                                         tinggi = '$_POST[e]',
+                                         lebar = '$_POST[f]',
+                                         keterangan = '$_POST[g]',
+                                         aktif = '$_POST[h]' where kode_gedung='$_POST[id]'") or die(mysql_error());
+      echo "<script>
+            setTimeout(function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data berhasil diupdate',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(function() {
+                window.location = 'index.php?view=gedung';
+              });
+            }, 100);
+          </script>";
     }
     $edit = mysql_query("SELECT * FROM rb_gedung where kode_gedung='$get_id'");
     $s = mysql_fetch_array($edit);
@@ -136,20 +113,20 @@ if ($act==''){ ?>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='".(isset($s['kode_gedung']) ? $s['kode_gedung'] : '')."'>
-                    <tr><th width='120px' scope='row'>Kode Gedung</th> <td><input type='text' class='form-control' name='a' required value='". (isset($s['id_gedung']) ? $s['id_gedung'] : (isset($s['kode_gedung']) ? $s['kode_gedung'] : '')) ."'> </td></tr>
-                    <tr><th scope='row'>Nama Gedung</th>          <td><input type='text' class='form-control' name='b' required value='".(isset($s['nama_gedung']) ? $s['nama_gedung'] : '')."'></td></tr>
-                    <tr><th scope='row'>Jumlah Lantai</th>        <td><input type='text' class='form-control' name='c' required value='".(isset($s['jumlah_lantai']) ? $s['jumlah_lantai'] : '')."'></td></tr>
-                    <tr><th scope='row'>Panjang</th>              <td><input type='text' class='form-control' name='d' required value='".(isset($s['panjang']) ? $s['panjang'] : '')."'></td></tr>
-                    <tr><th scope='row'>Tinggi</th>               <td><input type='text' class='form-control' name='e' required value='".(isset($s['tinggi']) ? $s['tinggi'] : '')."'></td></tr>
-                    <tr><th scope='row'>Lebar</th>                <td><input type='text' class='form-control' name='f' required value='".(isset($s['lebar']) ? $s['lebar'] : '')."'></td></tr>
+                    <tr><th width='120px' scope='row'>Kode Gedung</th> <td><input type='text' class='form-control' name='a' value='". (isset($s['id_gedung']) ? $s['id_gedung'] : (isset($s['kode_gedung']) ? $s['kode_gedung'] : '')) ."'> </td></tr>
+                    <tr><th scope='row'>Nama Gedung</th>          <td><input type='text' class='form-control' name='b' value='".(isset($s['nama_gedung']) ? $s['nama_gedung'] : '')."'></td></tr>
+                    <tr><th scope='row'>Jumlah Lantai</th>        <td><input type='text' class='form-control' name='c' value='".(isset($s['jumlah_lantai']) ? $s['jumlah_lantai'] : '')."'></td></tr>
+                    <tr><th scope='row'>Panjang</th>              <td><input type='text' class='form-control' name='d' value='".(isset($s['panjang']) ? $s['panjang'] : '')."'></td></tr>
+                    <tr><th scope='row'>Tinggi</th>               <td><input type='text' class='form-control' name='e' value='".(isset($s['tinggi']) ? $s['tinggi'] : '')."'></td></tr>
+                    <tr><th scope='row'>Lebar</th>                <td><input type='text' class='form-control' name='f' value='".(isset($s['lebar']) ? $s['lebar'] : '')."'></td></tr>
                     <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='g' value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if (isset($s['aktif']) && $s['aktif']=='Ya'){
-                                                                      echo "<input type='radio' name='h' required value='Ya' checked> Ya
-                                                                             <input type='radio' name='h' required value='Tidak'> Tidak";
+                                                                      echo "<input type='radio' name='h' value='Ya' checked> Ya
+                                                                             <input type='radio' name='h' value='Tidak'> Tidak";
                                                                   }else{
-                                                                      echo "<input type='radio' name='h' required value='Ya'> Ya
-                                                                             <input type='radio' name='h' required value='Tidak' checked> Tidak";
+                                                                      echo "<input type='radio' name='h' value='Ya'> Ya
+                                                                             <input type='radio' name='h' value='Tidak' checked> Tidak";
                                                                   }
                   echo "</td></tr>
                   </tbody>
@@ -165,42 +142,20 @@ if ($act==''){ ?>
             </div>";
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
-        $kode = isset($_POST['a']) ? trim($_POST['a']) : '';
-        $nama = isset($_POST['b']) ? trim($_POST['b']) : '';
-        $lantai = isset($_POST['c']) ? trim($_POST['c']) : '';
-        $panjang = isset($_POST['d']) ? trim($_POST['d']) : '';
-        $tinggi = isset($_POST['e']) ? trim($_POST['e']) : '';
-        $lebar = isset($_POST['f']) ? trim($_POST['f']) : '';
-        $keterangan = isset($_POST['g']) ? trim($_POST['g']) : '';
-        $aktif = isset($_POST['h']) ? $_POST['h'] : '';
-        
-        if (empty($kode) || empty($nama) || empty($aktif)){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Kode Gedung, Nama Gedung, dan Status Aktif harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-            mysql_query("INSERT INTO rb_gedung VALUES('$kode','$nama','$lantai','$panjang','$tinggi','$lebar','$keterangan','$aktif')") or die(mysql_error());
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: 'Data berhasil ditambahkan',
-                    showConfirmButton: false,
-                    timer: 1500
-                  }).then(function() {
-                    window.location = 'index.php?view=gedung';
-                  });
-                }, 100);
-              </script>";
-        }
+        mysql_query("INSERT INTO rb_gedung VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]','$_POST[h]')") or die(mysql_error());
+        echo "<script>
+            setTimeout(function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data berhasil ditambahkan',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(function() {
+                window.location = 'index.php?view=gedung';
+              });
+            }, 100);
+          </script>";
     }
 
     echo "<div class='col-md-12'>
@@ -213,15 +168,15 @@ if ($act==''){ ?>
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Kode Gedung</th> <td><input type='text' class='form-control' name='a' required> </td></tr>
-                    <tr><th scope='row'>Nama Gedung</th>          <td><input type='text' class='form-control' name='b' required></td></tr>
-                    <tr><th scope='row'>Jumlah Lantai</th>        <td><input type='text' class='form-control' name='c' required></td></tr>
-                    <tr><th scope='row'>Panjang</th>              <td><input type='text' class='form-control' name='d' required></td></tr>
-                    <tr><th scope='row'>Tinggi</th>               <td><input type='text' class='form-control' name='e' required></td></tr>
-                    <tr><th scope='row'>Lebar</th>                <td><input type='text' class='form-control' name='f' required></td></tr>
+                    <tr><th width='120px' scope='row'>Kode Gedung</th> <td><input type='text' class='form-control' name='a'> </td></tr>
+                    <tr><th scope='row'>Nama Gedung</th>          <td><input type='text' class='form-control' name='b'></td></tr>
+                    <tr><th scope='row'>Jumlah Lantai</th>        <td><input type='text' class='form-control' name='c'></td></tr>
+                    <tr><th scope='row'>Panjang</th>              <td><input type='text' class='form-control' name='d'></td></tr>
+                    <tr><th scope='row'>Tinggi</th>               <td><input type='text' class='form-control' name='e'></td></tr>
+                    <tr><th scope='row'>Lebar</th>                <td><input type='text' class='form-control' name='f'></td></tr>
                     <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='g'></td></tr>
-                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='h' required value='Ya'> Ya
-                                                                             <input type='radio' name='h' required value='Tidak'> Tidak
+                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='h' value='Ya'> Ya
+                                                                             <input type='radio' name='h' value='Tidak'> Tidak
                     </td></tr>
                   </tbody>
                   </table>

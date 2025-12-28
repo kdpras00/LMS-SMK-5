@@ -175,31 +175,6 @@ if ($act==''){ ?>
 
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'tambah' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan', 'alamat', 'foto'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("INSERT INTO rb_kompetensi_dasar VALUES(NULL,'$_POST[jdwl]','$_POST[e]','$_POST[f]','".date('Y-m-d H:i:s')."')") or die(mysql_error());
         echo "<script>
               setTimeout(function() {
@@ -258,31 +233,6 @@ if ($act==''){ ?>
 
 }elseif($act=='edit'){
     if (isset($_POST['update'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'update' && $key != 'id' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan', 'alamat', 'foto'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("UPDATE rb_kompetensi_dasar SET ranah = '$_POST[e]',
                                                     kompetensi_dasar = '$_POST[f]' where id_kompetensi_dasar='$_POST[id]'") or die(mysql_error());
         echo "<script>

@@ -64,31 +64,6 @@ if ($act==''){ ?>
 <?php 
 }elseif($act=='edit'){
     if (isset($_POST['update'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'update' && $key != 'id' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("UPDATE rb_pertanyaan_penilaian SET pertanyaan = '$_POST[a]' where id_pertanyaan_penilaian='$_POST[id]'") or die(mysql_error());
       echo "<script>
             setTimeout(function() {
@@ -131,31 +106,6 @@ if ($act==''){ ?>
             </div>";
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'tambah' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("INSERT INTO rb_pertanyaan_penilaian VALUES(NULL,'$_POST[a]','diri','".date('Y-m-d H:i:s')."')") or die(mysql_error());
         echo "<script>
             setTimeout(function() {

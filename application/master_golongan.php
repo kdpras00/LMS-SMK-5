@@ -66,6 +66,31 @@ if ($act==''){ ?>
 <?php 
 }elseif($act=='edit'){
     if (isset($_POST['update'])){
+        // Validasi input
+        $has_error = false;
+        foreach($_POST as $key => $value) {
+            if($key != 'update' && $key != 'id' && is_string($value) && trim($value) == '') {
+                // Skip field opsional
+                if(!in_array($key, array('f', 'g', 'keterangan'))) {
+                    $has_error = true;
+                    break;
+                }
+            }
+        }
+        
+        if($has_error){
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Semua field wajib harus diisi!',
+                    showConfirmButton: true
+                  });
+                }, 100);
+              </script>";
+        } else {
+        
         mysql_query("UPDATE rb_golongan SET nama_golongan = '$_POST[a]',
                                          keterangan = '$_POST[b]' where id_golongan='$_POST[id]'") or die(mysql_error());
       echo "<script>
@@ -95,8 +120,8 @@ if ($act==''){ ?>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='".(isset($s['id_golongan']) ? $s['id_golongan'] : '')."'>
-                    <tr><th width='120px' scope='row'>Nama Golongan</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['nama_golongan']) ? $s['nama_golongan'] : '')."'> </td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='b' value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
+                    <tr><th width='120px' scope='row'>Nama Golongan</th> <td><input type='text' class='form-control' name='a' required value='".(isset($s['nama_golongan']) ? $s['nama_golongan'] : '')."'> </td></tr>
+                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='b' required value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
                   </tbody>
                   </table>
                 </div>
@@ -110,6 +135,31 @@ if ($act==''){ ?>
             </div>";
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
+        // Validasi input
+        $has_error = false;
+        foreach($_POST as $key => $value) {
+            if($key != 'tambah' && is_string($value) && trim($value) == '') {
+                // Skip field opsional
+                if(!in_array($key, array('f', 'g', 'keterangan'))) {
+                    $has_error = true;
+                    break;
+                }
+            }
+        }
+        
+        if($has_error){
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Semua field wajib harus diisi!',
+                    showConfirmButton: true
+                  });
+                }, 100);
+              </script>";
+        } else {
+        
         mysql_query("INSERT INTO rb_golongan VALUES(NULL,'$_POST[a]','$_POST[b]')") or die(mysql_error());
         echo "<script>
             setTimeout(function() {
@@ -136,8 +186,8 @@ if ($act==''){ ?>
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Nama Golongan</th> <td><input type='text' class='form-control' name='a'> </td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='b'></td></tr>
+                    <tr><th width='120px' scope='row'>Nama Golongan</th> <td><input type='text' class='form-control' name='a' required> </td></tr>
+                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='b' required></td></tr>
                   </tbody>
                   </table>
                 </div>

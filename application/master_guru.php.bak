@@ -126,26 +126,26 @@ if (empty($_GET['act'])){
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value=''>
-                    <tr><th width='120px' scope='row'>Nip</th>      <td><input type='text' class='form-control' name='aa' required></td></tr>
-                    <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' name='ab' required></td></tr>
-                    <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' name='ac' required></td></tr>
-                    <tr><th scope='row'>Jenis Kelamin</th>          <td><select class='form-control' name='af' required> 
+                    <tr><th width='120px' scope='row'>Nip</th>      <td><input type='text' class='form-control' name='aa'></td></tr>
+                    <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' name='ab'></td></tr>
+                    <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' name='ac'></td></tr>
+                    <tr><th scope='row'>Jenis Kelamin</th>          <td><select class='form-control' name='af'> 
                                                                           <option value='0' selected>- Pilih Jenis Kelamin -</option>"; 
                                                                             $jk = mysql_query("SELECT * FROM rb_jenis_kelamin");
                                                                             while($a = mysql_fetch_array($jk)){
                                                                                 echo "<option value='$a[id_jenis_kelamin]'>$a[jenis_kelamin]</option>";
                                                                             }
                                                                             echo "</select></td></tr>
-                    <tr><th scope='row'>No Telpon</th>                  <td><input type='text' class='form-control' name='ah' required></td></tr>
-                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' name='aj' required></td></tr>
-                    <tr><th scope='row'>Jenis PTK</th>              <td><select class='form-control' name='as' required> 
+                    <tr><th scope='row'>No Telpon</th>                  <td><input type='text' class='form-control' name='ah'></td></tr>
+                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' name='aj'></td></tr>
+                    <tr><th scope='row'>Jenis PTK</th>              <td><select class='form-control' name='as'> 
                                                                           <option value='0' selected>- Pilih Jenis PTK -</option>"; 
                                                                             $ptk = mysql_query("SELECT * FROM rb_jenis_ptk");
                                                                             while($a = mysql_fetch_array($ptk)){
                                                                                 echo "<option value='$a[id_jenis_ptk]'>$a[jenis_ptk]</option>";
                                                                             }
                                                                   echo "</select></td></tr>
-                    <tr><th scope='row'>Status Pegawai</th>         <td><select class='form-control' name='au' required> 
+                    <tr><th scope='row'>Status Pegawai</th>         <td><select class='form-control' name='au'> 
                                                                           <option value='0' selected>- Pilih Status Kepegawaian -</option>"; 
                                                                             $status_kepegawaian = mysql_query("SELECT * FROM rb_status_kepegawaian");
                                                                             while($a = mysql_fetch_array($status_kepegawaian)){
@@ -241,10 +241,10 @@ if (empty($_GET['act'])){
                         echo "</th>
                     </tr>
                     <input type='hidden' name='id' value='$s[nip]'>
-                    <tr><th width='120px' scope='row'>Nip</th>      <td><input type='text' class='form-control' value='$s[nip]' name='aa' required></td></tr>
-                    <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' value='$s[password]' name='ab' required></td></tr>
-                    <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' value='$s[nama_guru]' name='ac' required></td></tr>
-                    <tr><th scope='row'>Jenis Kelamin</th>          <td><select class='form-control' name='af' required> 
+                    <tr><th width='120px' scope='row'>Nip</th>      <td><input type='text' class='form-control' value='$s[nip]' name='aa'></td></tr>
+                    <tr><th scope='row'>Password</th>               <td><input type='text' class='form-control' value='$s[password]' name='ab'></td></tr>
+                    <tr><th scope='row'>Nama Lengkap</th>           <td><input type='text' class='form-control' value='$s[nama_guru]' name='ac'></td></tr>
+                    <tr><th scope='row'>Jenis Kelamin</th>          <td><select class='form-control' name='af'> 
                                                                           <option value='0' selected>- Pilih Jenis Kelamin -</option>"; 
                                                                             $jk = mysql_query("SELECT * FROM rb_jenis_kelamin");
                                                                             while($a = mysql_fetch_array($jk)){
@@ -255,9 +255,9 @@ if (empty($_GET['act'])){
                                                                               }
                                                                             }
                                                                             echo "</select></td></tr>
-                    <tr><th scope='row'>No Telpon</th>                  <td><input type='text' class='form-control' value='$s[hp]' name='ah' required></td></tr>
-                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' value='$s[email]' name='aj' required></td></tr>
-                    <tr><th scope='row'>Jenis PTK</th>              <td><select class='form-control' name='as' required> 
+                    <tr><th scope='row'>No Telpon</th>                  <td><input type='text' class='form-control' value='$s[hp]' name='ah'></td></tr>
+                    <tr><th scope='row'>Alamat Email</th>           <td><input type='text' class='form-control' value='$s[email]' name='aj'></td></tr>
+                    <tr><th scope='row'>Jenis PTK</th>              <td><select class='form-control' name='as'> 
                                                                           <option value='0' selected>- Pilih Jenis PTK -</option>"; 
                                                                             $ptk = mysql_query("SELECT * FROM rb_jenis_ptk");
                                                                             while($a = mysql_fetch_array($ptk)){
@@ -268,7 +268,7 @@ if (empty($_GET['act'])){
                                                                               }
                                                                             }
                                                                   echo "</select></td></tr>
-                    <tr><th scope='row'>Status Pegawai</th>         <td><select class='form-control' name='au' required> 
+                    <tr><th scope='row'>Status Pegawai</th>         <td><select class='form-control' name='au'> 
                                                                           <option value='0' selected>- Pilih Status Kepegawaian -</option>"; 
                                                                             $status_kepegawaian = mysql_query("SELECT * FROM rb_status_kepegawaian");
                                                                             while($a = mysql_fetch_array($status_kepegawaian)){

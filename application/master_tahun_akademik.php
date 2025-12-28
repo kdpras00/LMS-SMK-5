@@ -68,24 +68,45 @@
 <?php 
 }elseif(isset($_GET['act']) && $_GET['act']=='edit'){
     if (isset($_POST['update'])){
-        mysql_query("UPDATE rb_tahun_akademik SET id_tahun_akademik = '$_POST[a]',
-                                         nama_tahun = '$_POST[b]',
-                                         keterangan = '$_POST[c]',
-                                         titimangsa = '$_POST[e]',
-                                         aktif = '$_POST[d]' where id_tahun_akademik='$_POST[id]'") or die(mysql_error());
-      echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil diupdate',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=tahunakademik';
-              });
-            }, 100);
-          </script>";
+        // Validasi input
+        $kode = isset($_POST['a']) ? trim($_POST['a']) : '';
+        $nama = isset($_POST['b']) ? trim($_POST['b']) : '';
+        $keterangan = isset($_POST['c']) ? trim($_POST['c']) : '';
+        $titimangsa = isset($_POST['e']) ? trim($_POST['e']) : '';
+        $aktif = isset($_POST['d']) ? $_POST['d'] : '';
+        $id = isset($_POST['id']) ? $_POST['id'] : '';
+        
+        if (empty($kode) || empty($nama) || empty($aktif)){
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Field Kode Tahun, Nama Tahun, dan Status Aktif harus diisi!',
+                    showConfirmButton: true
+                  });
+                }, 100);
+              </script>";
+        } else {
+            mysql_query("UPDATE rb_tahun_akademik SET id_tahun_akademik = '$kode',
+                                             nama_tahun = '$nama',
+                                             keterangan = '$keterangan',
+                                             titimangsa = '$titimangsa',
+                                             aktif = '$aktif' where id_tahun_akademik='$id'") or die(mysql_error());
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil diupdate',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }).then(function() {
+                    window.location = 'index.php?view=tahunakademik';
+                  });
+                }, 100);
+              </script>";
+        }
     }
     $edit = mysql_query("SELECT * FROM rb_tahun_akademik where id_tahun_akademik='$_GET[id]'");
     $s = mysql_fetch_array($edit);
@@ -100,17 +121,17 @@
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='$s[id_tahun_akademik]'>
-                    <tr><th width='120px' scope='row'>Kode Tahun</th> <td><input type='text' class='form-control' name='a' value='$s[id_tahun_akademik]'> </td></tr>
-                    <tr><th scope='row'>Nama Tahun</th>           <td><input type='text' class='form-control' name='b' value='$s[nama_tahun]'></td></tr>
+                    <tr><th width='120px' scope='row'>Kode Tahun</th> <td><input type='text' class='form-control' name='a' value='$s[id_tahun_akademik]' required> </td></tr>
+                    <tr><th scope='row'>Nama Tahun</th>           <td><input type='text' class='form-control' name='b' value='$s[nama_tahun]' required></td></tr>
                     <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='c' value='$s[keterangan]'></td></tr>
                     <tr><th scope='row'>Titimangsa</th>           <td><input type='text' class='form-control' name='e' value='$s[titimangsa]'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if ($s['aktif']=='Ya'){
-                                                                      echo "<input type='radio' name='d' value='Ya' checked> Ya
-                                                                             <input type='radio' name='d' value='Tidak'> Tidak";
+                                                                      echo "<input type='radio' name='d' value='Ya' checked required> Ya
+                                                                             <input type='radio' name='d' value='Tidak' required> Tidak";
                                                                   }else{
-                                                                      echo "<input type='radio' name='d' value='Ya'>
-                                                                             <input type='radio' name='d' value='Tidak' checked> Tidak";
+                                                                      echo "<input type='radio' name='d' value='Ya' required>
+                                                                             <input type='radio' name='d' value='Tidak' checked required> Tidak";
                                                                   }
                   echo "</td></tr>
                   </tbody>
@@ -126,20 +147,40 @@
             </div>";
 }elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
-        mysql_query("INSERT INTO rb_tahun_akademik VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[e]','$_POST[d]')") or die(mysql_error());
-        echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil ditambahkan',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=tahunakademik';
-              });
-            }, 100);
-          </script>";
+        // Validasi input
+        $kode = isset($_POST['a']) ? trim($_POST['a']) : '';
+        $nama = isset($_POST['b']) ? trim($_POST['b']) : '';
+        $keterangan = isset($_POST['c']) ? trim($_POST['c']) : '';
+        $titimangsa = isset($_POST['e']) ? trim($_POST['e']) : '';
+        $aktif = isset($_POST['d']) ? $_POST['d'] : '';
+        
+        if (empty($kode) || empty($nama) || empty($aktif)){
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Field Kode Tahun, Nama Tahun, dan Status Aktif harus diisi!',
+                    showConfirmButton: true
+                  });
+                }, 100);
+              </script>";
+        } else {
+            mysql_query("INSERT INTO rb_tahun_akademik VALUES('$kode','$nama','$keterangan','$titimangsa','$aktif')") or die(mysql_error());
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }).then(function() {
+                    window.location = 'index.php?view=tahunakademik';
+                  });
+                }, 100);
+              </script>";
+        }
     }
 
     echo "<div class='col-md-12'>
@@ -152,12 +193,12 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Kode Tahun</th> <td><input type='text' class='form-control' name='a'> </td></tr>
-                    <tr><th scope='row'>Nama Tahun</th>           <td><input type='text' class='form-control' name='b'></td></tr>
+                    <tr><th width='120px' scope='row'>Kode Tahun</th> <td><input type='text' class='form-control' name='a' required> </td></tr>
+                    <tr><th scope='row'>Nama Tahun</th>           <td><input type='text' class='form-control' name='b' required></td></tr>
                     <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='c'></td></tr>
                     <tr><th scope='row'>Titimangsa</th>           <td><input type='text' class='form-control' name='e'></td></tr>
-                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='d' value='Ya'> Ya
-                                                                      <input type='radio' name='d' value='Tidak'> Tidak
+                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='d' value='Ya' required> Ya
+                                                                      <input type='radio' name='d' value='Tidak' required> Tidak
                     </td></tr>
                   </tbody>
                   </table>

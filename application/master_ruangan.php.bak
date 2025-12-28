@@ -78,31 +78,6 @@ if ($act==''){ ?>
 <?php 
 }elseif($act=='edit'){
     if (isset($_POST['update'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'update' && $key != 'id' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("UPDATE rb_ruangan SET kode_ruangan = '$_POST[a]',
                                          kode_gedung = '$_POST[b]',
                                          nama_ruangan = '$_POST[c]',
@@ -137,8 +112,8 @@ if ($act==''){ ?>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
                     <input type='hidden' name='id' value='".(isset($s['kode_ruangan']) ? $s['kode_ruangan'] : '')."'>
-                    <tr><th width='120px' scope='row'>Kode Ruangan</th> <td><input type='text' class='form-control' name='a' required value='".(isset($s['kode_ruangan']) ? $s['kode_ruangan'] : '')."'> </td></tr>
-                    <tr><th scope='row'>Nama Gedung</th>          <td><select class='form-control' name='b' required> 
+                    <tr><th width='120px' scope='row'>Kode Ruangan</th> <td><input type='text' class='form-control' name='a' value='".(isset($s['kode_ruangan']) ? $s['kode_ruangan'] : '')."'> </td></tr>
+                    <tr><th scope='row'>Nama Gedung</th>          <td><select class='form-control' name='b'> 
                                                                           <option value='0' selected>- Pilih Gedung -</option>"; 
                                                                             $wali = mysql_query("SELECT * FROM rb_gedung");
                                                                             while($a = mysql_fetch_array($wali)){
@@ -149,17 +124,17 @@ if ($act==''){ ?>
                                                                               }
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c' required value='".(isset($s['nama_ruangan']) ? $s['nama_ruangan'] : '')."'></td></tr>
-                    <tr><th scope='row'>Kapasitas Belajar</th>              <td><input type='text' class='form-control' name='d' required value='".(isset($s['kapasitas_belajar']) ? $s['kapasitas_belajar'] : '')."'></td></tr>
-                    <tr><th scope='row'>Kapasitas Ujian</th>               <td><input type='text' class='form-control' name='e' required value='".(isset($s['kapasitas_ujian']) ? $s['kapasitas_ujian'] : '')."'></td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='f' required value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
+                    <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c' value='".(isset($s['nama_ruangan']) ? $s['nama_ruangan'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kapasitas Belajar</th>              <td><input type='text' class='form-control' name='d' value='".(isset($s['kapasitas_belajar']) ? $s['kapasitas_belajar'] : '')."'></td></tr>
+                    <tr><th scope='row'>Kapasitas Ujian</th>               <td><input type='text' class='form-control' name='e' value='".(isset($s['kapasitas_ujian']) ? $s['kapasitas_ujian'] : '')."'></td></tr>
+                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='f' value='".(isset($s['keterangan']) ? $s['keterangan'] : '')."'></td></tr>
                     <tr><th scope='row'>Aktif</th>                <td>";
                                                                   if (isset($s['aktif']) && $s['aktif']=='Ya'){
-                                                                      echo "<input type='radio' name='g' required value='Ya' checked> Ya
-                                                                             <input type='radio' name='g' required value='Tidak'> Tidak";
+                                                                      echo "<input type='radio' name='g' value='Ya' checked> Ya
+                                                                             <input type='radio' name='g' value='Tidak'> Tidak";
                                                                   }else{
-                                                                      echo "<input type='radio' name='g' required value='Ya'>
-                                                                             <input type='radio' name='g' required value='Tidak' checked> Tidak";
+                                                                      echo "<input type='radio' name='g' value='Ya'>
+                                                                             <input type='radio' name='g' value='Tidak' checked> Tidak";
                                                                   }
                   echo "</td></tr>
                   </tbody>
@@ -175,31 +150,6 @@ if ($act==''){ ?>
             </div>";
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
-        // Validasi input
-        $has_error = false;
-        foreach($_POST as $key => $value) {
-            if($key != 'tambah' && is_string($value) && trim($value) == '') {
-                // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan'))) {
-                    $has_error = true;
-                    break;
-                }
-            }
-        }
-        
-        if($has_error){
-            echo "<script>
-                setTimeout(function() {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Semua field wajib harus diisi!',
-                    showConfirmButton: true
-                  });
-                }, 100);
-              </script>";
-        } else {
-        
         mysql_query("INSERT INTO rb_ruangan VALUES('$_POST[a]','$_POST[b]','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','$_POST[g]')") or die(mysql_error());
         echo "<script>
             setTimeout(function() {
@@ -226,20 +176,20 @@ if ($act==''){ ?>
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Kode Ruangan</th> <td><input type='text' class='form-control' name='a' required> </td></tr>
-                    <tr><th scope='row'>Nama Gedung</th>          <td><select class='form-control' name='b' required> 
+                    <tr><th width='120px' scope='row'>Kode Ruangan</th> <td><input type='text' class='form-control' name='a'> </td></tr>
+                    <tr><th scope='row'>Nama Gedung</th>          <td><select class='form-control' name='b'> 
                                                                           <option value='0' selected>- Pilih Gedung -</option>"; 
                                                                             $wali = mysql_query("SELECT * FROM rb_gedung");
                                                                             while($a = mysql_fetch_array($wali)){
                                                                                 echo "<option value='".(isset($a['kode_gedung']) ? $a['kode_gedung'] : '')."'>".(isset($a['nama_gedung']) ? $a['nama_gedung'] : '')."</option>";
                                                                             }
                                                                          echo "</select></td></tr>
-                    <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c' required></td></tr>
-                    <tr><th scope='row'>Kapasitas Belajar</th>              <td><input type='text' class='form-control' name='d' required></td></tr>
-                    <tr><th scope='row'>Kapasitas Ujian</th>               <td><input type='text' class='form-control' name='e' required></td></tr>
-                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='f' required></td></tr>
-                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='g' required value='Ya'> Ya
-                                                                             <input type='radio' name='g' required value='Tidak'> Tidak</td></tr>
+                    <tr><th scope='row'>Nama Ruangan</th>        <td><input type='text' class='form-control' name='c'></td></tr>
+                    <tr><th scope='row'>Kapasitas Belajar</th>              <td><input type='text' class='form-control' name='d'></td></tr>
+                    <tr><th scope='row'>Kapasitas Ujian</th>               <td><input type='text' class='form-control' name='e'></td></tr>
+                    <tr><th scope='row'>Keterangan</th>           <td><input type='text' class='form-control' name='f'></td></tr>
+                    <tr><th scope='row'>Aktif</th>                <td><input type='radio' name='g' value='Ya'> Ya
+                                                                             <input type='radio' name='g' value='Tidak'> Tidak</td></tr>
                   </tbody>
                   </table>
                 </div>

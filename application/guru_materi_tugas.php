@@ -272,15 +272,16 @@ if ($act == '') {
                 }
                 
                 if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
-                mysql_query("UPDATE rb_elearning SET 
-                    id_kategori_elearning = '$_POST[kategori]',
-                    kodejdwl = '$_POST[jadwal]',
-                    nama_file = '$_POST[judul]',
-                    file_upload = '$filenamee',
-                    tanggal_tugas = '$_POST[tanggal_mulai]',
-                    tanggal_selesai = '$_POST[tanggal_selesai]',
-                    keterangan = '$_POST[keterangan]'
-                    WHERE id_elearning='$get_id'");
+                    mysql_query("UPDATE rb_elearning SET 
+                        id_kategori_elearning = '$_POST[kategori]',
+                        kodejdwl = '$_POST[jadwal]',
+                        nama_file = '$_POST[judul]',
+                        file_upload = '$filenamee',
+                        tanggal_tugas = '$_POST[tanggal_mulai]',
+                        tanggal_selesai = '$_POST[tanggal_selesai]',
+                        keterangan = '$_POST[keterangan]'
+                        WHERE id_elearning='$get_id'");
+                }
             }
         } else {
             mysql_query("UPDATE rb_elearning SET 
