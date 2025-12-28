@@ -435,7 +435,6 @@ if (empty($_GET['act'])){
     $detail = mysql_query("SELECT * FROM rb_siswa a LEFT JOIN rb_kelas b ON a.kode_kelas=b.kode_kelas 
                               LEFT JOIN rb_jenis_kelamin c ON a.id_jenis_kelamin=c.id_jenis_kelamin 
                                   LEFT JOIN rb_jurusan d ON b.kode_jurusan=d.kode_jurusan
-                                    LEFT JOIN rb_agama e ON a.id_agama=e.id_agama 
                                       where a.nisn='$nisn'");
     $s = mysql_fetch_array($detail);
     echo "<div class='col-md-12'>
@@ -448,7 +447,7 @@ if (empty($_GET['act'])){
                         <div class='col-md-7'>
                           <table class='table table-condensed table-bordered'>
                           <tbody>
-                            <tr><th style='background-color:#E7EAEC' width='160px' rowspan='17'>";
+                            <tr><th style='background-color:#E7EAEC' width='160px' rowspan='10'>";
                                 if (trim($s['foto'])==''){
                                   echo "<img class='img-thumbnail' style='width:155px' src='foto_siswa/no-image.jpg'>";
                                 }else{
@@ -466,40 +465,10 @@ if (empty($_GET['act'])){
                             <tr><th scope='row'>Kelas</th> <td>$s[nama_kelas]</td></tr>
                             <tr><th scope='row'>Angkatan</th> <td>$s[angkatan]</td></tr>
                             <tr><th scope='row'>Jurusan</th> <td>$s[nama_jurusan]</td></tr>
-                            <tr><th scope='row'>Alamat Siswa</th> <td>$s[alamat]</td></tr>
-                            <tr><th scope='row'>RT/RW</th> <td>$s[rt]/$s[rw]</td></tr>
-                            <tr><th scope='row'>Dusun</th> <td>$s[dusun]</td></tr>
-                            <tr><th scope='row'>Kelurahan</th> <td>$s[kelurahan]</td></tr>
-                            <tr><th scope='row'>Kecamatan</th> <td>$s[kecamatan]</td></tr>
-                            <tr><th scope='row'>Kode Pos</th> <td>$s[kode_pos]</td></tr>
-                            <tr><th scope='row'>Status Awal</th> <td>$s[status_awal]</td></tr>
-                            <tr><th scope='row'>Status Siswa</th> <td>$s[status_siswa]</td></tr>
+                            <tr><th scope='row'>Jenis Kelamin</th> <td>$s[jenis_kelamin]</td></tr>
                           </tbody>
                           </table>
                         </div>
-                        <div class='col-md-5'>
-                          <table class='table table-condensed table-bordered'>
-                          <tbody>
-                            <tr><th width='120px' scope='row'>NIK</th> <td>$s[nik]</td></tr>
-                            <tr><th scope='row'>Tempat Lahir</th> <td>$s[tempat_lahir]</td></tr>
-                            <tr><th scope='row'>Tanggal Lahir</th> <td>".tgl_indo($s['tanggal_lahir'])."</td></tr>
-                            <tr><th scope='row'>Jenis Kelamin</th> <td>$s[jenis_kelamin]</td></tr>
-                            <tr><th scope='row'>Agama</th> <td>$s[nama_agama]</td></tr>
-							 <tr><th scope='row'>Asal Sekolah SMP/Mts</th> <td>$s[asal_sekolah]</td></tr>
-							  <tr><th scope='row'>Tanggal Diterima Sekolah Ini</th> <td>$s[tanggal_terima]</td></tr>
-							  <tr><th scope='row'>Tanggal Disahkan identitas siswa</th> <td>$s[tanggal_sah]</td></tr>
-                            <tr><th scope='row'>Keb. Khusus</th> <td>$s[kebutuhan_khusus]</td></tr>
-                            <tr><th scope='row'>Jenis Tinggal</th> <td>$s[jenis_tinggal]</td></tr>
-                            <tr><th scope='row'>Transportasi</th> <td>$s[alat_transportasi]</td></tr>
-                            <tr><th scope='row'>No Telpon</th> <td>$s[telepon]</td></tr>
-                            <tr><th scope='row'>No Handpone</th> <td>$s[hp]</td></tr>
-                            <tr><th scope='row'>Alamat Email</th> <td>$s[email]</td></tr>
-                            <tr><th scope='row'>SKHUN</th> <td>$s[skhun]</td></tr>
-                            <tr><th scope='row'>Penerima KPS</th> <td>$s[penerima_kps]</td></tr>
-                            <tr><th scope='row'>No KPS</th> <td>$s[no_kps]</td></tr>
-                          </tbody>
-                          </table>
-                        </div>   
                         </form>
                 </div>
             </div>";
