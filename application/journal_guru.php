@@ -163,8 +163,34 @@ if ($act==''){ ?>
 }elseif($act=='tambah'){
     if (isset($_POST['tambah'])){
         $d = tgl_simpan($_POST['d']);
-        mysql_query("INSERT INTO rb_journal_list VALUES('','$_POST[jdwl]','$_POST[c]','$d','$_POST[e]','$_POST[f]','$_POST[g]','".date('Y-m-d H:i:s')."','$_SESSION[id]')");
-        echo "<script>document.location='index.php?view=journalguru&act=lihat&id=" . (isset($_POST['jdwl']) ? $_POST['jdwl'] : '') . "';</script>";
+        $query = "INSERT INTO rb_journal_list (kodejdwl, hari, tanggal, jam_ke, materi, keterangan, waktu_input, users) 
+                  VALUES ('$_POST[jdwl]', '$_POST[c]', '$d', '$_POST[e]', '$_POST[f]', '$_POST[g]', '".date('Y-m-d H:i:s')."', '$_SESSION[id]')";
+        $result = mysql_query($query);
+        
+        if ($result){
+            echo "<script>
+                    setTimeout(function() {
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Journal berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
+                      }).then(function() {
+                        window.location = 'index.php?view=journalguru&act=lihat&id=" . (isset($_POST['jdwl']) ? $_POST['jdwl'] : '') . "';
+                      });
+                    }, 100);
+                  </script>";
+        } else {
+            echo "<script>
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Gagal',
+                      text: 'Gagal menambahkan journal: " . mysql_error() . "',
+                      showConfirmButton: true
+                    });
+                  </script>";
+        }
     }
 
     $e = mysql_fetch_array(mysql_query("SELECT * FROM rb_jadwal_pelajaran where kodejdwl='$get_jdwl'"));

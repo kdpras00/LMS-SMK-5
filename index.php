@@ -245,7 +245,7 @@
           }elseif ($_GET['view']=='jurnalkbmrekap'){
             cek_session_admin();
             echo "<div class='row'>";
-                    include "application/jurnalkbm_rekap.php";
+                    include "application/admin_jurnal_kbm.php";
             echo "</div>";
           }
 
