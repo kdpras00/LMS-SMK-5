@@ -141,6 +141,7 @@ if (empty($_GET['act'])){ ?>
       $_SESSION['notif'] = "Data berhasil diupdate";
       echo "<script>document.location='index.php?view=jurusan';</script>";
       exit;
+        }
     }
     $edit = mysql_query("SELECT * FROM rb_jurusan where kode_jurusan='$_GET[id]'");
     $s = mysql_fetch_array($edit);
@@ -211,6 +212,7 @@ if (empty($_GET['act'])){ ?>
         $_SESSION['notif'] = "Data berhasil ditambahkan";
         echo "<script>document.location='index.php?view=jurusan';</script>";
         exit;
+        }
     }
 
     echo "<div class='col-md-12'>
