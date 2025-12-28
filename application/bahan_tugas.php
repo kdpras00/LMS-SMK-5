@@ -259,14 +259,25 @@ if (empty($act)){
           $waktu_mulai = mysql_real_escape_string($_POST['d']);
           $waktu_selesai = mysql_real_escape_string($_POST['e']);
           $keterangan = mysql_real_escape_string($_POST['f']);
+          $is_rpp = isset($_POST['is_rpp']) ? 1 : 0; // Check if RPP checkbox is checked
           
           if ($filename != ''){      
             if (move_uploaded_file($_FILES['c']['tmp_name'], $uploadfile)) {
-              $query = "INSERT INTO rb_elearning VALUES (NULL,'$kategori','$get_jdwl','$nama_file','$filenamee','$waktu_mulai','$waktu_selesai','$keterangan')";
+              // If marked as RPP, save to rb_elearning1, otherwise to rb_elearning
+              if ($is_rpp == 1) {
+                $query = "INSERT INTO rb_elearning1 VALUES (NULL,'$kategori','$get_jdwl','$nama_file','$filenamee','$waktu_mulai','$waktu_selesai','$keterangan')";
+              } else {
+                $query = "INSERT INTO rb_elearning VALUES (NULL,'$kategori','$get_jdwl','$nama_file','$filenamee','$waktu_mulai','$waktu_selesai','$keterangan')";
+              }
               $result = mysql_query($query);
               
               if ($result){
-                echo "<script>document.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
+                if ($is_rpp == 1) {
+                  echo "<script>window.alert('RPP berhasil diupload dan akan muncul di halaman Admin RPP!');
+                              document.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
+                } else {
+                  echo "<script>document.location='index.php?view=bahantugas&act=listbahantugas&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."';</script>";
+                }
               } else {
                 echo "<script>window.alert('Gagal menyimpan data: " . mysql_error() . "');
                             window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
@@ -275,8 +286,13 @@ if (empty($act)){
               echo "<script>window.alert('Gagal upload file. Pastikan folder files/ memiliki permission yang benar.');
                           window.location='index.php?view=bahantugas&act=tambah&jdwl=".$get_jdwl."&id=".$get_id."&kd=".$get_kd."'</script>";
             }
-          }else{
-            $query = "INSERT INTO rb_elearning VALUES (NULL,'$kategori','$get_jdwl','$nama_file','','$waktu_mulai','$waktu_selesai','$keterangan')";
+                    }else{
+            // If marked as RPP, save to rb_elearning1, otherwise to rb_elearning
+            if ($is_rpp == 1) {
+              $query = "INSERT INTO rb_elearning1 VALUES (NULL,'$kategori','$get_jdwl','$nama_file','','$waktu_mulai','$waktu_selesai','$keterangan')";
+            } else {
+              $query = "INSERT INTO rb_elearning VALUES (NULL,'$kategori','$get_jdwl','$nama_file','','$waktu_mulai','$waktu_selesai','$keterangan')";
+            }
             $result = mysql_query($query);
             
             if ($result){
@@ -298,7 +314,7 @@ if (empty($act)){
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='120px' scope='row'>Kategori</th> <td><select class='form-control' name='a'> 
+                    <tr><th width='120px' scope='row'>Kategori <span style='color:red'>*</span></th> <td><select class='form-control' name='a' required> 
                              <option value='0' selected>- Pilih Kategori Tugas -</option>"; 
                               $kategori = mysql_query("SELECT * FROM rb_kategori_elearning");
                                   while($a = mysql_fetch_array($kategori)){
@@ -306,17 +322,24 @@ if (empty($act)){
                                   }
                              echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Nama File</th>        <td><input type='text' class='form-control' name='b'></td></tr>
+                    <tr><th scope='row'>Nama File <span style='color:red'>*</span></th>        <td><input type='text' class='form-control' name='b' required placeholder='Masukkan nama file/judul materi'></td></tr>
                     <tr><th scope='row'>File</th>             <td><div style='position:relative;''>
                                                                           <a class='btn btn-primary' href='javascript:;'>
                                                                             <i class='fa fa-search'></i> Cari File Bahan atau Tugas...
-                                                                            <input type='file' class='files' name='c' onchange='$(\"#upload-file-info\").html($(this).val());'>
+                                                                            <input type='file' class='files' name='c' onchange='$(\"#upload-file-info\").html($(this).val());' accept='.pdf,.doc,.docx'>
                                                                           </a> <span style='width:155px' class='label label-info' id='upload-file-info'></span>
                                                                         </div>
                     </td></tr>
                     <tr><th scope='row'>Waktu Mulai</th>      <td><input type='text' class='form-control' value='".date("Y-m-d H:i:s")."' name='d'></td></tr>
                     <tr><th scope='row'>Waktu Selesai</th>    <td><input type='text' class='form-control' value='".date("Y-m-d H:i:s")."' name='e'></td></tr>
                     <tr><th scope='row'>Keterangan</th>       <td><input type='text' class='form-control' name='f'></td></tr>
+                    <tr><th scope='row'>Upload sebagai RPP</th> <td>
+                      <label style='font-weight:normal'>
+                        <input type='checkbox' name='is_rpp' value='1'> 
+                        <span style='color:#d9534f; font-weight:bold'>Ya, upload ini adalah RPP</span>
+                        <br><small style='color:#666'><i>Centang jika file ini adalah RPP (Rencana Pelaksanaan Pembelajaran). RPP akan muncul di halaman Admin RPP.</i></small>
+                      </label>
+                    </td></tr>
                     
                   </tbody>
                   </table>
@@ -324,11 +347,39 @@ if (empty($act)){
                 
               </div>
               <div class='box-footer'>
-                    <button type='submit' name='tambah' class='btn btn-info'>Tambahkan</button>
-                    <a href='index.php?view=bahantugas'><button class='btn btn-default pull-right'>Cancel</button></a>
+                    <button type='submit' name='tambah' class='btn btn-info' onclick='return validateForm()'>Tambahkan</button>
+                    <a href='index.php?view=bahantugas'><button type='button' class='btn btn-default pull-right'>Cancel</button></a>
                     
                   </div>
               </form>
+              <script>
+              function validateForm() {
+                var kategori = document.getElementsByName('a')[0].value;
+                var namaFile = document.getElementsByName('b')[0].value;
+                var fileInput = document.getElementsByName('c')[0];
+                var isRpp = document.getElementsByName('is_rpp')[0].checked;
+                
+                // Validasi kategori
+                if (kategori == '0' || kategori == '') {
+                  alert('Silakan pilih kategori terlebih dahulu!');
+                  return false;
+                }
+                
+                // Validasi nama file
+                if (namaFile.trim() == '') {
+                  alert('Nama file tidak boleh kosong!');
+                  return false;
+                }
+                
+                // Validasi file wajib jika RPP dicentang
+                if (isRpp && fileInput.files.length == 0) {
+                  alert('File wajib diupload jika Anda mencentang \"Upload sebagai RPP\"!');
+                  return false;
+                }
+                
+                return true;
+              }
+              </script>
             </div>";
 }elseif($act=='edit'){
     cek_session_guru();
