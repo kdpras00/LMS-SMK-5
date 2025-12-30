@@ -23,6 +23,8 @@
               </ul>
             </li>
             
+            <li><a href="index.php?view=uploadrpp"><i class="fa fa-file-pdf-o"></i> <span>Upload RPP</span></a></li>
+            
             <li class="treeview">
               <a href="javascript:void(0)"><i class="fa fa-calendar"></i> <span>KBM</span><i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">

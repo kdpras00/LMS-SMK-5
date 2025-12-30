@@ -382,6 +382,11 @@
             echo "<div class='row'>";
                     include "application/bahan_tugas.php";
             echo "</div>";
+          }elseif ($_GET['view']=='uploadrpp'){
+            cek_session_guru();
+            echo "<div class='row'>";
+                    include "application/guru_rpp.php";
+            echo "</div>";
           }elseif ($_GET['view']=='bahantugas1'){
             echo "<div class='row'>";
                     include "application/bahan_tugas1.php";

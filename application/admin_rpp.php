@@ -2,20 +2,8 @@
 $act = isset($_GET['act']) ? $_GET['act'] : '';
 $get_tahun = isset($_GET['tahun']) ? $_GET['tahun'] : '';
 $get_guru = isset($_GET['guru']) ? $_GET['guru'] : '';
-$get_id = isset($_GET['id']) ? $_GET['id'] : '';
 
-// Handle approval/rejection
-if (isset($_GET['approve'])) {
-    $id_rpp = $_GET['approve'];
-    // For now, just mark as viewed by admin (you can add approval table later)
-    echo "<script>Swal.fire('Berhasil', 'RPP telah disetujui', 'success').then(() => { window.location='index.php?view=adminrpp'; });</script>";
-}
-
-if (isset($_GET['reject'])) {
-    $id_rpp = $_GET['reject'];
-    echo "<script>Swal.fire('Berhasil', 'RPP telah ditolak', 'info').then(() => { window.location='index.php?view=adminrpp'; });</script>";
-}
-
+// List RPP (default view - Admin view only)
 if ($act==''){ 
 cek_session_admin();
 ?>
@@ -59,62 +47,121 @@ cek_session_admin();
                   <table id="example1" class="table table-bordered table-striped">
                     <thead>
                       <tr>
-                        <th style='width:20px'>No</th>
-                        <th>Jadwal Pelajaran</th>
+                        <th style='width:30px'>No</th>
                         <th>Nama Guru</th>
-                        <th>Kelas</th>
-                        <th>Nama File RPP</th>
-                        <th>Tanggal Upload</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Nama File</th>
                         <th>File</th>
-                        <th>Action</th>
+                        <th style='width:80px'>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
                   <?php
                     $where = "1=1";
                     if ($get_tahun != ''){
-                        $where .= " AND a.id_tahun_akademik='$get_tahun'";
+                        $where .= " AND jdwl.id_tahun_akademik='$get_tahun'";
                     }
                     if ($get_guru != ''){
-                        $where .= " AND a.nip='$get_guru'";
+                        $where .= " AND jdwl.nip='$get_guru'";
                     }
                     
-                    $tampil = mysql_query("SELECT e.*, a.kodejdwl, a.hari, a.jam_mulai, a.jam_selesai, b.namamatapelajaran, c.nama_guru, d.nama_kelas, a.id_tahun_akademik
+                    $tampil = mysql_query("SELECT e.*, b.namamatapelajaran, c.nama_guru
                                           FROM rb_elearning1 e
-                                          JOIN rb_jadwal_pelajaran a ON e.kodejdwl=a.kodejdwl
-                                          JOIN rb_mata_pelajaran b ON a.kode_pelajaran=b.kode_pelajaran
-                                          JOIN rb_guru c ON a.nip=c.nip 
-                                          JOIN rb_kelas d ON a.kode_kelas=d.kode_kelas 
+                                          JOIN rb_jadwal_pelajaran jdwl ON e.kodejdwl=jdwl.kodejdwl
+                                          JOIN rb_mata_pelajaran b ON jdwl.kode_pelajaran=b.kode_pelajaran
+                                          JOIN rb_guru c ON jdwl.nip=c.nip 
                                           WHERE $where
                                           ORDER BY e.id_elearning DESC");
                     
                     $no = 1;
                     if(mysql_num_rows($tampil) > 0){
                         while($r=mysql_fetch_array($tampil)){
-                        $jadwal_info = "$r[namamatapelajaran] - $r[hari] ($r[jam_mulai]-$r[jam_selesai])";
                         echo "<tr><td>$no</td>
-                                  <td>$jadwal_info</td>
                                   <td>$r[nama_guru]</td>
-                                  <td>$r[nama_kelas]</td>
+                                  <td>$r[namamatapelajaran]</td>
                                   <td>$r[nama_file]</td>
-                                  <td>-</td>
-                                  <td><a class='btn btn-info btn-xs' href='download.php?file=$r[file_upload]'><i class='fa fa-download'></i> Download</a></td>
+                                  <td>";
+                        if($r['file_upload'] != ''){
+                            echo "<a href='files/$r[file_upload]' target='_blank' class='btn btn-xs btn-success'>
+                                    <i class='fa fa-download'></i> Download
+                                  </a>";
+                        } else {
+                            echo "<span class='label label-warning'>Tidak ada file</span>";
+                        }
+                        echo "</td>
                                   <td>
-                                    <a class='btn btn-success btn-xs' href='index.php?view=adminrpp&approve=$r[id_elearning]' onclick=\"return confirm('Setujui RPP ini?')\"><i class='fa fa-check'></i> Setujui</a>
+                                    <center>
+                                      <a class='btn btn-info btn-xs' title='Detail' href='index.php?view=adminrpp&act=detail&id_elearning=$r[id]'>
+                                        <span class='glyphicon glyphicon-eye-open'></span> Detail
+                                      </a>
+                                    </center>
                                   </td>
                               </tr>";
-                          $no++;
-                          }
+                        $no++;
+                        }
                     } else {
-                        echo "<tr><td colspan='8' style='text-align:center; color:red'>Belum ada RPP yang diupload</td></tr>";
+                        echo "<tr><td colspan='6' style='text-align:center'>Tidak ada data RPP</td></tr>";
                     }
                   ?>
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->
-                </div>
+              </div><!-- /.box -->
             </div>
+<?php
+}
 
-<?php 
+// Detail RPP (Admin view-only)
+elseif($act == 'detail'){
+    cek_session_admin();
+    $id = mysql_real_escape_string($_GET['id']);
+    $detail = mysql_query("SELECT e.*, b.namamatapelajaran, c.nama_guru
+                           FROM rb_elearning1 e
+                           JOIN rb_jadwal_pelajaran jdwl ON e.kodejdwl=jdwl.kodejdwl
+                           JOIN rb_mata_pelajaran b ON jdwl.kode_pelajaran=b.kode_pelajaran
+                           JOIN rb_guru c ON jdwl.nip=c.nip
+                           WHERE e.id_elearning='$id'");
+    $d = mysql_fetch_array($detail);
+    
+    echo "<div class='col-md-12'>
+              <div class='box box-info'>
+                <div class='box-header with-border'>
+                  <h3 class='box-title'><i class='fa fa-eye'></i> Detail RPP</h3>
+                </div>
+              <div class='box-body'>
+                <div class='col-md-12'>
+                  <table class='table table-condensed table-bordered'>
+                  <tbody>
+                    <tr><th width='200px'>Nama Guru</th> 
+                      <td>".$d['nama_guru']."</td>
+                    </tr>
+                    <tr><th>Mata Pelajaran</th> 
+                      <td>".$d['namamatapelajaran']."</td>
+                    </tr>
+                    <tr><th>Nama File</th>        
+                      <td>".$d['nama_file']."</td>
+                    </tr>
+                    <tr><th>File RPP</th>             
+                      <td>";
+                      if($d['file_upload'] != ''){
+                          echo "<a href='files/".$d['file_upload']."' target='_blank' class='btn btn-sm btn-success'>
+                                  <i class='fa fa-download'></i> Download ".$d['file_upload']."
+                                </a>";
+                      } else {
+                          echo "<span class='label label-warning'>Tidak ada file</span>";
+                      }
+                  echo "</td>
+                    </tr>
+                    <tr><th>Tanggal Upload</th>             
+                      <td>".date('d-m-Y H:i', strtotime($d['waktu_mulai']))."</td>
+                    </tr>
+                  </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class='box-footer'>
+                    <a href='index.php?view=adminrpp'><button type='button' class='btn btn-default'>Kembali</button></a>
+                  </div>
+            </div>";
 }
 ?>
