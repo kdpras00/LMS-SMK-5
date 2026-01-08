@@ -112,7 +112,7 @@ if (empty($_GET['act'])){ ?>
         foreach($_POST as $key => $value) {
             if($key != 'update' && $key != 'id' && is_string($value) && trim($value) == '') {
                 // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan'))) {
+                if(!in_array($key, array('g'))) {
                     $has_error = true;
                     break;
                 }
@@ -186,9 +186,9 @@ if (empty($_GET['act'])){ ?>
         // Validasi input
         $has_error = false;
         foreach($_POST as $key => $value) {
-            if($key != 'tambah' && is_string($value) && trim($value) == '') {
+            if($key != 'tambah' && $key != 'id' && is_string($value) && trim($value) == '') {
                 // Skip field opsional
-                if(!in_array($key, array('f', 'g', 'keterangan'))) {
+                if(!in_array($key, array('g'))) {
                     $has_error = true;
                     break;
                 }
