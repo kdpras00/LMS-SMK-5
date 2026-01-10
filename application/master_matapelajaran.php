@@ -14,6 +14,7 @@
                         <th style='width:30px'>No</th>
                         <th>Kode Mapel</th>
                         <th>Nama Mapel</th>
+                        <th>Kurikulum</th> <!-- Added Column -->
                         <th>Jurusan</th>
                         <th>Tingkat</th>
                         <th>Guru Pengampu</th>
@@ -25,19 +26,21 @@
                     </thead>
                     <tbody>
                   <?php 
-                    $kurikulum_kode = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : '';
-                    if ($kurikulum_kode) {
-                        $tampil = mysql_query("SELECT * FROM rb_mata_pelajaran a 
+                        // Modified query to show subjects from ALL active curricula
+                        $tampil = mysql_query("SELECT a.*, b.nama_kelompok_mata_pelajaran, c.nama_guru, d.nama_jurusan, e.nama_kurikulum 
+                                                  FROM rb_mata_pelajaran a 
                                                   LEFT JOIN rb_kelompok_mata_pelajaran b ON a.id_kelompok_mata_pelajaran=b.id_kelompok_mata_pelajaran
-                                                    LEFT JOIN rb_guru c ON a.nip=c.nip 
-                                                      LEFT JOIN rb_jurusan d ON a.kode_jurusan=d.kode_jurusan
-                                                        where a.kode_kurikulum='$kurikulum_kode'
-                                                          ORDER BY a.urutan ASC");
+                                                  LEFT JOIN rb_guru c ON a.nip=c.nip 
+                                                  LEFT JOIN rb_jurusan d ON a.kode_jurusan=d.kode_jurusan
+                                                  JOIN rb_kurikulum e ON a.kode_kurikulum=e.kode_kurikulum
+                                                  WHERE e.status_kurikulum='Ya'
+                                                  ORDER BY a.urutan ASC");
                         $no = 1;
                         while($r=mysql_fetch_array($tampil)){
                         echo "<tr><td>$no</td>
                                   <td>".(isset($r['kode_pelajaran']) ? $r['kode_pelajaran'] : '')."</td>
                                   <td>".(isset($r['namamatapelajaran']) ? $r['namamatapelajaran'] : '')."</td>
+                                  <td>".(isset($r['nama_kurikulum']) ? $r['nama_kurikulum'] : '')."</td>
                                   <td>".(isset($r['nama_jurusan']) ? $r['nama_jurusan'] : '')."</td>
                                   <td>".(isset($r['tingkat']) ? $r['tingkat'] : '')."</td>
                                   <td>".(isset($r['nama_guru']) ? $r['nama_guru'] : '')."</td>
@@ -52,7 +55,6 @@
                                 echo "</tr>";
                           $no++;
                           }
-                    }
                       if (isset($_GET['hapus'])){
                           mysql_query("DELETE FROM rb_mata_pelajaran where kode_pelajaran='$_GET[hapus]'");
                           echo "<script>
