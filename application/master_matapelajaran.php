@@ -181,7 +181,7 @@
             </div>";
 }elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
-        mysql_query("INSERT INTO rb_mata_pelajaran VALUES('$_POST[a]','','$_POST[e]','$_POST[c]','$_POST[d]','$_POST[f]','','$_POST[h]','$_POST[i]','$_POST[j]','','','','$_POST[m]')") or die(mysql_error());
+        mysql_query("INSERT INTO rb_mata_pelajaran (kode_pelajaran, id_kelompok_mata_pelajaran, kode_jurusan, nip, kode_kurikulum, namamatapelajaran, namamatapelajaran_en, tingkat, kompetensi_umum, kompetensi_khusus, jumlah_jam, sesi, urutan, aktif) VALUES('$_POST[a]','0','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','','$_POST[h]','$_POST[i]','$_POST[j]','0','0','0','$_POST[m]')") or die(mysql_error());
         echo "<script>
             setTimeout(function() {
               Swal.fire({
