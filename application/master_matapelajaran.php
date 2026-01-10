@@ -181,21 +181,40 @@
             </div>";
 }elseif(isset($_GET['act']) && $_GET['act']=='tambah'){
     if (isset($_POST['tambah'])){
-        mysql_query("INSERT INTO rb_mata_pelajaran (kode_pelajaran, id_kelompok_mata_pelajaran, kode_jurusan, nip, kode_kurikulum, namamatapelajaran, namamatapelajaran_en, tingkat, kompetensi_umum, kompetensi_khusus, jumlah_jam, sesi, urutan, aktif) VALUES('$_POST[a]','0','$_POST[c]','$_POST[d]','$_POST[e]','$_POST[f]','','$_POST[h]','$_POST[i]','$_POST[j]','0','0','0','$_POST[m]')") or die(mysql_error());
-        echo "<script>
-            setTimeout(function() {
-              Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil ditambahkan',
-                showConfirmButton: false,
-                timer: 1500
-              }).then(function() {
-                window.location = 'index.php?view=matapelajaran';
-              });
-            }, 100);
-          </script>";
+        $kode_pelajaran = strip_tags($_POST['a']);
+        $kelompok_mapel = strip_tags($_POST['b']); // New input for Kelompok Mapel
+        $jurusan = strip_tags($_POST['c']);
+        $guru = strip_tags($_POST['d']);
+        $kurikulum_form = strip_tags($_POST['e']);
+        $nama_mapel = strip_tags($_POST['f']);
+        $tingkat = strip_tags($_POST['h']);
+        $kompetensi_umum = strip_tags($_POST['i']);
+        $kompetensi_khusus = strip_tags($_POST['j']);
+        $aktif = strip_tags($_POST['m']);
+
+        // Check for duplicate Kode Pelajaran
+        $cek = mysql_query("SELECT * FROM rb_mata_pelajaran WHERE kode_pelajaran = '$kode_pelajaran'");
+        if (mysql_num_rows($cek) > 0) {
+             echo "<script>window.alert('Gagal! Kode Pelajaran sudah ada.'); window.location='index.php?view=matapelajaran&act=tambah';</script>";
+        } else {
+             mysql_query("INSERT INTO rb_mata_pelajaran (kode_pelajaran, id_kelompok_mata_pelajaran, kode_jurusan, nip, kode_kurikulum, namamatapelajaran, namamatapelajaran_en, tingkat, kompetensi_umum, kompetensi_khusus, jumlah_jam, sesi, urutan, aktif) VALUES('$kode_pelajaran','$kelompok_mapel','$jurusan','$guru','$kurikulum_form','$nama_mapel','','$tingkat','$kompetensi_umum','$kompetensi_khusus','0','0','0','$aktif')") or die(mysql_error());
+            echo "<script>
+                setTimeout(function() {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }).then(function() {
+                    window.location = 'index.php?view=matapelajaran';
+                  });
+                }, 100);
+              </script>";
+        }
     }
+
+    $active_kurikulum = isset($kurikulum['kode_kurikulum']) ? $kurikulum['kode_kurikulum'] : 0;
 
     echo "<div class='col-md-12'>
               <div class='box box-info'>
@@ -207,27 +226,36 @@
                 <div class='col-md-12'>
                   <table class='table table-condensed table-bordered'>
                   <tbody>
-                    <tr><th width='140px' scope='row'>Kurikulum</th> <td><select class='form-control' name='e'> 
-                             <option value='0' selected>- Pilih Kurikulum -</option>"; 
-                              $kurikulum = mysql_query("SELECT * FROM rb_kurikulum");
-                                  while($a = mysql_fetch_array($kurikulum)){
-                                    echo "<option value='$a[kode_kurikulum]'>$a[nama_kurikulum]</option>";
+                    <tr><th width='140px' scope='row'>Kurikulum</th> <td><select class='form-control' name='e' required> 
+                             <option value=''>- Pilih Kurikulum -</option>"; 
+                              $kurikulum_query = mysql_query("SELECT * FROM rb_kurikulum");
+                                  while($a = mysql_fetch_array($kurikulum_query)){
+                                    $selected = ($a['kode_kurikulum'] == $active_kurikulum) ? 'selected' : '';
+                                    echo "<option value='$a[kode_kurikulum]' $selected>$a[nama_kurikulum]</option>";
                                   }
                              echo "</select>
                     </td></tr>
                     <tr><th scope='row'>Kode Pelajaran <span style='color:red'>*</span></th>       <td><input type='text' class='form-control' name='a' required> </td></tr>
+                    <tr><th scope='row'>Kelompok Mapel</th> <td><select class='form-control' name='b' required> 
+                             <option value=''>- Pilih Kelompok Mapel -</option>"; 
+                              $kelompok = mysql_query("SELECT * FROM rb_kelompok_mata_pelajaran");
+                                  while($a = mysql_fetch_array($kelompok)){
+                                       echo "<option value='$a[id_kelompok_mata_pelajaran]'>$a[nama_kelompok_mata_pelajaran]</option>";
+                                  }
+                             echo "</select>
+                    </td></tr>
                     <tr><th scope='row'>Nama Mapel</th>           <td><input type='text' class='form-control' name='f' required></td></tr>
 
-                    <tr><th scope='row'>Jurusan</th> <td><select class='form-control' name='c'> 
-                             <option value='0' selected>- Pilih Jurusan -</option>"; 
+                    <tr><th scope='row'>Jurusan</th> <td><select class='form-control' name='c' required> 
+                             <option value=''>- Pilih Jurusan -</option>"; 
                               $jurusan = mysql_query("SELECT * FROM rb_jurusan");
                                   while($a = mysql_fetch_array($jurusan)){
                                        echo "<option value='$a[kode_jurusan]'>$a[nama_jurusan]</option>";
                                   }
                              echo "</select>
                     </td></tr>
-                    <tr><th scope='row'>Guru Pengampu</th> <td><select class='form-control' name='d'> 
-                             <option value='0' selected>- Pilih Guru Pengampu -</option>"; 
+                    <tr><th scope='row'>Guru Pengampu</th> <td><select class='form-control' name='d' required> 
+                             <option value=''>- Pilih Guru Pengampu -</option>"; 
                               $guru = mysql_query("SELECT * FROM rb_guru");
                                   while($a = mysql_fetch_array($guru)){
                                        echo "<option value='$a[nip]'>$a[nama_guru]</option>";
