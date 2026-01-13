@@ -76,6 +76,25 @@
 </div>
 
 <div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">Laporan & Export Data</h3>
+            </div>
+            <div class="box-body">
+                <p>Silahkan unduh laporan berikut untuk keperluan administrasi dan evaluasi:</p>
+                <a href="application/export_rekap_kegiatan.php" target="_blank" class="btn btn-app">
+                    <i class="fa fa-file-excel-o"></i> Laporan Keaktifan Guru
+                </a>
+                <a href="application/export_rekap_akademik.php" target="_blank" class="btn btn-app">
+                    <i class="fa fa-graduation-cap"></i> Laporan Akademik Siswa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
   <!-- Latest Journal Activities -->
   <div class="col-md-6">
     <div class="box box-info">

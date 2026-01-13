@@ -4,6 +4,7 @@ $sem = mysql_fetch_array(mysql_query("SELECT * FROM rb_tahun_akademik WHERE akti
 $nama_hari = array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
 $hari_now = $nama_hari[$hari_ini];
 
+
 // Stats
 $total_mengajar = mysql_num_rows(mysql_query("SELECT * FROM rb_jadwal_pelajaran WHERE nip='$_SESSION[id]' AND id_tahun_akademik='$sem[id_tahun_akademik]'"));
 $total_materi = mysql_num_rows(mysql_query("SELECT * FROM rb_elearning WHERE id_kategori_elearning='1' AND kodejdwl IN (SELECT kodejdwl FROM rb_jadwal_pelajaran WHERE nip='$_SESSION[id]')"));
@@ -26,6 +27,22 @@ $jurnal_bulan_ini = mysql_num_rows(mysql_query("SELECT * FROM rb_journal_list
                                                  AND MONTH(tanggal) = MONTH(CURDATE()) 
                                                  AND YEAR(tanggal) = YEAR(CURDATE())"));
 
+// Absensi Hari Ini Stats
+$abs_hadir = 0; $abs_sakit = 0; $abs_izin = 0; $abs_alpa = 0;
+// Get Teacher's Schedule IDs
+$qry_jdwl = mysql_query("SELECT kodejdwl FROM rb_jadwal_pelajaran WHERE nip='$_SESSION[id]'");
+$list_jdwl = array();
+while($rj = mysql_fetch_array($qry_jdwl)){
+    $list_jdwl[] = $rj['kodejdwl'];
+}
+if(!empty($list_jdwl)){
+    $list_jdwl_str = implode("','", $list_jdwl);
+    // Count attendance for today
+    $abs_hadir = mysql_num_rows(mysql_query("SELECT * FROM rb_absensi_siswa WHERE kodejdwl IN ('$list_jdwl_str') AND tanggal=CURDATE() AND kode_kehadiran='H'"));
+    $abs_sakit = mysql_num_rows(mysql_query("SELECT * FROM rb_absensi_siswa WHERE kodejdwl IN ('$list_jdwl_str') AND tanggal=CURDATE() AND kode_kehadiran='S'"));
+    $abs_izin = mysql_num_rows(mysql_query("SELECT * FROM rb_absensi_siswa WHERE kodejdwl IN ('$list_jdwl_str') AND tanggal=CURDATE() AND kode_kehadiran='I'"));
+    $abs_alpa = mysql_num_rows(mysql_query("SELECT * FROM rb_absensi_siswa WHERE kodejdwl IN ('$list_jdwl_str') AND tanggal=CURDATE() AND kode_kehadiran='A'"));
+}
 ?>
 
 <div class="row">
@@ -36,6 +53,58 @@ $jurnal_bulan_ini = mysql_num_rows(mysql_query("SELECT * FROM rb_journal_list
             <p>Anda login sebagai <b><?php echo $level; ?></b>. Silahkan gunakan menu di sebelah kiri untuk mengelola kegiatan akademik.</p>
         </div>
     </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-success box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">Rekap Absensi Siswa Hari Ini (<?php echo tgl_indo(date('Y-m-d')); ?>)</h3>
+            </div>
+            <div class="box-body">
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-green">
+                        <div class="inner">
+                            <h3><?php echo $abs_hadir; ?></h3>
+                            <p>Hadir</p>
+                        </div>
+                        <div class="icon"><i class="fa fa-check"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h3><?php echo $abs_sakit; ?></h3>
+                            <p>Sakit</p>
+                        </div>
+                        <div class="icon"><i class="fa fa-medkit"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-blue">
+                        <div class="inner">
+                            <h3><?php echo $abs_izin; ?></h3>
+                            <p>Izin</p>
+                        </div>
+                        <div class="icon"><i class="fa fa-info-circle"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-6">
+                    <div class="small-box bg-red">
+                        <div class="inner">
+                            <h3><?php echo $abs_alpa; ?></h3>
+                            <p>Alpa</p>
+                        </div>
+                        <div class="icon"><i class="fa fa-times"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <a href="index.php?view=absensiswa&act=detailabsenguru" class="btn btn-sm btn-default pull-right">Lihat Detail Attendance</a>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Stats Row 1 -->
     <div class="col-lg-3 col-xs-6">
